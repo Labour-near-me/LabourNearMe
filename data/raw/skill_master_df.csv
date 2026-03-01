@@ -1,0 +1,95 @@
+id,skill_name,category
+85f64c86-6e1c-49a8-9566-9ca05ca11488,Pipe Fitting,Plumbing
+ed930eaf-c231-4283-a5b4-f61e57babe70,Leak Repair,Plumbing
+ac97d9ca-79ac-4791-936f-99ebb926d216,Bathroom Installation,Plumbing
+90061a22-13bc-4653-9026-8f72f0152e25,Drain Cleaning,Plumbing
+45bf1034-ff67-407e-a7cc-6ab979c657fd,Water Tank Installation,Plumbing
+3a08cd81-a48f-4376-8b53-7250866e7140,Wiring Installation,Electrical
+3a55930f-a9a0-4cf9-a64e-30d0d8b0034c,Switchboard Repair,Electrical
+ebcd049e-a783-4659-8e62-fd3b499346d0,Fan Installation,Electrical
+8a0afad7-db7d-4c4c-abb1-cc59e1189c76,Lighting Setup,Electrical
+46bcf081-0935-48b5-9ff8-6fe248307fe8,Inverter Installation,Electrical
+4f6a3469-9f64-4904-9e20-e5f55277c2bb,Furniture Assembly,Carpentry
+384371fd-c973-484b-b2fb-941d6008f8c7,Door Installation,Carpentry
+9fe871bd-a593-4ead-bb12-5708be7cee91,Cabinet Making,Carpentry
+7ffc0b0b-7157-4690-b3bf-8fce972eba78,Wood Polishing,Carpentry
+730acb04-1d5c-4c0e-9a57-2dbb383f24ed,Modular Kitchen Fitting,Carpentry
+4f919e84-d3a1-4fe0-8d9b-a18fa89ab4e3,Interior Painting,Painting
+1d0902b9-a567-4966-bcae-4cd0231d69ca,Exterior Painting,Painting
+d97c4f7d-f207-4b61-a256-67bb6b645af4,Wall Putty,Painting
+923c455f-11ba-48f4-96b1-b8addae15b77,Waterproof Coating,Painting
+2f0b741e-3c46-4211-82c8-21bbf105f9f1,House Cleaning,Cleaning
+d350db5c-38dc-4f46-8dc7-d4a5d8ab7116,Office Cleaning,Cleaning
+b195209b-218d-4540-a0cd-b2b64a43b824,Bathroom Cleaning,Cleaning
+1dacc135-712d-4af5-b37b-aaa50e6bce2c,Floor Scrubbing,Cleaning
+022d692f-cfac-4320-bf5a-3ccd9cd728f5,Lawn Maintenance,Gardening
+9fc0ad90-ded8-442a-a150-07304b9dd2ad,Plant Pruning,Gardening
+22a64357-ca0e-4a7b-b328-0690d58297ad,Garden Landscaping,Gardening
+19f5f26a-c12c-4861-ae89-7c5e9472ca1b,Cement Mixing,Masonry Helper
+6339158d-edb1-4da1-bc87-6943456a6028,Brick Carrying,Masonry Helper
+7090bd5b-bff1-4fbb-b1d0-9eab1abd5797,Site Assistance,Masonry Helper
+fb90d57a-02ae-4ba2-b4dc-cdf32b01d285,Housekeeping,Domestic Help
+076f0337-a67d-4ebb-ac8a-4e086b667bb0,Utensil Washing,Domestic Help
+58cf062d-c837-411f-91a2-f5c42eda2b68,Basic Cooking,Domestic Help
+d420999c-cd05-4b93-87c0-ebc047629170,Washing Machine Repair,Appliance Repair
+3bf5718b-804e-425f-8788-42f80c6489fd,Refrigerator Repair,Appliance Repair
+15c7f23b-2403-4fb1-8d8f-fbb866c01f37,Microwave Repair,Appliance Repair
+c4da33ff-46ea-409d-a68c-686914d964eb,TV Repair,Appliance Repair
+5f3bb990-f6ca-44e4-8968-242111436992,Packing Household Items,Moving and Packing
+f627decb-777a-49b9-bc79-4fa53323f96c,Loading Furniture,Moving and Packing
+ad0951a2-8da6-4661-bf19-38e98f19e974,Unloading Goods,Moving and Packing
+b4d525c9-10a3-405e-ae26-61323a20722a,Gate Monitoring,Security Guarding
+3d3ad7e3-f37b-4b82-9d98-d3c74d94d8b1,Night Patrolling,Security Guarding
+a0bad1ec-0567-40de-867d-bfb06920a870,Visitor Log Management,Security Guarding
+be776ade-f701-4ff5-b42f-e85bcff95954,Exterior Car Wash,Car Washing
+466a88b1-2466-4805-8ed0-abfe394f8de5,Interior Cleaning,Car Washing
+8fa5a833-ded4-41c2-baf6-20b0adba87cf,Car Polishing,Car Washing
+d6c692ce-fd60-465a-a5c7-16eab304d07b,Kitchen Deep Cleaning,Deep Cleaning
+f99f4fc4-c212-4f6b-a5e2-e6953286b225,Sofa Shampooing,Deep Cleaning
+8ed34819-e0a9-413e-883a-4c05dd815636,Tile Scrubbing,Deep Cleaning
+a718b77f-6452-47d7-946c-a7099cfb1795,Warehouse Loading,Loading
+02c770bb-96a2-48d6-8029-d69be58ba95e,Material Shifting,Loading
+f4b35098-d78b-4011-8c08-a75be76972be,Truck Loading,Loading
+f88f933f-a0ed-4f0e-b5ea-bf2124f39001,Termite Treatment,Pest Control
+6d1553fa-9dba-44e7-989c-84aa5acca4c9,Rodent Control,Pest Control
+6f01808b-945a-4048-8361-d6fe1dfaabd8,General Pest Spraying,Pest Control
+5d493ec1-c98b-46bc-8b05-c5cb8a1f4cd2,Harvesting,Agricultural Labor
+e3a356d0-7385-4969-bad0-8c813c7e513d,Irrigation Setup,Agricultural Labor
+bc8f55d6-02be-4b83-aa39-1de7d92d3cfa,Crop Planting,Agricultural Labor
+5f924988-0c6d-41d5-89ac-7d1e8354d936,Clothes Washing,Laundry
+250eea0d-0291-4310-8b44-2a245612ef31,Ironing,Laundry
+e9359508-5152-4160-b72d-8ca6b0fac027,Dry Cleaning Handling,Laundry
+5769481c-e042-4a82-8fb8-f93c713edd01,Grocery Picking,Shopper Assistant
+0317f642-d72c-4b7a-8efe-87cd840cf8cf,Inventory Assistance,Shopper Assistant
+d622f82c-aced-4b7a-bdaf-367defddeee1,Customer Help Desk,Shopper Assistant
+a434148c-8874-4966-8a61-ebe6057dcc92,Stage Setup,Event Support
+5571cf5e-88e0-471c-bd35-a0e55cc6b329,Crowd Assistance,Event Support
+1027250f-b5fd-4881-989f-9c9cbbe4e951,Equipment Arrangement,Event Support
+1cdc939d-24a3-4fff-bcc1-b7830c45b5d5,Indian Cooking,Cook/Chef
+b93bf1a9-3f8d-496f-8cef-a0085bd68574,South Indian Cooking,Cook/Chef
+07d80d5a-ed01-4f57-ad75-c11268b3bca8,Bulk Cooking,Cook/Chef
+7936d238-05b6-4dad-a09c-4dba8eb9307a,Kitchen Management,Cook/Chef
+26134a04-862c-4321-9f33-c5f02dde9cae,Car Driving,Driver
+5d7e1e37-fb20-4c4d-b8d8-7738354d52ea,Commercial Driving,Driver
+5b2c8cbb-cc3b-4d31-9ea2-52c6b105a2ef,Route Navigation,Driver
+58de98b7-1bd4-42a1-9604-8cb961a842c3,Infant Care,Babysitter
+92f4c1ab-8644-49ed-933a-c92dde8b9605,Child Supervision,Babysitter
+32fbd9b8-3b50-4ff1-8c3a-0cfdfb956e79,Homework Assistance,Babysitter
+78584c4a-b3e7-4cee-8d37-d4f447eb02a4,Arc Welding,Welder
+f9c113e0-ca09-4f89-a456-5a0aafeb2d51,Gas Welding,Welder
+a3107853-6756-4750-a177-f76721cd7c81,Metal Fabrication,Welder
+744fcde4-21b8-475b-b3d1-668e6026e15b,Patient Assistance,Elder Care
+7b3b6b46-6948-4ec7-b87a-ea85501a62fc,Medicine Reminders,Elder Care
+005b11cb-839c-41d6-8f8d-680cd8a751fd,Mobility Support,Elder Care
+89fc6311-2ee6-4833-85f3-ac4713c2b7a0,Stitching,Tailor and Sewers
+d03fea71-b696-44ab-811c-d0eda4d034cc,Alterations,Tailor and Sewers
+d70c8822-4247-4827-b856-754ebb0152dc,Blouse Designing,Tailor and Sewers
+ede236e9-ecc5-47bc-8283-bb6d44b01f68,Two Wheeler Repair,Mechanic
+8b9244e8-36ba-4496-ad3b-e9d7346130ca,Car Engine Repair,Mechanic
+f6d167f8-c1c1-4252-8e85-422a4134423f,Oil Change Service,Mechanic
+c57147d0-9b9c-4bd0-8a5f-395e56b0753f,AC Installation,Technician
+05459100-3692-49cf-be1c-df7196533777,RO Installation,Technician
+e4dbab44-a8ab-4080-a9c5-ac4ed000024f,CCTV Setup,Technician
+bef74bd6-5a20-4025-a07d-ad0465d99a0a,Marble Cutting,Marble Mistries
+cb60bdb9-cd45-4625-8d14-c5ce87f39773,Tile Laying,Marble Mistries
+41a80aea-c6a9-4849-b0e3-f8b5ed95daf0,Floor Polishing,Marble Mistries
