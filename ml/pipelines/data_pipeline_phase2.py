@@ -5,46 +5,56 @@
 import pandas as pd
 import numpy as np
 import pickle
+import os
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # -----------------------
-# 1️⃣ Load ML-ready dataset
+# 1️⃣ Load ML-ready dataset (Updated Path)
 # -----------------------
-df = pd.read_csv("ml_ready_dataset.csv")
+# Navigates from ml/pipelines/ to data/processed/
+DATA_PATH = os.path.join("..", "..", "data", "processed", "ml_ready_dataset.csv")
+
+if not os.path.exists(DATA_PATH):
+    print(f"❌ Error: Could not find dataset at {DATA_PATH}")
+    print("Ensure you are running this script from inside: LabourNearMe/ml/pipelines/")
+    exit()
+
+df = pd.read_csv(DATA_PATH)
 print("Loaded dataset shape:", df.shape)
 
 # -----------------------
-# 2️⃣ Drop ID columns (not useful for learning)
+# 2️⃣ Drop ID columns
 # -----------------------
-df = df.drop(columns=["worker_id", "job_id"])
-print("Dropped worker_id and job_id")
+# Standard cleanup for the LabourLink model
+cols_to_drop = ["worker_id", "job_id"]
+df = df.drop(columns=[c for c in cols_to_drop if c in df.columns])
+print(f"Dropped ID columns. New shape: {df.shape}")
 
 # -----------------------
 # 3️⃣ Separate features and target
 # -----------------------
+# Ensuring the target 'final_rating' exists from your Phase 1 processing
+if "final_rating" not in df.columns:
+    print("❌ Error: 'final_rating' column missing. Check your Phase 1 output.")
+    exit()
+
 y = df["final_rating"]
 X = df.drop(columns=["final_rating"])
 
-print("Feature matrix shape:", X.shape)
-print("Target shape:", y.shape)
-
 # -----------------------
-# 4️⃣ Convert any remaining categorical columns
-# (If title/description are still raw text, drop them for now)
+# 4️⃣ Preprocessing & Encoding
 # -----------------------
-
-# Check if title/description exist
+# Dropping raw text before encoding for the Random Forest model
 for col in ["title", "description"]:
     if col in X.columns:
         print(f"Dropping text column: {col}")
         X = X.drop(columns=[col])
 
-# Convert any object columns using get_dummies
+# Convert categorical columns (location, job_type) to numeric
 X = pd.get_dummies(X, drop_first=True)
-
 print("Final feature matrix shape after encoding:", X.shape)
 
 # -----------------------
@@ -56,12 +66,10 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-print("Train size:", X_train.shape)
-print("Test size:", X_test.shape)
-
 # -----------------------
 # 6️⃣ Train RandomForest Regressor
 # -----------------------
+# Using 200 estimators for better stability in worker matching
 model = RandomForestRegressor(
     n_estimators=200,
     random_state=42
@@ -85,9 +93,16 @@ print("RMSE:", round(rmse, 4))
 print("R²  :", round(r2, 4))
 
 # -----------------------
-# 8️⃣ Save Model
+# 8️⃣ Save Model + Feature Columns (Updated Path)
 # -----------------------
-with open("predictive_model.pkl", "wb") as f:
+# Saving to ml/models/ folder for Phase 3 use
+MODEL_DIR = os.path.join("..", "models")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+with open(os.path.join(MODEL_DIR, "predictive_model.pkl"), "wb") as f:
     pickle.dump(model, f)
 
-print("\nModel saved as predictive_model.pkl 🎯")
+with open(os.path.join(MODEL_DIR, "feature_columns.pkl"), "wb") as f:
+    pickle.dump(X.columns.tolist(), f)
+
+print(f"\nModel and feature columns saved to {MODEL_DIR} 🎯")
