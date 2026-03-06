@@ -1,3 +1,10 @@
 import numpy as np
-job_vectors = np.load("ml/vectors/job_vectors.npy")
-print(job_vectors.shape)
+from sklearn.metrics.pairwise import cosine_similarity
+
+worker_vec = np.load("ml/vectors/worker_vectors.npy")
+job_vec = np.load("ml/vectors/job_vectors.npy")
+
+sim = cosine_similarity(worker_vec[0].reshape(1,-1), job_vec)
+
+print("Top similarities:")
+print(np.sort(sim[0])[-10:])

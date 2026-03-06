@@ -49,17 +49,14 @@ def convert_embeddings(df, column_name):
     vectors = []
     for v in df[column_name]:
         if isinstance(v, str):
-            # If database returns vector as a string "[1, 2, 3...]"
             vectors.append(np.array(ast.literal_eval(v), dtype=float))
         elif isinstance(v, list):
-            # If driver already converted it to a list
             vectors.append(np.array(v, dtype=float))
         else:
-            # Handle unexpected types (like None)
-            vectors.append(np.zeros(143)) # Default to zero vector if empty
+            # Change this from 143 to 425
+            vectors.append(np.zeros(425)) 
             
     return np.array(vectors)
-
 
 # -------------------------------------------------
 # HAVERSINE DISTANCE (KM)
@@ -117,9 +114,9 @@ def recommend_workers_for_job(job_id, top_n=5):
         proximity_score = 1 / (1 + distance_km)
 
         final_score = (
-            0.6 * similarity_score +
-            0.2 * proximity_score +
-            0.2 * rating_score
+            0.7 * similarity_score +
+            0.15 * proximity_score +
+            0.15 * rating_score
         )
 
         results.append({
