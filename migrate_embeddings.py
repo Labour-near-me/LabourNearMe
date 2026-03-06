@@ -1,8 +1,8 @@
+from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
 import os
-from dotenv import load_dotenv
 
 # -----------------------------
 # Setup

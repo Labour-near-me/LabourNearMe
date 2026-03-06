@@ -52,8 +52,8 @@ def convert_embeddings(df, column_name):
         elif isinstance(v, list):
             vectors.append(np.array(v, dtype=float))
         else:
-            # Change this from 143 to 425
-            vectors.append(np.zeros(425))            
+            # Change this from 143 to 384
+            vectors.append(np.zeros(384))            
     return np.array(vectors)
 
 # -------------------------------------------------
