@@ -4,8 +4,9 @@ from sentence_transformers import SentenceTransformer
 
 print("Loading skill sentences...")
 
-worker_df = pd.read_csv("data/processed/worker_skill_sentences.csv")
-job_df = pd.read_csv("data/processed/job_skill_sentences.csv")
+# Load CSVs generated from pipeline 2
+worker_df = pd.read_csv("worker_skill_sentences.csv")
+job_df = pd.read_csv("job_skill_sentences.csv")
 
 worker_sentences = worker_df["skill_sentence"].astype(str).tolist()
 job_sentences = job_df["skill_sentence"].astype(str).tolist()
@@ -40,7 +41,7 @@ print("Job vector shape:", job_vectors.shape)
 
 print("Saving embeddings...")
 
-np.save("ml/vectors/worker_vectors.npy", worker_vectors)
-np.save("ml/vectors/job_vectors.npy", job_vectors)
+np.save("worker_vectors.npy", worker_vectors)
+np.save("job_vectors.npy", job_vectors)
 
 print("Embeddings saved successfully.")

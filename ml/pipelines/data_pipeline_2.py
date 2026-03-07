@@ -4,7 +4,7 @@ import pandas as pd
 job_skills_df = pd.read_csv("job_skills_df.csv")
 skill_master_df = pd.read_csv("skill_master_df.csv")
 
-# Merge correctly
+# Merge skill names
 job_skills_named = job_skills_df.merge(
     skill_master_df,
     left_on="skill_id",
@@ -14,6 +14,9 @@ job_skills_named = job_skills_df.merge(
 
 # Drop redundant id column
 job_skills_named = job_skills_named.drop(columns=["id"])
+
+# Remove rows with missing skill names
+job_skills_named = job_skills_named.dropna(subset=["skill_name"])
 
 # Clean skill text
 job_skills_named["skill_name"] = (
@@ -27,17 +30,17 @@ job_skills_named = job_skills_named.drop_duplicates(
     subset=["job_id", "skill_name"]
 )
 
-# Group and combine into single sentence per job
+# Combine skills into sentence
 job_skill_sentences = (
     job_skills_named
     .groupby("job_id")["skill_name"]
-    .apply(lambda x: " ".join(x))
+    .apply(lambda x: ", ".join(x))
     .reset_index()
 )
 
 job_skill_sentences.columns = ["job_id", "skill_sentence"]
 
-# Save to CSV
+# Save CSV
 job_skill_sentences.to_csv("job_skill_sentences.csv", index=False)
 
 print("Job skill sentences created.")
