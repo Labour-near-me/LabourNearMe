@@ -1,63 +1,57 @@
 from backend.database.supabase_client import supabase
-from ml.engines.jobForWorkers_RE import recommend_jobs_for_worker as ml_recommend_jobs
-import uuid
+from sentence_transformers import SentenceTransformer
 
+# Initialize the model (matches your ML engine's 384 dimensions)
+# Note: On first run, it will download a small (~80MB) model file
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 class WorkerService:
-
     @staticmethod
-    def create_worker(worker_data: dict):
+    def register_new_worker(data: dict):
         try:
-            # Generate shared UUID
-            user_id = str(uuid.uuid4())
+            # --- STEP 1: Generate AI Embedding ---
+            # We combine experience and skills for a rich vector
+            # You can also add actual skill names here if the frontend sends them
+            text_for_embedding = f"Worker with {data.get('experience_years')} years of experience."
+            vector = embedding_model.encode(text_for_embedding).tolist()
 
-            # Step 1️⃣ Create profile
-            profile_payload = {
-                "id": user_id,
-                "full_name": worker_data.get("name"),
+            # --- STEP 2: Create Profile (Identity) ---
+            profile_resp = supabase.table("Profiles").insert({
+                "full_name": data.get("full_name"),
+                "phone": data.get("phone"),
                 "role": "worker"
-            }
+            }).execute()
 
-            supabase.table("Profiles").insert(profile_payload).execute()
+            if not profile_resp.data:
+                return {"error": "Failed to create profile entry"}
 
-            # Step 2️⃣ Create worker
-            worker_payload = {
-                "id": user_id,
-                "experience_years": worker_data.get("experience_years"),
-                "expected_wage": worker_data.get("expected_wage"),
-                "location_lat": worker_data.get("location_lat"),
-                "location_lng": worker_data.get("location_lng"),
-                "availability_status": worker_data.get("availability_status", True),
-                "rating": 0.0,
-                "total_jobs_done": 0
-            }
+            new_worker_id = profile_resp.data[0]['id']
 
-            response = supabase.table("workers").insert(worker_payload).execute()
+            # --- STEP 3: Create Worker (Stats + Embedding) ---
+            supabase.table("workers").insert({
+                "id": new_worker_id,
+                "experience_years": data.get("experience_years"),
+                "expected_wage": data.get("expected_wage"),
+                "location_lat": data.get("location_lat"),
+                "location_lng": data.get("location_lng"),
+                "worker_embedding": vector,  # <--- No longer NULL!
+                "rating": 0,
+                "total_jobs_done": 0,
+                "availability_status": True
+            }).execute()
 
-            return {"success": True, "worker": response.data[0]}
+            # --- STEP 4: Link Skills (Option B) ---
+            skill_ids = data.get("skills", [])
+            if skill_ids:
+                skill_mappings = [{"worker_id": new_worker_id, "skill_id": s_id} for s_id in skill_ids]
+                supabase.table("Worker_skills").insert(skill_mappings).execute()
+
+            return {"status": "success", "worker_id": new_worker_id}
 
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            return {"error": str(e)}
 
     @staticmethod
-    def get_worker(worker_id: str):
-        response = supabase.table("workers").select("*").eq("id", worker_id).execute()
-        return response.data[0] if response.data else None
-
-    @staticmethod
-    def get_recommended_jobs(worker_id: str):
-
-        ml_results = ml_recommend_jobs(worker_id)
-
-        job_list = []
-
-        for item in ml_results:
-
-            job_resp = supabase.table("Jobs").select("*").eq("id", item['job_id']).execute()
-
-            if job_resp.data:
-                data = job_resp.data[0]
-                data["match_score"] = item['score']
-                job_list.append(data)
-
-        return job_list
+    def get_worker_details(worker_id: str):
+        res = supabase.table("workers").select("*, Profiles(*)").eq("id", worker_id).execute()
+        return res.data[0] if res.data else None

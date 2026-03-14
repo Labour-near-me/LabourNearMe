@@ -1,31 +1,32 @@
-# backend/routes/recommendations.py
-from fastapi import APIRouter, HTTPException
-from backend.services.recommendation_service import RecommendationService
+from fastapi import APIRouter
+from ml.engines.jobForWorkers_RE import recommend_jobs_for_worker
+from ml.engines.workerForJob_RE import recommend_workers_for_job
 
 router = APIRouter()
 
-# -----------------------------
-# Job-for-Worker
-# -----------------------------
-@router.get("/jobs/{worker_id}")
-async def get_recommended_jobs(worker_id: str, top_n: int = 5):
-    try:
-        recommendations = RecommendationService.get_jobs_for_worker(worker_id, top_n)
-        if not recommendations:
-            return {"status": "success", "data": []}
-        return {"status": "success", "data": recommendations}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# For Workers: "Which jobs are best for me?"
+from fastapi import APIRouter, HTTPException
+from ml.engines.jobForWorkers_RE import recommend_jobs_for_worker, refresh_data
 
-# -----------------------------
-# Worker-for-Job
-# -----------------------------
-@router.get("/workers/{job_id}")
-async def get_recommended_workers(job_id: str, top_n: int = 5):
+router = APIRouter()
+
+@router.get("/jobs/{worker_id}")
+def get_job_recs(worker_id: str):
     try:
-        recommendations = RecommendationService.get_workers_for_job(job_id, top_n)
-        if not recommendations:
-            return {"status": "success", "data": []}
-        return {"status": "success", "data": recommendations}
+        # Step 1: Force Refresh taaki naye jobs memory mein aa jayein
+        refresh_data()
+        
+        # Step 2: Get Recommendations
+        recs = recommend_jobs_for_worker(worker_id)
+        
+        return {
+            "worker_id": worker_id, 
+            "count": len(recs),
+            "recommendations": recs
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+# For Employers: "Which workers are best for my job?"
+@router.get("/workers/{job_id}")
+def get_worker_recs(job_id: str):
+    return {"job_id": job_id, "recommendations": recommend_workers_for_job(job_id)}
