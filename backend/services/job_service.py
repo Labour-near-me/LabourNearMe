@@ -3,23 +3,38 @@ from sentence_transformers import SentenceTransformer
 
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
+
 class JobService:
+
     @staticmethod
-    def create_job(data: dict):
+    def create_job(data: dict, employer_id: str):
         try:
+            # --- STEP 0: Validate employer ---
+            if not employer_id:
+                return {"error": "User not authenticated"}
+
+            profile = supabase.table("Profiles") \
+                .select("*") \
+                .eq("id", employer_id) \
+                .eq("role", "employer") \
+                .execute()
+
+            if not profile.data:
+                return {"error": "Invalid employer"}
+
             # --- STEP 1: Generate AI Embedding ---
             job_text = f"{data.get('title')}: {data.get('description')}"
             vector = embedding_model.encode(job_text).tolist()
 
-            # --- STEP 2: Insert Job (Stats + Embedding) ---
+            # --- STEP 2: Insert Job ---
             job_resp = supabase.table("Jobs").insert({
-                "employer_id": data.get("employer_id"),
+                "employer_id": employer_id,  # 🔥 FROM HEADER
                 "title": data.get("title"),
                 "description": data.get("description"),
                 "budget": data.get("budget"),
                 "location_lat": data.get("location_lat"),
                 "location_lng": data.get("location_lng"),
-                "job_embedding": vector,  # <--- No longer NULL!
+                "job_embedding": vector,
                 "status": "open"
             }).execute()
 
@@ -28,10 +43,29 @@ class JobService:
 
             job_id = job_resp.data[0]['id']
 
-            # --- STEP 3: Link Required Skills ---
-            skill_ids = data.get("skills", [])
+            # --- STEP 3: Link Required Skills (NAME → ID) ---
+            skill_names = data.get("required_skills", [])
+            skill_ids = []
+
+            for skill_name in skill_names:
+                skill_name = skill_name.strip()
+
+                skill_resp = supabase.table("Skill_master") \
+                    .select("*") \
+                    .ilike("skill_name", skill_name) \
+                    .execute()
+
+                if not skill_resp.data:
+                    return {"error": f"Skill '{skill_name}' not found"}
+
+                skill_ids.append(skill_resp.data[0]["id"])
+
+            # --- STEP 4: Insert into Job_required_skill ---
             if skill_ids:
-                job_skill_links = [{"job_id": job_id, "skill_id": s_id} for s_id in skill_ids]
+                job_skill_links = [
+                    {"job_id": job_id, "skill_id": sid}
+                    for sid in skill_ids
+                ]
                 supabase.table("Job_required_skill").insert(job_skill_links).execute()
 
             return {"status": "success", "job_id": job_id}
@@ -41,5 +75,9 @@ class JobService:
 
     @staticmethod
     def get_job_details(job_id: str):
-        res = supabase.table("Jobs").select("*, Job_required_skill(skill_id)").eq("id", job_id).execute()
+        res = supabase.table("Jobs") \
+            .select("*, Job_required_skill(skill_id)") \
+            .eq("id", job_id) \
+            .execute()
+
         return res.data[0] if res.data else None

@@ -1,12 +1,25 @@
-from fastapi import APIRouter, HTTPException
-from backend.database.supabase_client import supabase # Ye line missing hai
+from fastapi import APIRouter, HTTPException, Body
+from pydantic import BaseModel
+from typing import List, Optional
 from backend.services.worker_service import WorkerService
 
 router = APIRouter()
 
+# Schema for automation & validation
+class WorkerCreate(BaseModel):
+    full_name: str
+    phone: str
+    experience_years: int
+    expected_wage: float
+    location_lat: float
+    location_lng: float
+    category: str
+    skills: List[str] = []
+
 @router.post("/")
-def register_worker(data: dict):
-    result = WorkerService.register_new_worker(data)
+def register_worker(worker_data: WorkerCreate):
+    # .model_dump() converts Pydantic to a clean dict
+    result = WorkerService.register_new_worker(worker_data.model_dump())
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
     return result
@@ -17,20 +30,3 @@ def get_worker(worker_id: str):
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
     return worker
-
-@router.patch("/{worker_id}/update-profile")
-def update_worker_profile(worker_id: str, data: dict):
-    try:
-        # data mein availability_status, expected_wage ya experience_years ho sakta hai
-        res = supabase.table("workers").update(data).eq("id", worker_id).execute()
-        
-        if not res.data:
-            raise Exception("Worker not found")
-            
-        return {
-            "status": "success", 
-            "message": "Profile updated successfully", 
-            "updated_fields": data
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))

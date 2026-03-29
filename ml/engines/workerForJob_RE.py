@@ -22,19 +22,26 @@ MODEL_DIR = os.path.join(BASE_DIR, "models")
 kmeans = pickle.load(open(os.path.join(MODEL_DIR, "kmeans_model.pkl"), "rb"))
 
 def load_data():
-    workers = pd.read_sql("SELECT * FROM workers", engine)
-    jobs = pd.read_sql('SELECT * FROM "Jobs"', engine)
+    with engine.connect() as connection:
+        # This 'with' block automatically handles connection closing/rollbacks
+        workers = pd.read_sql("SELECT * FROM workers", connection)
+        jobs = pd.read_sql('SELECT * FROM "Jobs"', connection)
+    
     workers["id"] = workers["id"].astype(str)
     jobs["id"] = jobs["id"].astype(str)
+    # Fill NaNs to prevent the JSON crash we saw earlier
+    workers["rating"] = workers["rating"].fillna(0)
+    jobs["budget"] = jobs["budget"].fillna(0)
     return workers, jobs
 
 def load_skills():
-    worker_skills = pd.read_sql('SELECT * FROM "Worker_skills"', engine)
-    job_skills = pd.read_sql('SELECT * FROM "Job_required_skill"', engine)
+    with engine.connect() as connection:
+        worker_skills = pd.read_sql('SELECT * FROM "Worker_skills"', connection)
+        job_skills = pd.read_sql('SELECT * FROM "Job_required_skill"', connection)
+        
     worker_skills["worker_id"] = worker_skills["worker_id"].astype(str)
     job_skills["job_id"] = job_skills["job_id"].astype(str)
     return worker_skills, job_skills
-
 def convert_embeddings(df, column):
     vectors = []
     for v in df[column]:
@@ -46,14 +53,12 @@ def convert_embeddings(df, column):
             vectors.append(np.zeros(384))
     return np.array(vectors)
 
-# Global variables initialized at startup
 WORKERS_DF, JOBS_DF = load_data()
 WORKER_SKILLS_DF, JOB_SKILLS_DF = load_skills()
 WORKER_VEC = convert_embeddings(WORKERS_DF, "worker_embedding")
 JOB_VEC = convert_embeddings(JOBS_DF, "job_embedding")
 
 def refresh_data():
-    """Refreshes the global dataframes from Supabase."""
     global WORKERS_DF, JOBS_DF, WORKER_SKILLS_DF, JOB_SKILLS_DF, WORKER_VEC, JOB_VEC
     WORKERS_DF, JOBS_DF = load_data()
     WORKER_SKILLS_DF, JOB_SKILLS_DF = load_skills()
@@ -70,17 +75,11 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 def recommend_workers_for_job(job_id, top_n=5):
-    global JOBS_DF, WORKERS_DF # Access globals
+    refresh_data()
+    global JOBS_DF, WORKERS_DF, WORKER_VEC, JOB_VEC
 
-    # 1. Refresh if job_id is not in current memory (The Fix)
-    if job_id not in JOBS_DF["id"].values:
-        refresh_data()
-
-    # 2. Check again, if still not found, return empty
     job_match = JOBS_DF[JOBS_DF["id"] == job_id]
-    if job_match.empty:
-        print(f"⚠️ Job {job_id} not found in database.")
-        return []
+    if job_match.empty: return []
 
     job_row = job_match.iloc[0]
     job_idx = JOBS_DF.index[JOBS_DF["id"] == job_id][0]
@@ -88,64 +87,28 @@ def recommend_workers_for_job(job_id, top_n=5):
 
     similarities = cosine_similarity(job_vector, WORKER_VEC)[0]
     job_skills = set(JOB_SKILLS_DF[JOB_SKILLS_DF["job_id"] == job_id]["skill_id"])
-
-    # Pre-filter: Only workers with at least one matching skill
-    eligible_workers_ids = set(WORKER_SKILLS_DF[WORKER_SKILLS_DF["skill_id"].isin(job_skills)]["worker_id"])
+    eligible_ids = set(WORKER_SKILLS_DF[WORKER_SKILLS_DF["skill_id"].isin(job_skills)]["worker_id"])
 
     candidates = []
-
     for i, worker in WORKERS_DF.iterrows():
-        if worker["id"] not in eligible_workers_ids:
-            continue
+        if worker["id"] not in eligible_ids: continue
+        
+        similarity = float(similarities[i])
+        if similarity < SIMILARITY_THRESHOLD: continue
 
-        similarity = similarities[i]
-        if similarity < SIMILARITY_THRESHOLD:
-            continue
+        dist = haversine(worker["location_lat"], worker["location_lng"], job_row["location_lat"], job_row["location_lng"])
+        if dist > MAX_DISTANCE_KM: continue
 
-        distance = haversine(worker["location_lat"], worker["location_lng"], 
-                             job_row["location_lat"], job_row["location_lng"])
-        if distance > MAX_DISTANCE_KM:
-            continue
-
-        # Scoring Logic
-        experience_bucket = 2 if worker["experience_years"] > 5 else (1 if worker["experience_years"] > 2 else 0)
-        vector = np.array(WORKER_VEC[i], dtype=np.float64).reshape(1, -1)
-        worker_cluster = int(kmeans.predict(vector)[0])
-
-        features = pd.DataFrame([{
-            "skill_similarity": similarity,
-            "experience_bucket": experience_bucket,
-            "avg_rating": worker["rating"],
-            "distance_km": distance,
-            "budget": job_row["budget"],
-            "status": job_row["status"],
-            "worker_cluster": worker_cluster
-        }])
-
-        predictive_score = float(predict_score(features)) / 5
-        rating_score = worker["rating"] / 5
-        proximity_score = 1 / (1 + distance)
-
-        matched_skills = len(set(WORKER_SKILLS_DF[WORKER_SKILLS_DF["worker_id"] == worker["id"]]["skill_id"]) & job_skills)
-        skill_boost = matched_skills / max(len(job_skills), 1)
-
-        final_score = (0.35 * similarity + 0.20 * rating_score + 0.20 * proximity_score + 0.15 * predictive_score + 0.10 * skill_boost)
+        # Ensure numeric stability for JSON
+        safe_similarity = round(similarity, 3) if not np.isnan(similarity) else 0.0
+        safe_dist = round(float(dist), 3) if not np.isnan(dist) else 0.0
 
         candidates.append({
-            "worker_id": worker["id"],
-            "score": round(float(final_score), 3),
-            "distance_km": round(float(distance), 3),
-            "rating": round(float(worker["rating"]), 2),
-            "similarity": round(float(similarity), 3),
-            "matched_skills": matched_skills
+            "worker_id": str(worker["id"]),
+            "score": safe_similarity,
+            "distance_km": safe_dist,
+            "rating": float(worker["rating"]),
+            "similarity": safe_similarity
         })
 
-    candidates = sorted(candidates, key=lambda x: x["score"], reverse=True)
-    return candidates[:top_n]
-
-if __name__ == "__main__":
-    print("\n✅ Systems active. Testing...")
-    test_jobs = JOBS_DF.sample(min(len(JOBS_DF), 3))
-    for _, job in test_jobs.iterrows():
-        print(f"\nTarget Job: {job['title']}")
-        print(recommend_workers_for_job(job['id']))
+    return sorted(candidates, key=lambda x: x["score"], reverse=True)[:top_n]
