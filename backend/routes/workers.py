@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 from backend.services.worker_service import WorkerService
 
 router = APIRouter()
 
-# Schema for automation & validation
 class WorkerCreate(BaseModel):
     full_name: str
     phone: str
@@ -14,11 +13,11 @@ class WorkerCreate(BaseModel):
     location_lat: float
     location_lng: float
     category: str
-    skills: List[str] = []
+    # We make skills Optional with a default empty list
+    skills: Optional[List[str]] = [] 
 
 @router.post("/")
 def register_worker(worker_data: WorkerCreate):
-    # .model_dump() converts Pydantic to a clean dict
     result = WorkerService.register_new_worker(worker_data.model_dump())
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
