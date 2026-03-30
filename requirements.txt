@@ -6,15 +6,18 @@ python-dotenv==1.0.1
 
 # Database
 supabase==2.4.5
+sqlalchemy==2.0.30
 
-# AI & ML (Core)
-# We remove the strict networkx version to let pip resolve it
+# AI & ML
 sentence-transformers==2.7.0
 torch==2.2.2
 transformers==4.57.6
 numpy==1.26.4
-scikit-learn>=1.5.0
+scikit-learn==1.7.2
 
 # Data Handling
 pandas==2.2.2
 pydantic==2.12.5
+
+# Optional but commonly needed (safe to include)
+requests==2.33.0
