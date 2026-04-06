@@ -21,9 +21,10 @@ class WorkerService:
                 if skill_fetch.data:
                     skills = [s["skill_name"] for s in skill_fetch.data]
 
-            # 1. Build AI Embedding
+            # 1. Build AI Embedding (skills repeated for higher weight)
             skill_text = ", ".join(skills) if skills else "general labor"
-            text = f"{category} worker skilled in {skill_text}. Experience: {exp} years."
+            text = f"{category} {skill_text} {skill_text} Experience {exp} years {category} work"
+
             vector = embedding_model.encode(text).tolist()
 
             # 2. Insert Profile

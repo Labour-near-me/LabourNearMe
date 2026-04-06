@@ -22,13 +22,17 @@ class JobService:
             if not profile.data:
                 return {"error": "Invalid employer"}
 
-            # --- STEP 1: Generate AI Embedding ---
-            job_text = f"{data.get('title')}: {data.get('description')}"
+            # --- STEP 1: Generate AI Embedding (skills repeated for higher weight) ---
+            title = data.get('title', '')
+            desc = data.get('description', '')
+            skills = " ".join(data.get('required_skills', []))
+            job_text = f"{title} {skills} {skills} {desc}"
+
             vector = embedding_model.encode(job_text).tolist()
 
             # --- STEP 2: Insert Job ---
             job_resp = supabase.table("Jobs").insert({
-                "employer_id": employer_id,  # 🔥 FROM HEADER
+                "employer_id": employer_id,
                 "title": data.get("title"),
                 "description": data.get("description"),
                 "budget": data.get("budget"),
@@ -56,7 +60,7 @@ class JobService:
                     .execute()
 
                 if not skill_resp.data:
-                    return {"error": f"Skill '{skill_name}' not found"}
+                    return {"error": f"Skill '{skill_name}' not found in Skill_master"}
 
                 skill_ids.append(skill_resp.data[0]["id"])
 
