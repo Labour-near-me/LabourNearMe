@@ -81,3 +81,12 @@ class JobService:
             .execute()
 
         return res.data[0] if res.data else None
+    
+    @staticmethod
+    def get_all_jobs():
+     res = supabase.table("Jobs") \
+        .select("id, employer_id, title, description, budget, status, created_at, location_lat, location_lng")\
+        .eq("status", "open") \
+        .execute()
+
+     return res.data
