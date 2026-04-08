@@ -11,24 +11,28 @@ import os
 # -----------------------
 # 1️⃣ Set project directory
 # -----------------------
-PROJECT_DIR = r"C:\Users\yasht\LNM_project"
+PROJECT_DIR = r"D:\Projects\LNM_project"
 os.chdir(PROJECT_DIR)
 print("Working directory:", os.getcwd())
 
 # -----------------------
 # 2️⃣ Load worker skill embeddings
 # -----------------------
-skill_embeddings = np.load("worker_vectors.npy")
+skill_embeddings = np.load(r"D:\Projects\LNM_project\ml\pipelines\worker_vectors.npy")
 print("Loaded skill embeddings:", skill_embeddings.shape)
 
 # -----------------------
 # 3️⃣ Load worker info
 # -----------------------
-workers_df = pd.read_csv("workers_df.csv")  # id,experience_years,total_jobs_done,...
-print("Loaded workers_df:", workers_df.shape)
+workers_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\workers_df.csv", dtype={"id": str})
+worker_sent_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\worker_skill_sentences.csv", dtype={"worker_id": str})
 
-# Ensure same order as embeddings
-worker_ids = workers_df['id'].values
+workers_df = workers_df.set_index("id").loc[worker_sent_df["worker_id"]].reset_index()
+worker_ids = worker_sent_df["worker_id"].values
+
+# 🔥 ADD THIS
+if len(worker_ids) != skill_embeddings.shape[0]:
+    raise ValueError("Mismatch between embeddings and worker IDs")
 
 # Extract experience and total_jobs_done
 features_numeric = workers_df[['experience_years','total_jobs_done']].values

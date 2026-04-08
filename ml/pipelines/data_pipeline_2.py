@@ -18,11 +18,12 @@ job_skills_named = job_skills_named.drop(columns=["id"])
 # Remove rows with missing skill names
 job_skills_named = job_skills_named.dropna(subset=["skill_name"])
 
-# Clean skill text
+# Clean + normalize skill text
 job_skills_named["skill_name"] = (
     job_skills_named["skill_name"]
     .str.lower()
     .str.strip()
+    .str.replace(" ", "_")   # 🔥 IMPORTANT
 )
 
 # Remove duplicate skill entries per job
@@ -30,11 +31,11 @@ job_skills_named = job_skills_named.drop_duplicates(
     subset=["job_id", "skill_name"]
 )
 
-# Combine skills into sentence
+# Combine skills into structured sentence
 job_skill_sentences = (
     job_skills_named
     .groupby("job_id")["skill_name"]
-    .apply(lambda x: ", ".join(x))
+    .apply(lambda x: f"Job requires skills: {', '.join(x)}")  # 🔥 CONTEXT ADDED
     .reset_index()
 )
 

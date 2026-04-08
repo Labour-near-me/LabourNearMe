@@ -4,14 +4,18 @@ import psycopg2
 
 print("Loading embeddings...")
 
+# Load embeddings
 worker_vectors = np.load("worker_vectors.npy")
 job_vectors = np.load("job_vectors.npy")
 
-workers_df = pd.read_csv("workers_df.csv", dtype={"id": str})
-jobs_df = pd.read_csv("jobs_df.csv", dtype={"id": str})
+# Load sentence mapping files (IMPORTANT FIX)
+worker_sent_df = pd.read_csv("worker_skill_sentences.csv", dtype={"worker_id": str})
+job_sent_df = pd.read_csv("job_skill_sentences.csv", dtype={"job_id": str})
 
-print(worker_vectors.shape, job_vectors.shape)
+print("Worker vectors shape:", worker_vectors.shape)
+print("Job vectors shape:", job_vectors.shape)
 
+# DB Connection
 conn = psycopg2.connect(
     host="aws-1-ap-south-1.pooler.supabase.com",
     database="postgres",
@@ -28,9 +32,9 @@ cursor = conn.cursor()
 
 print("Updating worker embeddings...")
 
-for i, row in workers_df.iterrows():
+for i, row in worker_sent_df.iterrows():
 
-    worker_id = str(row["id"])
+    worker_id = str(row["worker_id"])
 
     if worker_id == "nan":
         continue
@@ -46,6 +50,7 @@ for i, row in workers_df.iterrows():
         (vector, worker_id)
     )
 
+print("Worker embeddings updated.")
 
 # -------------------------
 # Upload job embeddings
@@ -53,9 +58,9 @@ for i, row in workers_df.iterrows():
 
 print("Updating job embeddings...")
 
-for i, row in jobs_df.iterrows():
+for i, row in job_sent_df.iterrows():
 
-    job_id = str(row["id"])
+    job_id = str(row["job_id"])
 
     if job_id == "nan":
         continue
@@ -71,9 +76,12 @@ for i, row in jobs_df.iterrows():
         (vector, job_id)
     )
 
+print("Job embeddings updated.")
 
+# Commit changes
 conn.commit()
 
+# Close connection
 cursor.close()
 conn.close()
 

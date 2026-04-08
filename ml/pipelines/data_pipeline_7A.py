@@ -5,7 +5,7 @@ import pickle
 
 print("Loading predictive dataset...")
 
-df = pd.read_csv("predictive_training_dataset.csv")
+df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\predictive_training_dataset.csv")
 
 print("Dataset shape:", df.shape)
 
@@ -22,6 +22,8 @@ X = df.drop(columns=["final_rating"])
 # -------------------------------------------------
 # 2️⃣ Scale numeric features
 # -------------------------------------------------
+
+X = X.drop(columns=["title", "description"], errors="ignore")
 
 numeric_cols = [
     "skill_similarity",
@@ -79,7 +81,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.2,
-    random_state=42
+    random_state=42,
+    stratify=y   # 🔥 better distribution
 )
 
 train_df = pd.concat([X_train, y_train], axis=1)
@@ -93,4 +96,4 @@ print("Train/Test split completed.")
 print("Train shape:", train_df.shape)
 print("Test shape:", test_df.shape)
 
-print("Pipeline 7 completed successfully.")
+print("Pipeline 7A completed successfully.")

@@ -15,11 +15,12 @@ worker_skills_named = worker_skills_df.merge(
 # Drop redundant id column
 worker_skills_named = worker_skills_named.drop(columns=["id"])
 
-# Clean text
+# Clean + normalize text
 worker_skills_named["skill_name"] = (
     worker_skills_named["skill_name"]
     .str.lower()
     .str.strip()
+    .str.replace(" ", "_")   # 🔥 IMPORTANT
 )
 
 # Remove duplicates
@@ -27,11 +28,11 @@ worker_skills_named = worker_skills_named.drop_duplicates(
     subset=["worker_id", "skill_name"]
 )
 
-# Combine skills
+# Combine skills into structured sentence
 worker_skill_sentences = (
     worker_skills_named
     .groupby("worker_id")["skill_name"]
-    .apply(lambda x: ", ".join(x))
+    .apply(lambda x: f"Worker skills: {', '.join(x)}")  # 🔥 CONTEXT ADDED
     .reset_index()
 )
 
