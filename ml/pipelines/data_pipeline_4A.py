@@ -39,7 +39,7 @@ for i, row in worker_sent_df.iterrows():
     if worker_id == "nan":
         continue
 
-    vector = worker_vectors[i].tolist()
+    vector = list(map(float, worker_vectors[i]))
 
     cursor.execute(
         """
@@ -65,7 +65,7 @@ for i, row in job_sent_df.iterrows():
     if job_id == "nan":
         continue
 
-    vector = job_vectors[i].tolist()
+    vector = list(map(float, job_vectors[i]))
 
     cursor.execute(
         """

@@ -7,9 +7,30 @@ embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 class JobService:
 
     @staticmethod
+    def normalize_skill(skill: str):
+        return skill.strip().lower()
+
+    @staticmethod
+    def get_or_create_skill_id(skill_name: str):
+        skill_name = JobService.normalize_skill(skill_name)
+
+        existing = supabase.table("Skill_master") \
+            .select("id") \
+            .ilike("skill_name", skill_name) \
+            .execute()
+
+        if existing.data:
+            return existing.data[0]["id"]
+
+        new_skill = supabase.table("Skill_master") \
+            .insert({"skill_name": skill_name}) \
+            .execute()
+
+        return new_skill.data[0]["id"]
+
+    @staticmethod
     def create_job(data: dict, employer_id: str):
         try:
-            # --- STEP 0: Validate employer ---
             if not employer_id:
                 return {"error": "User not authenticated"}
 
@@ -22,19 +43,21 @@ class JobService:
             if not profile.data:
                 return {"error": "Invalid employer"}
 
-            # --- STEP 1: Generate AI Embedding (skills repeated for higher weight) ---
+            # --- Embedding ---
             title = data.get('title', '')
             desc = data.get('description', '')
-            skills = " ".join(data.get('required_skills', []))
-            job_text = f"{title} {skills} {skills} {desc}"
+            skill_list = data.get('required_skills', [])
+
+            skill_text = " ".join(skill_list)
+            job_text = f"{title} {skill_text} {skill_text} {desc}"
 
             vector = embedding_model.encode(job_text).tolist()
 
-            # --- STEP 2: Insert Job ---
+            # --- Insert Job ---
             job_resp = supabase.table("Jobs").insert({
                 "employer_id": employer_id,
-                "title": data.get("title"),
-                "description": data.get("description"),
+                "title": title,
+                "description": desc,
                 "budget": data.get("budget"),
                 "location_lat": data.get("location_lat"),
                 "location_lng": data.get("location_lng"),
@@ -47,29 +70,18 @@ class JobService:
 
             job_id = job_resp.data[0]['id']
 
-            # --- STEP 3: Link Required Skills (NAME → ID) ---
-            skill_names = data.get("required_skills", [])
-            skill_ids = []
+            # --- FIXED SKILL LINKING ---
+            job_skill_links = []
 
-            for skill_name in skill_names:
-                skill_name = skill_name.strip()
+            for skill in skill_list:
+                skill_id = JobService.get_or_create_skill_id(skill)
 
-                skill_resp = supabase.table("Skill_master") \
-                    .select("*") \
-                    .ilike("skill_name", skill_name) \
-                    .execute()
+                job_skill_links.append({
+                    "job_id": job_id,
+                    "skill_id": skill_id
+                })
 
-                if not skill_resp.data:
-                    return {"error": f"Skill '{skill_name}' not found in Skill_master"}
-
-                skill_ids.append(skill_resp.data[0]["id"])
-
-            # --- STEP 4: Insert into Job_required_skill ---
-            if skill_ids:
-                job_skill_links = [
-                    {"job_id": job_id, "skill_id": sid}
-                    for sid in skill_ids
-                ]
+            if job_skill_links:
                 supabase.table("Job_required_skill").insert(job_skill_links).execute()
 
             return {"status": "success", "job_id": job_id}
@@ -85,12 +97,12 @@ class JobService:
             .execute()
 
         return res.data[0] if res.data else None
-    
+
     @staticmethod
     def get_all_jobs():
-     res = supabase.table("Jobs") \
-        .select("id, employer_id, title, description, budget, status, created_at, location_lat, location_lng")\
-        .eq("status", "open") \
-        .execute()
+        res = supabase.table("Jobs") \
+            .select("id, employer_id, title, description, budget, status, created_at, location_lat, location_lng") \
+            .eq("status", "open") \
+            .execute()
 
-     return res.data
+        return res.data

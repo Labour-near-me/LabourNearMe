@@ -34,5 +34,5 @@ def home():
     return {
         "message": "LabourNearMe Backend is Live! 🚀",
         "status": "Healthy",
-        "engine": "Sentence-Transformers (AI Heart Active)"
+        "engine": "AI Matching + ML Ranking Active"
     }

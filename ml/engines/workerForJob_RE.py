@@ -1,28 +1,43 @@
 import os
 import ast
-import pickle
 import numpy as np
 import pandas as pd
+import pickle
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sklearn.metrics.pairwise import cosine_similarity
 
-# --- CONFIG ---
-SIMILARITY_THRESHOLD = 0.10
-MAX_DISTANCE_KM = 100
+# ================= CONFIG =================
+SIMILARITY_THRESHOLD = 0.01
+MAX_DISTANCE_KM = 50
 
 load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
 
-# -------------------------------
-# LOAD ML MODEL
-# -------------------------------
-MODEL = pickle.load(open("predictive_model.pkl", "rb"))
-FEATURE_COLUMNS = pickle.load(open("feature_columns.pkl", "rb"))
+# ================= MODEL =================
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "predictive_model.pkl")
+FEATURE_PATH = os.path.join(BASE_DIR, "models", "feature_columns.pkl")
 
-# -------------------------------
-# LOAD DATA
-# -------------------------------
+MODEL = pickle.load(open(MODEL_PATH, "rb"))
+FEATURE_COLUMNS = pickle.load(open(FEATURE_PATH, "rb"))
+
+# ================= GLOBAL =================
+WORKERS_DF = pd.DataFrame()
+JOBS_DF = pd.DataFrame()
+WORKER_VEC = np.array([])
+JOB_VEC = np.array([])
+
+# ================= SAFE FLOAT =================
+def safe_float(val, default=0.0):
+    try:
+        if val is None or np.isnan(val) or np.isinf(val):
+            return default
+        return float(val)
+    except:
+        return default
+
+# ================= LOAD =================
 def load_data():
     with engine.connect() as conn:
         workers = pd.read_sql("SELECT * FROM workers", conn)
@@ -36,58 +51,29 @@ def load_data():
 
     return workers, jobs
 
-
-def load_skills():
-    with engine.connect() as conn:
-        worker_skills = pd.read_sql(
-            'SELECT worker_id, skill_id FROM "Worker_skills"', conn
-        )
-        job_skills = pd.read_sql(
-            'SELECT job_id, skill_id FROM "job_required_skills"', conn
-        )
-
-    worker_skills["worker_id"] = worker_skills["worker_id"].astype(str)
-    job_skills["job_id"] = job_skills["job_id"].astype(str)
-
-    return worker_skills, job_skills
-
-
-# -------------------------------
-# EMBEDDINGS
-# -------------------------------
-def convert_embeddings(df, column):
+def convert_embeddings(df, col):
     vectors = []
-    for v in df[column]:
-        if isinstance(v, str):
-            vectors.append(np.array(ast.literal_eval(v)))
-        elif isinstance(v, list):
-            vectors.append(np.array(v))
-        else:
+    for v in df[col]:
+        try:
+            if isinstance(v, str):
+                vectors.append(np.array(ast.literal_eval(v)))
+            elif isinstance(v, list):
+                vectors.append(np.array(v))
+            else:
+                vectors.append(np.zeros(384))
+        except:
             vectors.append(np.zeros(384))
     return np.array(vectors)
 
-
-# -------------------------------
-# GLOBAL LOAD
-# -------------------------------
-WORKERS_DF, JOBS_DF = load_data()
-WORKER_SKILLS_DF, JOB_SKILLS_DF = load_skills()
-
-WORKER_VEC = convert_embeddings(WORKERS_DF, "worker_embedding")
-JOB_VEC = convert_embeddings(JOBS_DF, "job_embedding")
-
-
 def refresh_data():
-    global WORKERS_DF, JOBS_DF, WORKER_SKILLS_DF, JOB_SKILLS_DF, WORKER_VEC, JOB_VEC
+    global WORKERS_DF, JOBS_DF, WORKER_VEC, JOB_VEC
     WORKERS_DF, JOBS_DF = load_data()
-    WORKER_SKILLS_DF, JOB_SKILLS_DF = load_skills()
     WORKER_VEC = convert_embeddings(WORKERS_DF, "worker_embedding")
     JOB_VEC = convert_embeddings(JOBS_DF, "job_embedding")
 
+refresh_data()
 
-# -------------------------------
-# DISTANCE
-# -------------------------------
+# ================= DISTANCE =================
 def haversine(lat1, lon1, lat2, lon2):
     try:
         R = 6371
@@ -95,15 +81,11 @@ def haversine(lat1, lon1, lat2, lon2):
         dlat = lat2 - lat1
         dlon = lon2 - lon1
         a = np.sin(dlat/2)**2 + np.cos(lat1)*np.cos(lat2)*np.sin(dlon/2)**2
-        c = 2 * np.arcsin(np.sqrt(a))
-        return R * c
+        return safe_float(R * 2 * np.arcsin(np.sqrt(a)), 999)
     except:
         return 999
 
-
-# -------------------------------
-# MAIN FUNCTION
-# -------------------------------
+# ================= MAIN =================
 def recommend_workers_for_job(job_id, top_n=5):
 
     refresh_data()
@@ -118,44 +100,16 @@ def recommend_workers_for_job(job_id, top_n=5):
     job_vector = JOB_VEC[job_idx].reshape(1, -1)
     similarities = cosine_similarity(job_vector, WORKER_VEC)[0]
 
-    # -------------------------
-    # SKILL MAPS
-    # -------------------------
-    job_skills = set(
-        JOB_SKILLS_DF[JOB_SKILLS_DF["job_id"] == job_id]["skill_id"].astype(str)
-    )
-
-    worker_skill_map = (
-        WORKER_SKILLS_DF.groupby("worker_id")["skill_id"]
-        .apply(lambda x: set(x.astype(str)))
-        .to_dict()
-    )
-
     recommendations = []
 
     for i, worker in WORKERS_DF.iterrows():
 
-        worker_id = str(worker["id"])
-        worker_skills = worker_skill_map.get(worker_id, set())
-
-        # -------------------------
-        # 1. STRICT SKILL FILTER
-        # -------------------------
-        if len(worker_skills.intersection(job_skills)) == 0:
-            continue
-
-        # -------------------------
-        # 2. EMBEDDING FILTER
-        # -------------------------
-        similarity = float(similarities[i])
+        similarity = safe_float(similarities[i])
         similarity = max(0, min(1, similarity))
 
         if similarity < SIMILARITY_THRESHOLD:
             continue
 
-        # -------------------------
-        # 3. DISTANCE FILTER
-        # -------------------------
         dist = haversine(
             worker["location_lat"],
             worker["location_lng"],
@@ -166,17 +120,11 @@ def recommend_workers_for_job(job_id, top_n=5):
         if dist > MAX_DISTANCE_KM:
             continue
 
-        # -------------------------
-        # 4. SAFE VALUES
-        # -------------------------
-        exp = worker.get("experience_years", 0) or 0
-        rating = worker.get("rating", 0) or 0
-        budget = job_row.get("budget", 0) or 0
+        exp = safe_float(worker.get("experience_years", 0))
+        rating = safe_float(worker.get("rating", 0))
+        budget = safe_float(job_row.get("budget", 0))
         status = job_row.get("status", "open")
 
-        # -------------------------
-        # 5. ML FEATURES
-        # -------------------------
         features = {
             "skill_similarity": similarity,
             "experience_bucket": 0 if exp <= 2 else (1 if exp <= 5 else 2),
@@ -185,44 +133,35 @@ def recommend_workers_for_job(job_id, top_n=5):
             "budget": budget,
         }
 
-        # status encoding
         for col in FEATURE_COLUMNS:
             if col.startswith("status_"):
                 features[col] = 1 if col == f"status_{status}" else 0
 
-        # fill missing
         for col in FEATURE_COLUMNS:
             if col not in features:
                 features[col] = 0
 
         X = pd.DataFrame([features])[FEATURE_COLUMNS]
 
-        # -------------------------
-        # 6. ML PREDICTION
-        # -------------------------
-        final_score = MODEL.predict(X)[0]
+        try:
+            ml_score = safe_float(MODEL.predict(X)[0])
+        except:
+            ml_score = 0.0
+
+        final_score = safe_float(
+            0.6 * ml_score +
+            0.2 * similarity +
+            0.2 * (rating / 5)
+        )
 
         recommendations.append({
-            "worker_id": worker_id,
-            "ml_score": round(float(final_score), 3),
+            "worker_id": str(worker["id"]),
+            "final_score": round(final_score, 3),
+            "ml_score": round(ml_score, 3),
             "similarity": round(similarity, 3),
-            "distance_km": round(float(dist), 2),
-            "rating": float(rating)
+            "distance_km": round(dist, 2),
+            "rating": round(rating, 2),
+            "full_name": worker.get("full_name", "")
         })
 
-    # -------------------------
-    # 7. FINAL SORT
-    # -------------------------
-    return sorted(
-        recommendations,
-        key=lambda x: x["ml_score"],
-        reverse=True
-    )[:top_n]
-
-
-# -------------------------------
-# TEST
-# -------------------------------
-if __name__ == "__main__":
-    result = recommend_workers_for_job("PUT_JOB_ID_HERE")
-    print(result)
+    return sorted(recommendations, key=lambda x: x["final_score"], reverse=True)[:top_n]
