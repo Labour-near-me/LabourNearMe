@@ -59,3 +59,16 @@ def get_worker_apps(worker_id: str):
         return res.data
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/job/{job_id}")
+def get_applications_by_job(job_id: str):
+    try:
+        res = supabase.table("applications")\
+            .select("*")\
+            .eq("job_id", job_id)\
+            .execute()
+
+        return res.data
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

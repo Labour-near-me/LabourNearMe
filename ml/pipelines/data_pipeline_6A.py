@@ -3,10 +3,13 @@ import numpy as np
 
 print("Loading datasets...")
 
-similarity_df = pd.read_csv("worker_job_similarity.csv", dtype={"worker_id": str, "job_id": str})
-workers_df = pd.read_csv("workers_df.csv", dtype={"id": str})
-jobs_df = pd.read_csv("jobs_df.csv", dtype={"id": str})
-ratings_df = pd.read_csv("ratings_df.csv", dtype={"reviewee_id": str, "job_id": str})
+similarity_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\worker_job_similarity.csv", dtype={"worker_id": str, "job_id": str})
+
+workers_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\workers_df.csv", dtype={"id": str})
+
+jobs_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\jobs_df.csv", dtype={"id": str})
+
+ratings_df = pd.read_csv(r"D:\Projects\LNM_project\ml\pipelines\ratings_df.csv", dtype={"reviewee_id": str, "job_id": str})
 
 print("Datasets loaded.")
 
@@ -98,10 +101,13 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2*np.arcsin(np.sqrt(a))
     return R*c
 
-df["distance_km"] = df.apply(
-    lambda x: haversine(x["worker_lat"],x["worker_lng"],x["job_lat"],x["job_lng"]),
-    axis=1
-)
+def safe_distance(row):
+    try:
+        return haversine(row["worker_lat"], row["worker_lng"], row["job_lat"], row["job_lng"])
+    except:
+        return 999  # large distance fallback
+
+df["distance_km"] = df.apply(safe_distance, axis=1)
 
 # -------------------------------------------------
 # Final ML dataset

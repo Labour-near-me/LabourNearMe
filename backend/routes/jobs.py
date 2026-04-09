@@ -45,3 +45,8 @@ def get_job(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+@router.get("/")
+def get_all_jobs():
+    jobs = JobService.get_all_jobs()
+    return jobs

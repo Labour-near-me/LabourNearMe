@@ -3,24 +3,38 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 import pickle
 
 print("Loading datasets...")
 
 # -------------------------------------------------
-# Load required files
+# Load required files (USE CORRECT PATHS)
 # -------------------------------------------------
 
-worker_vectors = np.load("../vectors/worker_vectors.npy").astype(np.float64)
-workers_df = pd.read_csv("workers_df.csv", dtype={"id": str})
-ml_df = pd.read_csv("predictive_training_dataset.csv", dtype={"worker_id": str})
+worker_vectors = np.load(r"D:\Projects\LNM_project\ml\pipelines\worker_vectors.npy").astype(np.float64)
+
+workers_df = pd.read_csv(
+    r"D:\Projects\LNM_project\ml\pipelines\workers_df.csv",
+    dtype={"id": str}
+)
+
+worker_sent_df = pd.read_csv(
+    r"D:\Projects\LNM_project\ml\pipelines\worker_skill_sentences.csv",
+    dtype={"worker_id": str}
+)
+
+ml_df = pd.read_csv(
+    r"D:\Projects\LNM_project\ml\pipelines\predictive_training_dataset.csv",
+    dtype={"worker_id": str}
+)
 
 print("Worker vectors:", worker_vectors.shape)
 print("Workers:", workers_df.shape)
 print("ML dataset:", ml_df.shape)
 
 # -------------------------------------------------
-# PIPELINE 8 — Worker Clustering
+# PIPELINE 8 — Worker Clustering (CORRECT MAPPING)
 # -------------------------------------------------
 
 print("\nTraining worker clustering model...")
@@ -35,8 +49,9 @@ kmeans = KMeans(
 
 clusters = kmeans.fit_predict(worker_vectors)
 
+# ✅ FIXED mapping
 cluster_df = pd.DataFrame({
-    "worker_id": workers_df["id"],
+    "worker_id": worker_sent_df["worker_id"],
     "worker_cluster": clusters
 })
 
@@ -71,14 +86,25 @@ X = df.drop(columns=[
     "title",
     "description",
     "final_rating"
-])
+], errors="ignore")
 
 y = df["final_rating"]
 
-# Convert status to numeric
-X = pd.get_dummies(X, columns=["status"])
+# Convert categorical to numeric
+X = pd.get_dummies(X, columns=["status"], drop_first=True)
 
 print("Feature columns:", X.columns.tolist())
+
+# -------------------------------------------------
+# Train/Test Split (IMPORTANT FIX)
+# -------------------------------------------------
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
 
 # -------------------------------------------------
 # PIPELINE 10 — Train Predictive Model
@@ -88,16 +114,17 @@ print("\nTraining predictive model...")
 
 model = RandomForestRegressor(
     n_estimators=100,
+    max_depth=5,   # good for small data
     random_state=42
 )
 
-model.fit(X, y)
+model.fit(X_train, y_train)
 
-preds = model.predict(X)
+preds = model.predict(X_test)
 
-rmse = np.sqrt(mean_squared_error(y, preds))
+rmse = np.sqrt(mean_squared_error(y_test, preds))
 
-print("Training RMSE:", rmse)
+print("Test RMSE:", rmse)
 
 # -------------------------------------------------
 # Save artifacts

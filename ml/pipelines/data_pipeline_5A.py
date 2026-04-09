@@ -11,13 +11,12 @@ job_vectors = np.load("job_vectors.npy")
 print("Worker vectors:", worker_vectors.shape)
 print("Job vectors:", job_vectors.shape)
 
-# Load CSV datasets
-workers_df = pd.read_csv("workers_df.csv")
-jobs_df = pd.read_csv("jobs_df.csv")
+# ✅ Load correct mapping files (IMPORTANT FIX)
+worker_sent_df = pd.read_csv("worker_skill_sentences.csv", dtype={"worker_id": str})
+job_sent_df = pd.read_csv("job_skill_sentences.csv", dtype={"job_id": str})
 
-# Extract IDs safely (first column always contains IDs)
-worker_ids = workers_df.iloc[:, 0].astype(str).tolist()
-job_ids = jobs_df.iloc[:, 0].astype(str).tolist()
+worker_ids = worker_sent_df["worker_id"].tolist()
+job_ids = job_sent_df["job_id"].tolist()
 
 print("Workers loaded:", len(worker_ids))
 print("Jobs loaded:", len(job_ids))
@@ -37,19 +36,16 @@ print("Similarity matrix shape:", similarity_matrix.shape)
 
 records = []
 
-# Better threshold to reduce dataset size
 SIMILARITY_THRESHOLD = 0.15
 
 print("Filtering similarity pairs...")
 
 for i, worker_id in enumerate(worker_ids):
-
     for j, job_id in enumerate(job_ids):
 
         similarity_score = similarity_matrix[i][j]
 
         if similarity_score >= SIMILARITY_THRESHOLD:
-
             records.append({
                 "worker_id": worker_id,
                 "job_id": job_id,
