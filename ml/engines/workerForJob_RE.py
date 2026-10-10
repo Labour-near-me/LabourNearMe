@@ -25,6 +25,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sklearn.metrics.pairwise import cosine_similarity
+from ml.engines.skill_taxonomy import matched_required_skills, normalize_skill_name
 
 
 # ============================================================
@@ -150,7 +151,12 @@ def load_job_skills():
     """
 
     df = pd.read_sql(
-        'SELECT job_id, skill_id FROM "Job_required_skill"',
+        '''SELECT jrs.job_id,
+                  COALESCE(intended_skill.skill_name, sm.skill_name) AS skill_name
+           FROM "Job_required_skill" AS jrs
+           JOIN "Skill_master" AS sm ON sm.id = jrs.skill_id
+           LEFT JOIN "Skill_master" AS intended_skill
+             ON intended_skill.id::text = sm.skill_name''',
         engine
     )
 
@@ -159,12 +165,12 @@ def load_job_skills():
     for _, row in df.iterrows():
 
         job_id = str(row["job_id"])
-        skill_id = str(row["skill_id"])
+        skill_name = normalize_skill_name(row["skill_name"])
 
         job_skill_map.setdefault(
             job_id,
             set()
-        ).add(skill_id)
+        ).add(skill_name)
 
     return job_skill_map
 
@@ -184,7 +190,9 @@ def load_worker_skills():
     """
 
     df = pd.read_sql(
-        'SELECT worker_id, skill_id FROM "Worker_skills"',
+        '''SELECT ws.worker_id, sm.skill_name
+           FROM "Worker_skills" AS ws
+           JOIN "Skill_master" AS sm ON sm.id = ws.skill_id''',
         engine
     )
 
@@ -193,12 +201,12 @@ def load_worker_skills():
     for _, row in df.iterrows():
 
         worker_id = str(row["worker_id"])
-        skill_id = str(row["skill_id"])
+        skill_name = normalize_skill_name(row["skill_name"])
 
         worker_skill_map.setdefault(
             worker_id,
             set()
-        ).add(skill_id)
+        ).add(skill_name)
 
     return worker_skill_map
 
@@ -592,10 +600,9 @@ def recommend_jobs_for_worker(
             set()
         )
 
-        common_skills = (
-            worker_skills.intersection(
-                job_skills
-            )
+        matched_skills = matched_required_skills(
+            worker_skills,
+            job_skills
         )
 
         # ----------------------------------------------------
@@ -612,11 +619,11 @@ def recommend_jobs_for_worker(
         if not job_skills:
             continue
 
-        if len(common_skills) < MIN_SKILL_OVERLAP:
+        if len(matched_skills) < MIN_SKILL_OVERLAP:
             continue
 
         skill_similarity_score = (
-            len(common_skills)
+            len(matched_skills)
             /
             max(
                 len(job_skills),

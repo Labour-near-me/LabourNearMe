@@ -1,5 +1,6 @@
 from backend.database.supabase_client import supabase
 from backend.services.embedding_service import encode_text
+from uuid import UUID
 
 
 class JobService:
@@ -10,7 +11,25 @@ class JobService:
 
     @staticmethod
     def get_or_create_skill_id(skill_name: str):
-        skill_name = JobService.normalize_skill(skill_name)
+        raw_skill = str(skill_name).strip()
+
+        # The frontend may submit a selected Skill_master UUID. Reuse it
+        # directly instead of creating a skill whose name is the UUID text.
+        try:
+            skill_uuid = str(UUID(raw_skill))
+        except ValueError:
+            skill_uuid = None
+
+        if skill_uuid:
+            existing_by_id = supabase.table("Skill_master") \
+                .select("id") \
+                .eq("id", skill_uuid) \
+                .execute()
+            if existing_by_id.data:
+                return existing_by_id.data[0]["id"]
+            raise ValueError("Unknown skill ID")
+
+        skill_name = JobService.normalize_skill(raw_skill)
 
         existing = supabase.table("Skill_master") \
             .select("id") \
