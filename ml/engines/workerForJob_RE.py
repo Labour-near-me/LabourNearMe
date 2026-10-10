@@ -329,7 +329,8 @@ def refresh_data():
 # INITIAL LOAD
 # ============================================================
 
-refresh_data()
+# Data is refreshed by the recommendation function when first needed, rather
+# than during API module import. This keeps ordinary API startup lightweight.
 
 
 # ============================================================

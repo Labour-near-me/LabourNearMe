@@ -17,12 +17,10 @@ Bug fixed vs original:
 
 from ml.engines.workerForJob_RE import (
     recommend_jobs_for_worker,
-    refresh_data as refresh_jobs
 )
 
 from ml.engines.jobForWorkers_RE import (
     recommend_workers_for_job,
-    refresh_data as refresh_workers
 )
 from backend.database.supabase_client import supabase
 
@@ -33,8 +31,6 @@ class RecommendationService:
     @staticmethod
     def get_jobs_for_worker(worker_id: str, top_n: int = 5):
         try:
-            refresh_jobs()
-
             worker_skill_resp = supabase.table("Worker_skills") \
                 .select("skill_id") \
                 .eq("worker_id", worker_id) \
@@ -73,8 +69,6 @@ class RecommendationService:
     @staticmethod
     def get_workers_for_job(job_id: str, top_n: int = 5):
         try:
-            refresh_workers()
-
             job_skill_resp = supabase.table("Job_required_skill") \
                 .select("skill_id") \
                 .eq("job_id", job_id) \

@@ -1,7 +1,5 @@
 from backend.database.supabase_client import supabase
-from sentence_transformers import SentenceTransformer
-
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+from backend.services.embedding_service import encode_text
 
 
 class WorkerService:
@@ -50,7 +48,7 @@ class WorkerService:
             # --- Embedding ---
             skill_text = ", ".join(skills) if skills else "general labor"
             text = f"{category} {skill_text} {skill_text} Experience {exp} years {category} work"
-            vector = embedding_model.encode(text).tolist()
+            vector = encode_text(text)
 
             # --- Profile ---
             profile_resp = supabase.table("Profiles").insert({
