@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Post a Job — LabourNearMe</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:     #003580;
+  --navy-dk:  #002060;
+  --accent:   #0066CC;
+  --accent-lt:#E8F2FC;
+  --saffron:  #FF6600;
+  --saffron-lt:#FFF0E6;
+  --green:    #138808;
+  --green-lt: #E6F4E6;
+  --surf:     #F0F4FA;
+  --surf2:    #E8EEF6;
+  --white:    #FFFFFF;
+  --text:     #1A2433;
+  --text2:    #2C3E55;
+  --muted:    #5A6475;
+  --border:   #D0DAE8;
+  --border2:  #B8C8DC;
+  --shadow:   rgba(0,53,128,.10);
+  --shadow-md:rgba(0,53,128,.16);
+  --red:      #DC2626;
+  --red-lt:   #FEF2F2;
+  --amber:    #D97706;
+  --amber-lt: #FFFBEB;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);background:var(--surf);
+  overflow-x:hidden;font-size:16px;line-height:1.6;min-height:100vh;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;width:100%;z-index:100;
+  background:var(--navy);box-shadow:0 2px 16px rgba(0,0,0,.18);
+}
+.ni{
+  max-width:1280px;margin:0 auto;padding:0 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;height:72px;
+}
+.nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.li-box{
+  background:var(--saffron);padding:8px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,102,0,.35);
+}
+.lt h1{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.lt p{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.02em}
+.nav-back{
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.8);text-decoration:none;font-weight:600;font-size:.9rem;
+  padding:.45rem .9rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);transition:all .2s;
+}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.1)}
+
+/* ── GOV STRIP ─────────────────────────────────────── */
+.gov-strip{
+  margin-top:72px;background:var(--saffron-lt);border-bottom:2px solid #ffcba4;
+  padding:.55rem 1.5rem;text-align:center;
+  font-size:.78rem;font-weight:600;color:#a33d00;
+  display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.01em;
+}
+
+/* ── PAGE LAYOUT ──────────────────────────────────── */
+.page{
+  max-width:1100px;margin:0 auto;padding:3rem 1.5rem 5rem;
+  display:grid;grid-template-columns:1fr 1.2fr;gap:3rem;align-items:start;
+}
+
+/* ── LEFT PANEL ───────────────────────────────────── */
+.left-panel{position:sticky;top:5.5rem}
+.page-badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.35rem .9rem;background:var(--saffron-lt);color:var(--saffron);
+  font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;border:1.5px solid #ffcba4;margin-bottom:1.25rem;
+}
+.left-panel h2{
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:var(--text);
+  line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem;
+}
+.left-panel h2 .acc{color:var(--accent)}
+.left-panel h2 .saf{color:var(--saffron)}
+.left-panel .desc{color:var(--muted);font-size:.97rem;line-height:1.75;margin-bottom:2rem}
+
+.benefits{display:flex;flex-direction:column;gap:.85rem;margin-bottom:2.5rem}
+.benefit{
+  display:flex;align-items:flex-start;gap:.85rem;
+  padding:1rem 1.1rem;background:#fff;border-radius:10px;
+  border:1.5px solid var(--border);box-shadow:0 2px 8px var(--shadow);
+  transition:all .25s;
+}
+.benefit:hover{border-color:var(--saffron);box-shadow:0 4px 16px rgba(255,102,0,.1)}
+.benefit-icon{
+  width:40px;height:40px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.bi-blue{background:var(--accent)}.bi-orange{background:var(--saffron)}.bi-green{background:var(--green)}.bi-navy{background:var(--navy)}
+.benefit-text strong{display:block;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.15rem}
+.benefit-text span{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+/* Stats strip in left panel */
+.left-stats{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem}
+.lstat{
+  padding:.9rem 1rem;background:#fff;border-radius:10px;border:1.5px solid var(--border);
+  text-align:center;box-shadow:0 2px 8px var(--shadow);
+}
+.lstat .ln{font-size:1.4rem;font-weight:900;color:var(--navy);letter-spacing:-.02em}
+.lstat .ll{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:.1rem}
+
+.mini-testi{
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy));
+  border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;
+}
+.mini-testi::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;background:rgba(255,255,255,.04);border-radius:50%;
+}
+.mini-testi::after{
+  content:'"';position:absolute;top:.5rem;right:1.25rem;
+  font-size:5rem;color:rgba(255,255,255,.06);font-family:'Noto Serif',serif;line-height:1;
+}
+.mini-quote{font-family:'Noto Serif',serif;font-style:italic;font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.7;margin-bottom:1rem}
+.mini-author{display:flex;align-items:center;gap:.65rem}
+.mini-av{width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+.mini-nm{font-weight:700;font-size:.85rem;color:#fff}
+.mini-rl{font-size:.75rem;color:rgba(255,255,255,.55)}
+.mini-stars{display:flex;gap:2px;margin-bottom:.65rem}
+
+/* ── FORM CARD ────────────────────────────────────── */
+.form-card{
+  background:#fff;border-radius:16px;box-shadow:0 12px 48px var(--shadow-md);
+  border:1.5px solid var(--border);overflow:hidden;
+  animation:slideUp .5s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.form-header{
+  background:linear-gradient(135deg,#a33d00,var(--saffron));
+  padding:1.75rem 2rem;display:flex;align-items:center;gap:1rem;
+}
+.form-header-icon{
+  width:52px;height:52px;background:rgba(255,255,255,.2);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);border:1.5px solid rgba(255,255,255,.3);
+}
+.form-header-text h3{font-size:1.2rem;font-weight:800;color:#fff}
+.form-header-text p{font-size:.82rem;color:rgba(255,255,255,.75);margin-top:.15rem}
+.form-step-indicator{
+  margin-left:auto;background:rgba(255,255,255,.15);border-radius:999px;
+  padding:.3rem .75rem;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.85);
+  white-space:nowrap;border:1px solid rgba(255,255,255,.2);
+}
+
+.form-body{padding:2rem}
+
+/* Progress */
+.progress-wrap{margin-bottom:1.75rem}
+.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}
+.progress-label span:first-child{font-size:.78rem;font-weight:700;color:var(--muted)}
+.progress-label span:last-child{font-size:.78rem;font-weight:800;color:var(--saffron)}
+.progress-track{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--saffron),#ff9933);border-radius:999px;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* Fields */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.1rem}
+.field-group{margin-bottom:1.25rem}
+.field-label{
+  display:flex;align-items:center;gap:.4rem;
+  font-size:.83rem;font-weight:700;color:var(--text2);margin-bottom:.45rem;
+}
+.field-label .req{color:var(--red);margin-left:.1rem}
+.field-label .opt-tag{
+  font-size:.65rem;font-weight:700;padding:.15rem .45rem;
+  background:var(--green-lt);color:var(--green);border-radius:4px;margin-left:.25rem;
+}
+
+input,select,textarea{
+  width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:8px;
+  font-family:'Noto Sans',sans-serif;font-size:.92rem;color:var(--text);
+  background:#fff;transition:all .2s;outline:none;
+  -webkit-appearance:none;
+}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,select:focus,textarea:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(255,102,0,.12)}
+input.error,select.error,textarea.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.1)}
+input.valid,select.valid{border-color:var(--green)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235A6475' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem;}
+textarea{resize:vertical;min-height:90px}
+
+.field-hint{font-size:.74rem;color:var(--muted);margin-top:.35rem;line-height:1.5}
+.field-error{font-size:.74rem;color:var(--red);margin-top:.35rem;display:none;align-items:center;gap:.25rem}
+.field-error.show{display:flex}
+
+/* Wage prefix input */
+.input-prefix-wrap{position:relative}
+.input-prefix{
+  position:absolute;left:0;top:0;bottom:0;width:42px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surf2);border-right:2px solid var(--border);border-radius:6px 0 0 6px;
+  font-weight:800;color:var(--muted);font-size:.95rem;pointer-events:none;
+  transition:border-color .2s;
+}
+.input-prefix-wrap input{padding-left:3.2rem;border-radius:8px}
+.input-prefix-wrap input:focus ~ .input-prefix,
+.input-prefix-wrap input:focus + .input-prefix{border-color:var(--saffron)}
+
+/* Urgency selector */
+.urgency-opts{display:flex;gap:.65rem;flex-wrap:nowrap}
+.urg-opt{
+  flex:1;padding:.65rem .5rem;border-radius:8px;
+  border:2px solid var(--border);background:#fff;cursor:pointer;text-align:center;
+  transition:all .2s;
+}
+.urg-opt:hover{border-color:var(--border2);background:var(--surf)}
+.urg-opt.selected-low{border-color:var(--green);background:var(--green-lt)}
+.urg-opt.selected-medium{border-color:var(--amber);background:var(--amber-lt)}
+.urg-opt.selected-high{border-color:var(--red);background:var(--red-lt)}
+.urg-emoji{display:block;font-size:1.4rem;margin-bottom:.25rem}
+.urg-label{display:block;font-size:.78rem;font-weight:700;color:var(--text2)}
+.urg-sub{display:block;font-size:.66rem;color:var(--muted)}
+
+/* Skills chips */
+.skills-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.65rem}
+.skill-chip{
+  display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:999px;
+  background:var(--saffron-lt);border:1.5px solid #ffcba4;
+  font-size:.76rem;font-weight:700;color:var(--saffron);animation:chipIn .2s ease both;
+}
+@keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.skill-chip button{background:none;border:none;cursor:pointer;padding:0;color:var(--muted);display:flex;line-height:1;font-size:1rem;transition:color .15s}
+.skill-chip button:hover{color:var(--red)}
+.skill-suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
+.skill-sugg{
+  padding:.25rem .65rem;border-radius:6px;background:var(--surf);border:1.5px solid var(--border);
+  font-size:.74rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.skill-sugg:hover{background:var(--saffron-lt);border-color:var(--saffron);color:var(--saffron)}
+
+/* Divider */
+.form-divider{height:1px;background:var(--border);margin:1.5rem 0;position:relative}
+.form-divider span{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#fff;padding:0 .75rem;font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.05em;
+}
+
+/* Availability toggle */
+.avail-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem 1rem;background:var(--surf);border-radius:8px;border:1.5px solid var(--border);
+}
+.avail-label{font-size:.88rem;font-weight:600;color:var(--text2)}
+.avail-sub{font-size:.74rem;color:var(--muted);margin-top:.1rem}
+.toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;cursor:pointer;background:var(--border2);border-radius:999px;transition:.3s}
+.slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked + .slider{background:var(--saffron)}
+.toggle input:checked + .slider::before{transform:translateX(22px)}
+
+/* Terms */
+.terms-row{
+  display:flex;align-items:flex-start;gap:.65rem;margin-top:1rem;
+  padding:.75rem 1rem;background:var(--surf);border-radius:8px;
+}
+.terms-row input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--saffron);margin-top:2px}
+.terms-row label{font-size:.8rem;color:var(--muted);line-height:1.5}
+.terms-row a{color:var(--saffron);font-weight:600;text-decoration:none}
+.terms-row a:hover{text-decoration:underline}
+
+/* Error banner */
+.error-banner{
+  display:none;padding:.85rem 1rem;background:var(--red-lt);border:1.5px solid #fecaca;
+  border-radius:8px;margin-bottom:1.25rem;
+  align-items:center;gap:.65rem;font-size:.85rem;font-weight:600;color:var(--red);
+}
+.error-banner.show{display:flex}
+
+/* Submit */
+.submit-btn{
+  width:100%;padding:1rem 1.5rem;background:var(--saffron);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:1.05rem;font-weight:800;
+  border:none;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  transition:all .3s;box-shadow:0 4px 16px rgba(255,102,0,.35);margin-top:1.75rem;
+  position:relative;overflow:hidden;
+}
+.submit-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .35s ease}
+.submit-btn:hover::before{transform:translateX(0)}
+.submit-btn:hover{background:#e55a00;box-shadow:0 6px 24px rgba(255,102,0,.45);transform:translateY(-2px)}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.submit-btn:disabled::before{display:none}
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SUCCESS ──────────────────────────────────────── */
+.success-overlay{display:none;padding:3rem 2rem;text-align:center}
+.success-overlay.show{display:block}
+.success-circle{
+  width:88px;height:88px;border-radius:50%;background:var(--green);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;
+  box-shadow:0 6px 24px rgba(19,136,8,.35);
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.success-icon-ring{
+  width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green-lt),#c8eac8);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+.success-circle-inner{
+  width:88px;height:88px;border-radius:50%;background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 24px rgba(19,136,8,.35);
+}
+.success-overlay h3{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:.5rem}
+.success-overlay>p{color:var(--muted);font-size:.95rem;margin-bottom:.35rem}
+.success-id{
+  display:inline-block;margin:1rem 0 .5rem;padding:.45rem 1.1rem;border-radius:8px;
+  background:var(--green-lt);border:1.5px solid #b8dfc0;font-weight:700;color:var(--green);font-size:.9rem;
+}
+.success-job-title{
+  display:inline-block;margin-bottom:1.5rem;padding:.35rem .9rem;border-radius:8px;
+  background:var(--saffron-lt);border:1.5px solid #ffcba4;font-weight:600;color:var(--saffron);font-size:.85rem;
+}
+.success-actions{display:flex;flex-direction:column;gap:.75rem}
+.btn-view-workers{
+  padding:.85rem 1.5rem;background:var(--navy);color:#fff;font-weight:800;
+  border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans',sans-serif;
+  font-size:.95rem;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.5rem;
+}
+.btn-view-workers:hover{background:var(--navy-dk);box-shadow:0 4px 16px var(--shadow-md)}
+.btn-post-another{
+  padding:.75rem 1.5rem;background:transparent;color:var(--muted);font-weight:600;
+  border:2px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Noto Sans',sans-serif;
+  font-size:.9rem;transition:all .25s;
+}
+.btn-post-another:hover{border-color:var(--border2);color:var(--text)}
+
+/* ── FOOTER ───────────────────────────────────────── */
+footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
+.fbot-p{color:rgba(255,255,255,.4);font-size:.8rem}
+.fbot-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;margin-top:.4rem;transition:color .2s}
+.fbot-back:hover{color:rgba(255,255,255,.85)}
+
+/* ── ANIMATIONS ───────────────────────────────────── */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:900px){
+  .page{grid-template-columns:1fr;gap:2rem}
+  .left-panel{position:static}
+  .mini-testi{display:none}
+}
+@media(max-width:640px){
+  .field-row,.field-row-3{grid-template-columns:1fr}
+  .form-body{padding:1.5rem}
+  .form-header{padding:1.25rem 1.5rem}
+  .urgency-opts{flex-direction:row}
+  .left-stats{grid-template-columns:1fr 1fr}
+}
+@media(max-width:400px){
+  .urgency-opts{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="ni">
+    <a href="index.html" class="nl">
+      <div class="li-box">
+        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="lt">
+        <h1>LabourNearMe</h1>
+        <p>Shramik Setu · श्रमिक सेतु</p>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Home
+    </a>
+  </div>
+</nav>
+
+<!-- GOV STRIP -->
+<div class="gov-strip">
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+  Free Job Posting · No Middlemen · Verified Worker Network · सुरक्षित एवं विश्वसनीय
+</div>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="page-badge">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Employer Job Posting
+    </div>
+    <h2>
+      Hire <span class="saf">Skilled Workers</span><br>
+      <span class="acc">Near You</span> Fast
+    </h2>
+    <p class="desc">Post a job in under 2 minutes and get matched with verified, rated workers in your area. No commission, no middlemen.</p>
+
+    <div class="left-stats">
+      <div class="lstat">
+        <div class="ln">10K+</div>
+        <div class="ll">Verified Workers</div>
+      </div>
+      <div class="lstat">
+        <div class="ln">12 min</div>
+        <div class="ll">Avg. Match Time</div>
+      </div>
+      <div class="lstat">
+        <div class="ln">95%</div>
+        <div class="ll">Fill Rate</div>
+      </div>
+      <div class="lstat">
+        <div class="ln">₹0</div>
+        <div class="ll">Commission</div>
+      </div>
+    </div>
+
+    <div class="benefits">
+      <div class="benefit">
+        <div class="benefit-icon bi-orange">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Instant Matching</strong>
+          <span>Get qualified worker profiles the moment you post — our algorithm does the heavy lifting</span>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon bi-blue">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Aadhaar-Verified Profiles</strong>
+          <span>Every worker is identity-verified, so you hire with full confidence and zero risk</span>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon bi-green">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Hyperlocal Results</strong>
+          <span>Workers matched by proximity — reducing commute time for everyone and improving reliability</span>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon bi-navy">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Transparent Ratings</strong>
+          <span>Browse worker reviews and ratings from verified employers — pick the best fit every time</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mini-testi">
+      <div class="mini-stars" id="mini-stars"></div>
+      <p class="mini-quote">"Posted a job for 3 electricians on Monday morning. Had all 3 confirmed and on-site by Tuesday. Incredible platform."</p>
+      <div class="mini-author">
+        <div class="mini-av">S</div>
+        <div>
+          <div class="mini-nm">Sunita Agarwal</div>
+          <div class="mini-rl">Construction Manager · Indore</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div class="form-header">
+      <div class="form-header-icon">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      </div>
+      <div class="form-header-text">
+        <h3>Post a Job</h3>
+        <p>Fill in the details and reach workers near you instantly</p>
+      </div>
+      <div class="form-step-indicator">Quick Form</div>
+    </div>
+
+    <div class="form-body" id="form-body">
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Form Completion</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Error banner -->
+      <div class="error-banner" id="error-banner">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="error-msg">Something went wrong. Please try again.</span>
+      </div>
+
+      <!-- SECTION: Job Details -->
+      <div class="field-group">
+        <label class="field-label" for="job_title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Job Title <span class="req">*</span>
+        </label>
+        <input type="text" id="job_title" name="job_title" placeholder="e.g. Experienced Electrician Needed"/>
+        <div class="field-error" id="job_title-err">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please enter a job title
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="description">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+          Job Description <span class="req">*</span>
+        </label>
+        <textarea id="description" name="description" placeholder="Describe the job role, duties, timings, and any special requirements..." rows="4"></textarea>
+        <div class="field-hint">Be specific about the work, timings, and expectations to attract the right workers</div>
+        <div class="field-error" id="description-err">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please add a job description
+        </div>
+      </div>
+
+      <!-- Skills required -->
+      <div class="field-group">
+        <label class="field-label" for="skills-input">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Required Skills <span class="req">*</span>
+        </label>
+        <input type="text" id="skills-input" placeholder="Type a skill and press Enter (e.g. Electrician)"/>
+        <div class="field-error" id="skills-err">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please add at least one required skill
+        </div>
+        <div class="skills-chips" id="skills-chips"></div>
+        <p class="field-hint">Press <strong>Enter</strong> or <strong>comma</strong> to add · Click × to remove</p>
+        <div style="margin-top:.65rem">
+          <p class="field-hint" style="margin-bottom:.4rem">Quick add:</p>
+          <div class="skill-suggestions" id="skill-suggestions">
+            <button class="skill-sugg" type="button">Carpenter</button>
+            <button class="skill-sugg" type="button">Painter</button>
+            <button class="skill-sugg" type="button">Plumber</button>
+            <button class="skill-sugg" type="button">Electrician</button>
+            <button class="skill-sugg" type="button">Mason</button>
+            <button class="skill-sugg" type="button">Driver</button>
+            <button class="skill-sugg" type="button">Helper</button>
+            <button class="skill-sugg" type="button">Welder</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="field-group">
+        <label class="field-label" for="location">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Job Location <span class="req">*</span>
+        </label>
+        <input type="text" id="location" name="location" placeholder="Enter site address, city or area" autocomplete="address-level2"/>
+        <div class="field-hint">Enter the actual work site location (not your office address)</div>
+        <div class="field-error" id="location-err">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please enter the job location
+        </div>
+      </div>
+
+      <!-- Wage + Workers required -->
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="wage">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Daily Wage (₹) <span class="req">*</span>
+          </label>
+          <div class="input-prefix-wrap">
+            <input type="number" id="wage" name="wage" placeholder="500" min="100" max="99999"/>
+            <span class="input-prefix">₹</span>
+          </div>
+          <div class="field-hint">Per worker, per day</div>
+          <div class="field-error" id="wage-err">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid wage
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="workers_required">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Workers Needed <span class="req">*</span>
+          </label>
+          <input type="number" id="workers_required" name="workers_required" placeholder="e.g. 3" min="1" max="999"/>
+          <div class="field-hint">Number of workers required</div>
+          <div class="field-error" id="workers_required-err">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter how many workers you need
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgency -->
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Urgency Level <span class="req">*</span>
+        </label>
+        <div class="urgency-opts" id="urgency-opts">
+          <div class="urg-opt" data-val="Low">
+            <span class="urg-emoji">🟢</span>
+            <span class="urg-label">Low</span>
+            <span class="urg-sub">Within a week</span>
+          </div>
+          <div class="urg-opt" data-val="Medium">
+            <span class="urg-emoji">🟡</span>
+            <span class="urg-label">Medium</span>
+            <span class="urg-sub">Within 2–3 days</span>
+          </div>
+          <div class="urg-opt" data-val="High">
+            <span class="urg-emoji">🔴</span>
+            <span class="urg-label">High</span>
+            <span class="urg-sub">ASAP / Today</span>
+          </div>
+        </div>
+        <div class="field-error" id="urgency-err" style="margin-top:.45rem">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please select an urgency level
+        </div>
+      </div>
+
+      <div class="form-divider"><span>YOUR DETAILS</span></div>
+
+      <!-- Employer name + phone -->
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="employer_name">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Your Name <span class="req">*</span>
+          </label>
+          <input type="text" id="employer_name" name="employer_name" placeholder="Enter your full name" autocomplete="name"/>
+          <div class="field-error" id="employer_name-err">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter your name
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="phone">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.09h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.94-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Contact Number <span class="req">*</span>
+          </label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210" maxlength="15" autocomplete="tel"/>
+          <div class="field-error" id="phone-err">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter a valid phone number
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Active Toggle -->
+      <div class="field-group">
+        <label class="field-label">Job Status <span class="opt-tag">Optional</span></label>
+        <div class="avail-row">
+          <div>
+            <div class="avail-label">Post as Active Immediately</div>
+            <div class="avail-sub">Workers will see this job as soon as it's posted</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="is_active" checked/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <label for="terms">
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Employer Guidelines</a>. I confirm the job details are accurate and the wage offered is fair and legal.
+        </label>
+      </div>
+
+      <!-- Submit -->
+      <button class="submit-btn" id="submit-btn" type="button" onclick="handleJobPost()">
+        <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <span id="btn-text">Post Job Now</span>
+        <div class="spinner" id="btn-spinner"></div>
+      </button>
+
+    </div><!-- /form-body -->
+
+    <!-- SUCCESS SCREEN -->
+    <div class="success-overlay" id="success-overlay">
+      <div class="success-icon-ring">
+        <div class="success-circle-inner">
+          <svg width="40" height="40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <h3>Job Posted Successfully! 🎉</h3>
+      <p>Your job listing is now live. Matched workers near you will be notified.</p>
+      <div class="success-id" id="success-id"></div>
+      <div class="success-job-title" id="success-job-title"></div>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">Workers typically respond within 12–30 minutes.</p>
+      <div class="success-actions">
+        <button class="btn-view-workers" onclick="goToWorkers()">
+          <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          View Workers Who Applied
+        </button>
+        <button class="btn-post-another" onclick="resetForm()">Post Another Job</button>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <a href="index.html" class="fbot-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to Homepage
+  </a>
+</footer>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────
+const BASE_URL = 'https://labournearme.onrender.com';
+const skillMap = {
+  "Electrician": "3a08cd81-a48f-4376-8b53-7250866e7140", // Wiring Installation
+  "Plumber": "85f64c86-6e1c-49a8-9566-9ca05ca11488",     // Pipe Fitting
+  "Painter": "4f919e84-d3a1-4fe0-8d9b-a18fa89ab4e3",     // Interior Painting
+  "Carpenter": "4f6a3469-9f64-4904-9e20-e5f55277c2bb",   // Furniture Assembly
+  "Mason": "19f5f26a-c12c-4861-ae89-7c5e9472ca1b"        // Cement Mixing
+};
+
+// ── STATE ──────────────────────────────────────────
+let skills        = [];
+let urgency       = '';
+let currentJobId  = null; // stores job ID after successful post
+
+// ── MINI STARS ─────────────────────────────────────
+const starSVG = `<svg width="16" height="16" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+document.getElementById('mini-stars').innerHTML = starSVG.repeat(5);
+
+// ── PROGRESS ────────────────────────────────────────
+const TRACKED_FIELDS = ['job_title', 'description', 'location', 'wage', 'workers_required', 'employer_name', 'phone'];
+
+function updateProgress() {
+  let filled = TRACKED_FIELDS.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim() !== '';
+  }).length;
+  if (skills.length > 0) filled++;
+  if (urgency)           filled++;
+
+  const total = TRACKED_FIELDS.length + 2; // + skills + urgency
+  const pct   = Math.round((filled / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent  = pct + '%';
+}
+
+TRACKED_FIELDS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateProgress);
+});
+
+// ── SKILLS ─────────────────────────────────────────
+const skillsInput = document.getElementById('skills-input');
+
+function addSkill(val) {
+  const skill = val.trim();
+  if (!skill || skills.includes(skill)) return;
+  skills.push(skill);
+  renderChips();
+  updateProgress();
+}
+
+function removeSkill(skill) {
+  skills = skills.filter(s => s !== skill);
+  renderChips();
+  updateProgress();
+}
+
+function renderChips() {
+  document.getElementById('skills-chips').innerHTML = skills.map(s =>
+    `<div class="skill-chip">${s}<button type="button" onclick="removeSkill('${s.replace(/'/g, "\\'")}')">×</button></div>`
+  ).join('');
+}
+
+skillsInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    addSkill(skillsInput.value.replace(',', ''));
+    skillsInput.value = '';
+  }
+});
+
+skillsInput.addEventListener('blur', () => {
+  if (skillsInput.value.trim()) {
+    addSkill(skillsInput.value);
+    skillsInput.value = '';
+  }
+});
+
+document.querySelectorAll('.skill-sugg').forEach(btn => {
+  btn.addEventListener('click', () => addSkill(btn.textContent.trim()));
+});
+
+// ── URGENCY ─────────────────────────────────────────
+document.querySelectorAll('.urg-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.urg-opt').forEach(o => {
+      o.classList.remove('selected-low', 'selected-medium', 'selected-high');
+    });
+    const val = opt.dataset.val;
+    urgency = val;
+    opt.classList.add(`selected-${val.toLowerCase()}`);
+    clearFieldErr('urgency');
+    updateProgress();
+  });
+});
+
+// ── VALIDATION ──────────────────────────────────────
+function showFieldErr(fieldId) {
+  const input = document.getElementById(fieldId);
+  const err   = document.getElementById(fieldId + '-err');
+  if (input) input.classList.add('error');
+  if (err)   err.classList.add('show');
+}
+
+function clearFieldErr(fieldId) {
+  const input = document.getElementById(fieldId);
+  const err   = document.getElementById(fieldId + '-err');
+  if (input) input.classList.remove('error');
+  if (err)   err.classList.remove('show');
+}
+
+// Live clear on input
+[...TRACKED_FIELDS, 'description'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => clearFieldErr(id));
+});
+
+function validate() {
+  let ok = true;
+
+  const requiredText = ['job_title', 'description', 'location', 'employer_name', 'phone'];
+  requiredText.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !el.value.trim()) { showFieldErr(id); ok = false; }
+  });
+
+  const wage = parseFloat(document.getElementById('wage').value);
+  if (!wage || wage < 1) { showFieldErr('wage'); ok = false; }
+
+  const workers = parseInt(document.getElementById('workers_required').value, 10);
+  if (!workers || workers < 1) { showFieldErr('workers_required'); ok = false; }
+
+  if (skills.length === 0) {
+    document.getElementById('skills-input').classList.add('error');
+    document.getElementById('skills-err').classList.add('show');
+    ok = false;
+  } else {
+    document.getElementById('skills-input').classList.remove('error');
+    document.getElementById('skills-err').classList.remove('show');
+  }
+
+  if (!urgency) {
+    document.getElementById('urgency-err').classList.add('show');
+    ok = false;
+  } else {
+    document.getElementById('urgency-err').classList.remove('show');
+  }
+
+  return ok;
+}
+
+// ── MAIN SUBMIT FUNCTION ────────────────────────────
+async function handleJobPost() {
+  if (!validate()) {
+    showBanner('Please fill in all required fields before submitting.');
+    return;
+  }
+
+  if (!document.getElementById('terms').checked) {
+    showBanner('Please accept the Terms of Service to continue.');
+    return;
+  }
+
+  const payload = {
+    title:        document.getElementById('job_title').value.trim(),
+    description:      document.getElementById('description').value.trim(),
+    required_skills: skills.map(s => skillMap[s] || s),
+    location:         document.getElementById('location').value.trim(),
+    location_lat:     22.7196,
+    location_lng:     75.8577,
+    wage:             parseFloat(document.getElementById('wage').value),
+    workers_required: parseInt(document.getElementById('workers_required').value, 10),
+    urgency:          urgency,
+    employer_name:    document.getElementById('employer_name').value.trim(),
+    phone:            document.getElementById('phone').value.trim(),
+  };
+
+  setLoading(true);
+  hideBanner();
+
+  const controller = new AbortController();
+  const timeoutId  = setTimeout(() => controller.abort(), 40000);
+
+  try {
+    const res = await fetch(`${BASE_URL}/jobs/`, {
+      method:  'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': 'a184c5e8-f3f9-4415-98c0-b9d866deabac' // ⚠️ TODO: replace with real employer UUID from your DB
+      },
+      body:    JSON.stringify(payload),
+      signal:  controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    const rawText = await res.text();
+    let data = {};
+    try { data = JSON.parse(rawText); } catch (_) {}
+
+    if (!res.ok) {
+      const detail = data.detail || data.message || rawText || `Server error (${res.status})`;
+      throw new Error(typeof detail === 'object' ? JSON.stringify(detail) : detail);
+    }
+
+    showSuccess(payload.title, data.id || data.job_id || data.jobId || data.job?.id || null);
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+
+    const msg = err.name === 'AbortError'
+      ? 'Server is waking up (Render cold start). Please wait a few seconds and try again.'
+      : (err.message || 'Something went wrong. Please try again.');
+
+    showBanner(msg);
+    setLoading(false);
+  }
+}
+
+// ── UI HELPERS ──────────────────────────────────────
+function setLoading(on) {
+  const btn = document.getElementById('submit-btn');
+  document.getElementById('btn-text').textContent    = on ? 'Posting Job...' : 'Post Job Now';
+  document.getElementById('btn-spinner').style.display = on ? 'block' : 'none';
+  btn.disabled = on;
+}
+
+function showBanner(msg) {
+  const b = document.getElementById('error-banner');
+  document.getElementById('error-msg').textContent = msg;
+  b.classList.add('show');
+  b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideBanner() {
+  document.getElementById('error-banner').classList.remove('show');
+}
+
+function showSuccess(jobTitle, id) {
+  document.getElementById('form-body').style.display = 'none';
+
+  currentJobId = id || null; // store for goToWorkers()
+
+  const idEl = document.getElementById('success-id');
+  if (id) { idEl.textContent = `Job ID: ${id}`; }
+  else     { idEl.style.display = 'none'; }
+
+  document.getElementById('success-job-title').textContent = `\u{1F4CB} ${jobTitle}`;
+
+  const overlay = document.getElementById('success-overlay');
+  overlay.classList.add('show');
+  overlay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function goToWorkers() {
+  if (!currentJobId) {
+    alert('Job ID not available. Please try posting the job again.');
+    return;
+  }
+  window.location.href = `job_workers.html?job_id=${currentJobId}`;
+}
+
+function resetForm() {
+  // Reset text/number inputs
+  [...TRACKED_FIELDS, 'description'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error', 'valid'); }
+    clearFieldErr(id);
+  });
+
+  // Reset skills
+  skills = [];
+  renderChips();
+  document.getElementById('skills-input').classList.remove('error');
+  document.getElementById('skills-err').classList.remove('show');
+
+  // Reset urgency
+  urgency = '';
+  document.querySelectorAll('.urg-opt').forEach(o =>
+    o.classList.remove('selected-low', 'selected-medium', 'selected-high')
+  );
+  document.getElementById('urgency-err').classList.remove('show');
+
+  // Reset toggles & checkboxes
+  document.getElementById('is_active').checked = true;
+  document.getElementById('terms').checked      = false;
+
+  // Reset success state
+  document.getElementById('success-id').style.display      = '';
+  document.getElementById('success-id').textContent        = '';
+  document.getElementById('success-job-title').textContent = '';
+  document.getElementById('success-overlay').classList.remove('show');
+  document.getElementById('form-body').style.display       = 'block';
+
+  hideBanner();
+  setLoading(false);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Job Applicants — LabourNearMe</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:      #003580;
+  --navy-dk:   #002060;
+  --accent:    #0066CC;
+  --accent-lt: #E8F2FC;
+  --saffron:   #FF6600;
+  --saffron-lt:#FFF0E6;
+  --green:     #138808;
+  --green-lt:  #E6F4E6;
+  --surf:      #F0F4FA;
+  --surf2:     #E8EEF6;
+  --white:     #FFFFFF;
+  --text:      #1A2433;
+  --text2:     #2C3E55;
+  --muted:     #5A6475;
+  --border:    #D0DAE8;
+  --border2:   #B8C8DC;
+  --shadow:    rgba(0,53,128,.10);
+  --shadow-md: rgba(0,53,128,.16);
+  --red:       #DC2626;
+  --red-lt:    #FEF2F2;
+  --amber:     #D97706;
+  --amber-lt:  #FFFBEB;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);background:var(--surf);
+  overflow-x:hidden;font-size:16px;line-height:1.6;min-height:100vh;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;width:100%;z-index:100;
+  background:var(--navy);box-shadow:0 2px 16px rgba(0,0,0,.18);
+}
+.ni{
+  max-width:1280px;margin:0 auto;padding:0 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;height:72px;
+}
+.nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.li-box{
+  background:var(--saffron);padding:8px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,102,0,.35);
+}
+.lt h1{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.lt p{font-size:.62rem;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.02em}
+.nav-back{
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.8);text-decoration:none;font-weight:600;font-size:.88rem;
+  padding:.4rem .85rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);transition:all .2s;
+}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.1)}
+
+/* ── GOV STRIP ─────────────────────────────────────── */
+.gov-strip{
+  margin-top:72px;background:var(--accent-lt);border-bottom:2px solid var(--border2);
+  padding:.5rem 1.5rem;text-align:center;
+  font-size:.77rem;font-weight:600;color:var(--navy);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.01em;
+}
+
+/* ── PAGE WRAPPER ──────────────────────────────────── */
+.page{
+  max-width:1200px;margin:0 auto;padding:2.5rem 1.5rem 5rem;
+}
+
+/* ── PAGE HEADER ───────────────────────────────────── */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:1.25rem;margin-bottom:2.5rem;
+}
+.header-left{}
+.header-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.3rem .85rem;background:var(--saffron-lt);color:var(--saffron);
+  font-weight:800;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;border:1.5px solid #ffcba4;margin-bottom:.75rem;
+}
+.page-title{
+  font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;
+  color:var(--text);letter-spacing:-.025em;line-height:1.15;
+}
+.page-title span{color:var(--accent)}
+.page-subtitle{
+  font-size:.95rem;color:var(--muted);margin-top:.4rem;line-height:1.6;
+}
+.job-id-pill{
+  display:inline-flex;align-items:center;gap:.4rem;margin-top:.6rem;
+  padding:.3rem .85rem;background:#fff;border:1.5px solid var(--border);
+  border-radius:999px;font-size:.78rem;font-weight:700;color:var(--text2);
+  box-shadow:0 2px 6px var(--shadow);
+}
+
+/* Refresh button */
+.refresh-btn{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.7rem 1.35rem;background:var(--saffron);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:.9rem;font-weight:700;
+  border:none;border-radius:8px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,102,0,.3);
+  transition:all .25s;flex-shrink:0;align-self:flex-end;
+}
+.refresh-btn:hover{background:#e55a00;box-shadow:0 6px 22px rgba(255,102,0,.4);transform:translateY(-2px)}
+.refresh-btn:active{transform:translateY(0)}
+.refresh-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.refresh-btn svg{transition:transform .5s}
+.refresh-btn.spinning svg{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── STATES CONTAINER ──────────────────────────────── */
+#state-container{min-height:320px}
+
+/* ── LOADING STATE ─────────────────────────────────── */
+.loading-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1.5rem;animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.loading-ring{
+  width:64px;height:64px;border-radius:50%;
+  border:5px solid var(--border2);border-top-color:var(--accent);
+  animation:spin .9s linear infinite;
+}
+.loading-state p{font-size:1rem;font-weight:600;color:var(--muted);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ── ERROR STATE ───────────────────────────────────── */
+.error-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1rem;animation:fadeIn .3s ease;text-align:center;
+}
+.error-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--red-lt);border:2px solid #fecaca;
+  display:flex;align-items:center;justify-content:center;margin-bottom:.5rem;
+}
+.error-state h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+.error-state p{font-size:.9rem;color:var(--muted);max-width:32rem;line-height:1.6}
+.retry-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:.5rem;padding:.55rem 1.2rem;
+  background:var(--red);color:#fff;font-weight:700;font-size:.86rem;
+  border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans',sans-serif;
+  transition:all .2s;
+}
+.retry-btn:hover{background:#b91c1c}
+
+/* ── EMPTY STATE ───────────────────────────────────── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1rem;animation:fadeIn .3s ease;text-align:center;
+}
+.empty-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--surf2);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;margin-bottom:.5rem;
+}
+.empty-state h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+.empty-state p{font-size:.9rem;color:var(--muted);max-width:28rem;line-height:1.6}
+
+/* ── RESULTS META ──────────────────────────────────── */
+.results-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;animation:fadeIn .3s ease;
+}
+.results-count{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem 1rem;background:#fff;border-radius:999px;
+  border:1.5px solid var(--border);font-size:.82rem;font-weight:700;color:var(--text2);
+  box-shadow:0 2px 8px var(--shadow);
+}
+.count-dot{
+  width:8px;height:8px;background:var(--saffron);border-radius:50%;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.results-hint{font-size:.78rem;color:var(--muted)}
+
+/* ── WORKERS GRID ──────────────────────────────────── */
+.workers-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.4rem;animation:fadeIn .4s ease;
+}
+
+/* ── WORKER CARD ───────────────────────────────────── */
+.worker-card{
+  background:#fff;border-radius:14px;
+  border:1.5px solid var(--border);
+  box-shadow:0 3px 14px var(--shadow);
+  overflow:hidden;
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  animation:cardIn .4s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.worker-card:hover{
+  border-color:var(--accent);
+  box-shadow:0 10px 36px var(--shadow-md);
+  transform:translateY(-4px);
+}
+.worker-card.accepted{border-color:var(--green);box-shadow:0 4px 18px rgba(19,136,8,.15)}
+.worker-card.rejected{border-color:var(--border2);opacity:.72;transform:none!important}
+
+/* Card top accent */
+.card-accent{height:4px;background:linear-gradient(90deg,var(--navy),var(--accent))}
+.worker-card.accepted .card-accent{background:linear-gradient(90deg,var(--green),#22c55e)}
+.worker-card.rejected  .card-accent{background:var(--border2)}
+
+.card-body{padding:1.4rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.85rem}
+
+/* Avatar + name row */
+.card-identity{display:flex;align-items:center;gap:1rem}
+.worker-avatar{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--navy),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.02em;
+  box-shadow:0 3px 10px var(--shadow-md);
+}
+.identity-text{}
+.worker-name{font-size:1.05rem;font-weight:800;color:var(--text);line-height:1.2;letter-spacing:-.01em}
+.worker-meta{font-size:.78rem;color:var(--muted);margin-top:.15rem;display:flex;align-items:center;gap:.4rem}
+
+/* Rating */
+.rating-row{display:flex;align-items:center;gap:.3rem}
+.star-fill{color:#F59E0B;font-size:.9rem}
+.star-empty{color:var(--border2);font-size:.9rem}
+.rating-num{font-size:.8rem;font-weight:700;color:var(--text2);margin-left:.2rem}
+
+/* Phone */
+.phone-row{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.5rem .75rem;background:var(--surf);border-radius:7px;
+  font-size:.85rem;font-weight:600;color:var(--text2);
+  border:1.5px solid var(--border);
+}
+.phone-row a{color:var(--accent);text-decoration:none;font-weight:700}
+.phone-row a:hover{text-decoration:underline}
+
+/* Skills */
+.skills-label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem}
+.skills-tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.skill-tag{
+  padding:.22rem .6rem;border-radius:6px;
+  background:var(--accent-lt);border:1.5px solid var(--border2);
+  font-size:.72rem;font-weight:700;color:var(--accent);
+}
+.skill-tag.empty{color:var(--muted);background:var(--surf);border-color:var(--border)}
+
+/* Status badge */
+.status-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.4rem .9rem;border-radius:8px;
+  font-size:.82rem;font-weight:800;letter-spacing:.02em;
+}
+.status-badge.accepted{background:var(--green-lt);color:var(--green);border:1.5px solid #b8dfc0}
+.status-badge.rejected{background:var(--red-lt);color:var(--red);border:1.5px solid #fecaca}
+
+/* Card footer */
+.card-footer{
+  padding:1rem 1.5rem;border-top:1.5px solid var(--border);
+  display:flex;gap:.7rem;align-items:center;background:var(--surf);
+}
+.card-footer.decided{justify-content:center}
+
+.accept-btn,.reject-btn{
+  flex:1;padding:.65rem .75rem;border-radius:8px;
+  font-family:'Noto Sans',sans-serif;font-size:.88rem;font-weight:800;
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.45rem;
+  transition:all .22s;
+}
+.accept-btn{
+  background:var(--green);color:#fff;
+  box-shadow:0 3px 10px rgba(19,136,8,.3);
+}
+.accept-btn:hover:not(:disabled){background:#0d6e06;box-shadow:0 5px 16px rgba(19,136,8,.4);transform:translateY(-1px)}
+.accept-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.reject-btn{
+  background:#fff;color:var(--red);
+  border:2px solid #fecaca;
+}
+.reject-btn:hover:not(:disabled){background:var(--red-lt);border-color:var(--red);transform:translateY(-1px)}
+.reject-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.btn-spinner{
+  width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+  border-radius:50%;animation:spin .7s linear infinite;display:none;
+}
+.reject-btn .btn-spinner{border-color:rgba(220,38,38,.3);border-top-color:var(--red)}
+
+/* ── JOB ID LOOKUP PANEL ────────────────────────────── */
+.lookup-panel{
+  max-width:540px;margin:0 auto 2.5rem;
+  background:#fff;border-radius:14px;border:1.5px solid var(--border);
+  box-shadow:0 4px 24px var(--shadow);overflow:hidden;
+  animation:fadeIn .4s ease;
+}
+.lookup-header{
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy));
+  padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.85rem;
+}
+.lookup-header svg{flex-shrink:0;color:rgba(255,255,255,.8)}
+.lookup-header h3{font-size:1rem;font-weight:800;color:#fff}
+.lookup-header p{font-size:.78rem;color:rgba(255,255,255,.6);margin-top:.1rem}
+.lookup-body{padding:1.5rem;display:flex;gap:.75rem;align-items:flex-end}
+.lookup-body .field-wrap{flex:1}
+.lookup-body label{display:block;font-size:.8rem;font-weight:700;color:var(--text2);margin-bottom:.4rem}
+.lookup-body input{
+  width:100%;padding:.72rem 1rem;border:2px solid var(--border);border-radius:8px;
+  font-family:'Noto Sans',sans-serif;font-size:.9rem;color:var(--text);
+  background:#fff;transition:all .2s;outline:none;
+}
+.lookup-body input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,102,204,.12)}
+.lookup-go-btn{
+  padding:.72rem 1.35rem;background:var(--saffron);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:.9rem;font-weight:700;
+  border:none;border-radius:8px;cursor:pointer;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(255,102,0,.3);transition:all .25s;flex-shrink:0;
+}
+.lookup-go-btn:hover{background:#e55a00;transform:translateY(-1px)}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
+.fbot-p{color:rgba(255,255,255,.4);font-size:.8rem}
+.fbot-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;margin-top:.4rem;transition:color .2s}
+.fbot-back:hover{color:rgba(255,255,255,.85)}
+
+/* ── TOAST ──────────────────────────────────────────── */
+.toast-container{
+  position:fixed;bottom:2rem;right:1.5rem;z-index:999;
+  display:flex;flex-direction:column;gap:.65rem;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:.65rem;
+  padding:.75rem 1.1rem;border-radius:10px;
+  font-size:.85rem;font-weight:700;
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+  animation:toastIn .3s cubic-bezier(.34,1.56,.64,1) both;
+  pointer-events:all;min-width:240px;max-width:340px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast.out{animation:toastOut .25s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px) scale(.95)}}
+.toast.success{background:var(--green-lt);color:var(--green);border:1.5px solid #b8dfc0}
+.toast.error{background:var(--red-lt);color:var(--red);border:1.5px solid #fecaca}
+.toast.info{background:var(--accent-lt);color:var(--accent);border:1.5px solid var(--border2)}
+
+/* ── RESPONSIVE ────────────────────────────────────── */
+@media(max-width:640px){
+  .page-header{flex-direction:column;gap:1rem}
+  .refresh-btn{width:100%}
+  .workers-grid{grid-template-columns:1fr}
+  .card-footer{flex-direction:column}
+  .accept-btn,.reject-btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="ni">
+    <a href="index.html" class="nl">
+      <div class="li-box">
+        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="lt">
+        <h1>LabourNearMe</h1>
+        <p>Shramik Setu · श्रमिक सेतु</p>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Home
+    </a>
+  </div>
+</nav>
+
+<!-- GOV STRIP -->
+<div class="gov-strip">
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  Employer Dashboard · Review Applicants · Accept or Reject Workers
+</div>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-badge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Job Applicants
+      </div>
+      <h1 class="page-title">Workers Who <span>Applied</span></h1>
+      <p class="page-subtitle">Review each applicant and accept or reject them for this job.</p>
+      <div class="job-id-pill" id="job-id-pill" style="display:none">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        <span id="job-id-display">—</span>
+      </div>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadApplicants()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+
+  <!-- JOB ID LOOKUP (shown when no job_id in URL) -->
+  <div class="lookup-panel" id="lookup-panel" style="display:none">
+    <div class="lookup-header">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      <div>
+        <h3>Look Up Applicants by Job ID</h3>
+        <p>Paste a Job ID to see who applied — no URL param needed</p>
+      </div>
+    </div>
+    <div class="lookup-body">
+      <div class="field-wrap">
+        <label for="job-id-input">Job ID</label>
+        <input type="text" id="job-id-input" placeholder="e.g. a1b2c3d4-e5f6-…"
+          onkeydown="if(event.key==='Enter') lookupJob()"/>
+      </div>
+      <button class="lookup-go-btn" onclick="lookupJob()">
+        View Applicants →
+      </button>
+    </div>
+  </div>
+
+  <!-- STATE CONTAINER -->
+  <div id="state-container"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <a href="index.html" class="fbot-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to Homepage
+  </a>
+</footer>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────
+const BASE_URL = 'https://labournearme.onrender.com';
+
+// ── GLOBALS ───────────────────────────────────────────
+const container  = document.getElementById('state-container');
+const refreshBtn = document.getElementById('refresh-btn');
+
+// ── EXTRACT job_id FROM URL ───────────────────────────
+function getJobId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('job_id') || null;
+}
+
+const JOB_ID = getJobId();
+
+// Show job id pill in header if present
+if (JOB_ID) {
+  const pill = document.getElementById('job-id-pill');
+  document.getElementById('job-id-display').textContent = `Job ID: ${JOB_ID.slice(0, 16).toUpperCase()}`;
+  pill.style.display = 'inline-flex';
+}
+
+// ── SVG ICONS ─────────────────────────────────────────
+const checkIcon = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+const crossIcon  = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+const phoneIcon  = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+
+// ── SHOW STATES ───────────────────────────────────────
+function showLoading() {
+  setRefreshState(true);
+  container.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-ring"></div>
+      <p>Loading applicants…</p>
+    </div>`;
+}
+
+function showError(msg) {
+  setRefreshState(false);
+  container.innerHTML = `
+    <div class="error-state">
+      <div class="error-icon">
+        <svg width="32" height="32" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3>Something went wrong</h3>
+      <p>${escapeHtml(msg)}</p>
+      <button class="retry-btn" onclick="loadApplicants()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Try Again
+      </button>
+    </div>`;
+}
+
+function showEmpty() {
+  setRefreshState(false);
+  container.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="36" height="36" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <h3>No Applicants Yet</h3>
+      <p>No workers have applied to this job yet. Check back soon — applications come in daily!</p>
+    </div>`;
+}
+
+// ── RENDER WORKER CARDS ───────────────────────────────
+function renderApplicants(applicants) {
+  setRefreshState(false);
+  const count = applicants.length;
+
+  const cardsHTML = applicants.map((applicant, i) => buildWorkerCard(applicant, i)).join('');
+
+  container.innerHTML = `
+    <div class="results-meta">
+      <div class="results-count">
+        <span class="count-dot"></span>
+        ${count} applicant${count !== 1 ? 's' : ''} found
+      </div>
+      <span class="results-hint">Review each worker and take action</span>
+    </div>
+    <div class="workers-grid" id="workers-grid">
+      ${cardsHTML}
+    </div>`;
+
+  document.querySelectorAll('.worker-card').forEach((card, i) => {
+    card.style.animationDelay = `${i * 80}ms`;
+  });
+}
+
+// ── BUILD SINGLE WORKER CARD ──────────────────────────
+function buildWorkerCard(applicant, index) {
+  // Normalise fields — API may return worker nested or flat
+  const worker   = applicant.worker || applicant;
+  const appId    = applicant.id    || applicant.application_id || null;
+  const workerId = worker.id       || worker.worker_id         || applicant.worker_id || null;
+  const name     = worker.full_name || worker.name             || 'Unknown Worker';
+  const phone    = worker.phone    || null;
+  const rating   = worker.rating   || worker.avg_rating        || null;
+  const skills   = Array.isArray(worker.skills) ? worker.skills : [];
+  const status   = applicant.status || null; // 'accepted' | 'rejected' | null
+
+  // Avatar initials
+  const initials = name.trim().split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase() || '?';
+
+  // Rating stars
+  let starsHTML = '';
+  if (rating != null) {
+    const r = Math.round(Number(rating));
+    starsHTML = `
+      <div class="rating-row">
+        ${[1,2,3,4,5].map(n => `<span class="${n <= r ? 'star-fill' : 'star-empty'}">★</span>`).join('')}
+        <span class="rating-num">${Number(rating).toFixed(1)}</span>
+      </div>`;
+  }
+
+  // Phone row
+  const phoneHTML = phone ? `
+    <div class="phone-row">
+      ${phoneIcon}
+      <a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a>
+    </div>` : '';
+
+  // Skills tags
+  const skillsHTML = skills.length > 0
+    ? skills.map(s => `<span class="skill-tag">${escapeHtml(String(s))}</span>`).join('')
+    : '<span class="skill-tag empty">Not specified</span>';
+
+  // Footer: decided or action buttons?
+  let footerHTML = '';
+  if (status === 'accepted') {
+    footerHTML = `
+      <div class="card-footer decided">
+        <span class="status-badge accepted">${checkIcon} Accepted</span>
+      </div>`;
+  } else if (status === 'rejected') {
+    footerHTML = `
+      <div class="card-footer decided">
+        <span class="status-badge rejected">${crossIcon} Rejected</span>
+      </div>`;
+  } else {
+    footerHTML = `
+      <div class="card-footer" id="footer-${index}">
+        <button class="accept-btn" id="accept-${index}"
+          onclick="handleAction('accept', '${escapeHtml(String(workerId || ''))}', '${escapeHtml(String(appId || ''))}', ${index})">
+          ${checkIcon} Accept
+          <div class="btn-spinner" id="accept-spinner-${index}"></div>
+        </button>
+        <button class="reject-btn" id="reject-${index}"
+          onclick="handleAction('reject', '${escapeHtml(String(workerId || ''))}', '${escapeHtml(String(appId || ''))}', ${index})">
+          ${crossIcon} Reject
+          <div class="btn-spinner" id="reject-spinner-${index}"></div>
+        </button>
+      </div>`;
+  }
+
+  const decidedClass = status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : '';
+
+  return `
+    <div class="worker-card ${decidedClass}" id="card-${index}">
+      <div class="card-accent"></div>
+      <div class="card-body">
+
+        <!-- Identity -->
+        <div class="card-identity">
+          <div class="worker-avatar">${initials}</div>
+          <div class="identity-text">
+            <div class="worker-name">${escapeHtml(name)}</div>
+            <div class="worker-meta">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              Worker
+              ${workerId ? `· <span style="font-family:monospace;font-size:.72rem">#${String(workerId).slice(0,8).toUpperCase()}</span>` : ''}
+            </div>
+            ${starsHTML}
+          </div>
+        </div>
+
+        <!-- Phone -->
+        ${phoneHTML}
+
+        <!-- Skills -->
+        <div>
+          <p class="skills-label">Skills</p>
+          <div class="skills-tags">${skillsHTML}</div>
+        </div>
+
+      </div>
+      ${footerHTML}
+    </div>`;
+}
+
+// ── HANDLE ACCEPT / REJECT (frontend-only for demo) ──
+function handleAction(action, workerId, appId, index) {
+  const acceptBtn = document.getElementById(`accept-${index}`);
+  const rejectBtn = document.getElementById(`reject-${index}`);
+  const spinner   = document.getElementById(`${action}-spinner-${index}`);
+  const isAccept  = action === 'accept';
+
+  // Show spinner briefly, then update UI
+  if (acceptBtn) acceptBtn.disabled = true;
+  if (rejectBtn) rejectBtn.disabled = true;
+  if (spinner)   spinner.style.display = 'block';
+
+  setTimeout(() => {
+    const card   = document.getElementById(`card-${index}`);
+    const footer = document.getElementById(`footer-${index}`);
+
+    if (card) {
+      card.classList.remove('accepted', 'rejected');
+      card.classList.add(isAccept ? 'accepted' : 'rejected');
+    }
+    if (footer) {
+      const label = isAccept ? 'Accepted' : 'Rejected';
+      const icon  = isAccept ? checkIcon : crossIcon;
+      footer.className = 'card-footer decided';
+      footer.innerHTML = `<span class="status-badge ${action}">${icon} ${label}</span>`;
+    }
+
+    showToast('success', isAccept ? 'Worker accepted!' : 'Worker rejected.');
+  }, 600); // 600ms delay feels like a real API call
+}
+
+// ── LOOKUP JOB BY ID (manual entry) ──────────────────
+function lookupJob() {
+  const input = document.getElementById('job-id-input');
+  const val = input ? input.value.trim() : '';
+  if (!val) {
+    input.style.borderColor = 'var(--red)';
+    input.focus();
+    return;
+  }
+  input.style.borderColor = '';
+  // Update URL so refresh works, then reload with that job ID
+  window.location.href = `job_workers.html?job_id=${encodeURIComponent(val)}`;
+}
+
+// ── HARDCODED DEMO APPLICANTS ─────────────────────────
+const DEMO_APPLICANTS = [
+  { id:'app-001', worker:{ id:'w-a1b2c3d4', full_name:'Ramesh Kumar Verma',  phone:'+91 94251 78340', skills:['Electrician','Wiring','Panel Installation'], rating:4.8 } },
+  { id:'app-002', worker:{ id:'w-e5f6g7h8', full_name:'Suresh Patel',        phone:'+91 98760 12345', skills:['Plumber','Pipe Fitting','Sanitation'],        rating:4.5 } },
+  { id:'app-003', worker:{ id:'w-i9j0k1l2', full_name:'Anita Sharma',        phone:'+91 70210 98765', skills:['Painter','Interior Painting','Texturing'],    rating:5.0 } },
+  { id:'app-004', worker:{ id:'w-m3n4o5p6', full_name:'Vikram Singh Rajput', phone:'+91 80900 44321', skills:['Carpenter','Furniture Assembly','Woodwork'],  rating:4.2 } },
+  { id:'app-005', worker:{ id:'w-q7r8s9t0', full_name:'Priya Devi',          phone:'+91 91234 56789', skills:['Mason','Cement Mixing','Bricklaying'],        rating:4.6 } },
+];
+
+// ── FETCH APPLICANTS ──────────────────────────────────
+async function loadApplicants() {
+  if (!JOB_ID) {
+    const panel = document.getElementById('lookup-panel');
+    if (panel) panel.style.display = 'block';
+    return;
+  }
+  showLoading();
+  // Simulate realistic network delay then show demo applicants
+  await new Promise(r => setTimeout(r, 800));
+  renderApplicants(DEMO_APPLICANTS);
+}
+
+// ── REFRESH BUTTON STATE ──────────────────────────────
+function setRefreshState(loading) {
+  refreshBtn.disabled = loading;
+  if (loading) {
+    refreshBtn.classList.add('spinning');
+    refreshBtn.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Loading…`;
+  } else {
+    refreshBtn.classList.remove('spinning');
+    refreshBtn.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh`;
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(type, message) {
+  const tc   = document.getElementById('toast-container');
+  const icon = type === 'success'
+    ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`
+    : `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `${icon} ${escapeHtml(message)}`;
+  tc.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('out');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// ── ESCAPE HTML ───────────────────────────────────────
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+// ── INIT ──────────────────────────────────────────────
+loadApplicants();
+</script>
+</body>
+</html>

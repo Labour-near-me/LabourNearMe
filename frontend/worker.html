@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Worker Registration — LabourNearMe</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:     #003580;
+  --navy-dk:  #002060;
+  --accent:   #0066CC;
+  --accent-lt:#E8F2FC;
+  --saffron:  #FF6600;
+  --saffron-lt:#FFF0E6;
+  --green:    #138808;
+  --green-lt: #E6F4E6;
+  --surf:     #F0F4FA;
+  --surf2:    #E8EEF6;
+  --white:    #FFFFFF;
+  --text:     #1A2433;
+  --text2:    #2C3E55;
+  --muted:    #5A6475;
+  --border:   #D0DAE8;
+  --border2:  #B8C8DC;
+  --shadow:   rgba(0,53,128,.10);
+  --shadow-md:rgba(0,53,128,.16);
+  --red:      #DC2626;
+  --red-lt:   #FEF2F2;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);background:var(--surf);
+  overflow-x:hidden;font-size:16px;line-height:1.6;min-height:100vh;
+}
+
+/* ── NAV ─────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;width:100%;z-index:100;
+  background:var(--navy);box-shadow:0 2px 16px rgba(0,0,0,.18);
+}
+.ni{
+  max-width:1280px;margin:0 auto;padding:0 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;height:72px;
+}
+.nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.li-box{
+  background:var(--saffron);padding:8px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,102,0,.35);
+}
+.lt h1{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.lt p{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.02em}
+.nav-back{
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.8);text-decoration:none;font-weight:600;font-size:.9rem;
+  padding:.45rem .9rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);transition:all .2s;
+}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.1)}
+
+/* ── GOV STRIP ───────────────────────────────────────── */
+.gov-strip{
+  margin-top:72px;background:var(--accent-lt);border-bottom:2px solid var(--border2);
+  padding:.55rem 1.5rem;text-align:center;
+  font-size:.78rem;font-weight:600;color:var(--navy);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.01em;
+}
+
+/* ── PAGE LAYOUT ─────────────────────────────────────── */
+.page{
+  max-width:1100px;margin:0 auto;padding:3rem 1.5rem 5rem;
+  display:grid;grid-template-columns:1fr 1.15fr;gap:3rem;align-items:start;
+}
+
+/* ── LEFT PANEL ──────────────────────────────────────── */
+.left-panel{position:sticky;top:5rem}
+.page-badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.35rem .9rem;background:var(--accent-lt);color:var(--accent);
+  font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;border:1.5px solid var(--border2);margin-bottom:1.25rem;
+}
+.left-panel h2{
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:var(--text);
+  line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem;
+}
+.left-panel h2 .acc{color:var(--accent)}
+.left-panel h2 .saf{color:var(--saffron)}
+.left-panel .desc{color:var(--muted);font-size:.97rem;line-height:1.75;margin-bottom:2rem}
+
+.benefits{display:flex;flex-direction:column;gap:.85rem;margin-bottom:2.5rem}
+.benefit{
+  display:flex;align-items:flex-start;gap:.85rem;
+  padding:1rem 1.1rem;background:#fff;border-radius:10px;
+  border:1.5px solid var(--border);box-shadow:0 2px 8px var(--shadow);
+}
+.benefit-icon{
+  width:40px;height:40px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.bi-blue{background:var(--accent)}.bi-orange{background:var(--saffron)}.bi-green{background:var(--green)}
+.benefit-text strong{display:block;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:.15rem}
+.benefit-text span{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+.mini-testi{
+  background:var(--navy);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;
+}
+.mini-testi::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;background:rgba(255,255,255,.04);border-radius:50%;
+}
+.mini-quote{font-family:'Noto Serif',serif;font-style:italic;font-size:.9rem;color:rgba(255,255,255,.85);line-height:1.7;margin-bottom:1rem}
+.mini-author{display:flex;align-items:center;gap:.65rem}
+.mini-av{width:36px;height:36px;border-radius:50%;background:var(--saffron);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0}
+.mini-nm{font-weight:700;font-size:.85rem;color:#fff}
+.mini-rl{font-size:.75rem;color:rgba(255,255,255,.55)}
+.mini-stars{display:flex;gap:2px;margin-bottom:.5rem}
+
+/* ── FORM CARD ───────────────────────────────────────── */
+.form-card{
+  background:#fff;border-radius:16px;box-shadow:0 12px 48px var(--shadow-md);
+  border:1.5px solid var(--border);overflow:hidden;animation:slideUp .5s ease both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.form-header{
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy));
+  padding:1.75rem 2rem;display:flex;align-items:center;gap:1rem;
+}
+.form-header-icon{
+  width:52px;height:52px;background:var(--saffron);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(255,102,0,.4);
+}
+.form-header-text h3{font-size:1.2rem;font-weight:800;color:#fff}
+.form-header-text p{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:.15rem}
+.form-step-indicator{
+  margin-left:auto;background:rgba(255,255,255,.12);border-radius:999px;
+  padding:.3rem .75rem;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.75);white-space:nowrap;
+}
+
+.form-body{padding:2rem}
+
+.progress-wrap{margin-bottom:1.75rem}
+.progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}
+.progress-label span:first-child{font-size:.78rem;font-weight:700;color:var(--muted)}
+.progress-label span:last-child{font-size:.78rem;font-weight:800;color:var(--accent)}
+.progress-track{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--saffron));border-radius:999px;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.field-group{margin-bottom:1.25rem}
+.field-label{display:flex;align-items:center;gap:.4rem;font-size:.83rem;font-weight:700;color:var(--text2);margin-bottom:.45rem}
+.field-label .req{color:var(--red);margin-left:.1rem}
+.field-label .opt-tag{font-size:.65rem;font-weight:700;padding:.15rem .45rem;background:var(--green-lt);color:var(--green);border-radius:4px;margin-left:.25rem}
+
+input,select,textarea{
+  width:100%;padding:.75rem 1rem;border:2px solid var(--border);border-radius:8px;
+  font-family:'Noto Sans',sans-serif;font-size:.92rem;color:var(--text);
+  background:#fff;transition:all .2s;outline:none;
+}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,102,204,.12)}
+input.error,select.error,textarea.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.1)}
+input.valid{border-color:var(--green)}
+
+.field-hint{font-size:.74rem;color:var(--muted);margin-top:.35rem}
+.field-error{font-size:.74rem;color:var(--red);margin-top:.35rem;display:none}
+.field-error.show{display:block}
+
+.skills-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.65rem}
+.skill-chip{
+  display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:999px;
+  background:var(--accent-lt);border:1.5px solid var(--border2);
+  font-size:.76rem;font-weight:700;color:var(--accent);animation:chipIn .2s ease both;
+}
+@keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.skill-chip button{background:none;border:none;cursor:pointer;padding:0;color:var(--muted);display:flex;line-height:1;font-size:1rem;transition:color .15s}
+.skill-chip button:hover{color:var(--red)}
+
+.skill-suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
+.skill-sugg{
+  padding:.25rem .65rem;border-radius:6px;background:var(--surf);border:1.5px solid var(--border);
+  font-size:.74rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.skill-sugg:hover{background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+
+.exp-options{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.1rem}
+.exp-opt{
+  flex:1;min-width:80px;padding:.65rem .5rem;border-radius:8px;
+  border:2px solid var(--border);background:#fff;cursor:pointer;text-align:center;transition:all .2s;
+}
+.exp-opt:hover{border-color:var(--accent);background:var(--accent-lt)}
+.exp-opt.selected{border-color:var(--accent);background:var(--accent-lt)}
+.exp-opt span{display:block;font-size:.78rem;font-weight:700;color:var(--text2)}
+.exp-opt small{font-size:.68rem;color:var(--muted)}
+
+.form-divider{height:1px;background:var(--border);margin:1.5rem 0;position:relative}
+.form-divider span{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#fff;padding:0 .75rem;font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.05em;
+}
+
+.avail-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:var(--surf);border-radius:8px;border:1.5px solid var(--border)}
+.avail-label{font-size:.88rem;font-weight:600;color:var(--text2)}
+.toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;cursor:pointer;background:var(--border2);border-radius:999px;transition:.3s}
+.slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked + .slider{background:var(--green)}
+.toggle input:checked + .slider::before{transform:translateX(22px)}
+
+.submit-btn{
+  width:100%;padding:1rem 1.5rem;background:var(--saffron);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:1.05rem;font-weight:800;
+  border:none;border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  transition:all .3s;box-shadow:0 4px 16px rgba(255,102,0,.35);margin-top:1.75rem;
+  position:relative;overflow:hidden;
+}
+.submit-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .3s ease}
+.submit-btn:hover::before{transform:translateX(0)}
+.submit-btn:hover{background:#e55a00;box-shadow:0 6px 24px rgba(255,102,0,.45);transform:translateY(-2px)}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.submit-btn .spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.terms-row{display:flex;align-items:flex-start;gap:.65rem;margin-top:1rem;padding:.75rem 1rem;background:var(--surf);border-radius:8px}
+.terms-row input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent);margin-top:2px}
+.terms-row label{font-size:.8rem;color:var(--muted);line-height:1.5}
+.terms-row a{color:var(--accent);font-weight:600;text-decoration:none}
+.terms-row a:hover{text-decoration:underline}
+
+.error-banner{
+  display:none;padding:.85rem 1rem;background:var(--red-lt);border:1.5px solid #fecaca;
+  border-radius:8px;margin-bottom:1.25rem;
+  align-items:center;gap:.65rem;font-size:.85rem;font-weight:600;color:var(--red);
+}
+.error-banner.show{display:flex}
+
+/* ── SUCCESS ─────────────────────────────────────────── */
+.success-overlay{display:none;padding:3rem 2rem;text-align:center}
+.success-overlay.show{display:block}
+.success-circle{
+  width:88px;height:88px;border-radius:50%;background:var(--green);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;
+  box-shadow:0 6px 24px rgba(19,136,8,.35);animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.success-overlay h3{font-size:1.5rem;font-weight:800;color:var(--text);margin-bottom:.5rem}
+.success-overlay p{color:var(--muted);font-size:.95rem;margin-bottom:.35rem}
+.success-id{
+  display:inline-block;margin:1rem 0 1.5rem;padding:.45rem 1.1rem;border-radius:8px;
+  background:var(--green-lt);border:1.5px solid #b8dfc0;font-weight:700;color:var(--green);font-size:.9rem;
+}
+.success-actions{display:flex;flex-direction:column;gap:.75rem}
+.btn-find-jobs{
+  padding:.85rem 1.5rem;background:var(--navy);color:#fff;font-weight:800;
+  border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans',sans-serif;font-size:.95rem;transition:all .25s;
+}
+.btn-find-jobs:hover{background:var(--navy-dk);box-shadow:0 4px 16px var(--shadow-md)}
+.btn-register-another{
+  padding:.75rem 1.5rem;background:transparent;color:var(--muted);font-weight:600;
+  border:2px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Noto Sans',sans-serif;font-size:.9rem;transition:all .25s;
+}
+.btn-register-another:hover{border-color:var(--border2);color:var(--text)}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
+.fbot-p{color:rgba(255,255,255,.4);font-size:.8rem}
+.fbot-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.55);text-decoration:none;font-size:.82rem;margin-top:.4rem;transition:color .2s}
+.fbot-back:hover{color:rgba(255,255,255,.85)}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:900px){
+  .page{grid-template-columns:1fr;gap:2rem}
+  .left-panel{position:static}
+  .mini-testi{display:none}
+}
+@media(max-width:560px){
+  .field-row{grid-template-columns:1fr}
+  .form-body{padding:1.5rem}
+  .form-header{padding:1.25rem 1.5rem}
+  .exp-opt{min-width:calc(50% - .325rem)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="ni">
+    <a href="index.html" class="nl">
+      <div class="li-box">
+        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="lt">
+        <h1>LabourNearMe</h1>
+        <p>Shramik Setu · श्रमिक सेतु</p>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Home
+    </a>
+  </div>
+</nav>
+
+<!-- GOV STRIP -->
+<div class="gov-strip">
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  Aadhaar-Verified · Free Registration · No Commission Cuts
+</div>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="page-badge">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Worker Registration
+    </div>
+    <h2>
+      Start Finding<br>
+      <span class="acc">Jobs Near</span> <span class="saf">You</span>
+    </h2>
+    <p class="desc">Join over 10,000 workers across Bharat already earning through LabourNearMe. Free to register. No middlemen.</p>
+
+    <div class="benefits">
+      <div class="benefit">
+        <div class="benefit-icon bi-blue">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Get Matched Instantly</strong>
+          <span>Our algorithm finds the best jobs near you within minutes of registration</span>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon bi-orange">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Verified &amp; Trusted</strong>
+          <span>Your Aadhaar-linked badge builds trust with employers and secures better pay</span>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="benefit-icon bi-green">
+          <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="benefit-text">
+          <strong>Jobs in Your Area</strong>
+          <span>Only see jobs near your location — no long commutes, no wasted time</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mini-testi">
+      <div class="mini-stars" id="mini-stars"></div>
+      <p class="mini-quote">"I registered in the morning and had my first job confirmed by noon. The best thing I did for my work life."</p>
+      <div class="mini-author">
+        <div class="mini-av">R</div>
+        <div>
+          <div class="mini-nm">Ramu Yadav</div>
+          <div class="mini-rl">Plumber · Lucknow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <div class="form-header">
+      <div class="form-header-icon">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="form-header-text">
+        <h3>Worker Registration</h3>
+        <p>Fill your details to get started — takes 2 minutes</p>
+      </div>
+      <div class="form-step-indicator">Step 1 of 1</div>
+    </div>
+
+    <div class="form-body" id="form-body">
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Profile Completion</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Error banner -->
+      <div class="error-banner" id="error-banner">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="error-msg">Something went wrong. Please try again.</span>
+      </div>
+
+      <!-- Name + Phone -->
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="name">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full Name <span class="req">*</span>
+          </label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" autocomplete="name"/>
+          <div class="field-error" id="name-err">Please enter your full name</div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="phone">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.09h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.94-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Phone Number <span class="req">*</span>
+          </label>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210" maxlength="15" autocomplete="tel"/>
+          <div class="field-error" id="phone-err">Please enter your phone number</div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="field-group">
+        <label class="field-label" for="skills-input">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Skills <span class="req">*</span>
+        </label>
+        <input type="text" id="skills-input" placeholder="Type a skill and press Enter (e.g. Carpenter)"/>
+        <div class="field-error" id="skills-err">Please add at least one skill</div>
+        <div class="skills-chips" id="skills-chips"></div>
+        <p class="field-hint">Press <strong>Enter</strong> or <strong>comma</strong> to add · Click chip ×  to remove</p>
+        <div style="margin-top:.65rem">
+          <p class="field-hint" style="margin-bottom:.4rem">Quick add common skills:</p>
+          <div class="skill-suggestions" id="skill-suggestions">
+            <button class="skill-sugg" type="button">Carpenter</button>
+            <button class="skill-sugg" type="button">Painter</button>
+            <button class="skill-sugg" type="button">Plumber</button>
+            <button class="skill-sugg" type="button">Electrician</button>
+            <button class="skill-sugg" type="button">Mason</button>
+            <button class="skill-sugg" type="button">Driver</button>
+            <button class="skill-sugg" type="button">Helper</button>
+            <button class="skill-sugg" type="button">Welder</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="field-group">
+        <label class="field-label" for="location">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Location <span class="req">*</span>
+        </label>
+        <input type="text" id="location" name="location" placeholder="Enter your city or area" autocomplete="address-level2"/>
+        <div class="field-hint">Enter your city, area, or neighbourhood</div>
+        <div class="field-error" id="location-err">Please enter your location</div>
+      </div>
+
+      <div class="form-divider"><span>OPTIONAL DETAILS</span></div>
+
+      <!-- Experience -->
+      <div class="field-group">
+        <label class="field-label">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Experience <span class="opt-tag">Optional</span>
+        </label>
+        <div class="exp-options" id="exp-options">
+          <div class="exp-opt" data-val="fresher"><span>🌱</span><span>Fresher</span><small>0–6 months</small></div>
+          <div class="exp-opt" data-val="1-2 years"><span>🔧</span><span>1–2 yrs</span><small>Growing</small></div>
+          <div class="exp-opt" data-val="3-5 years"><span>⚡</span><span>3–5 yrs</span><small>Skilled</small></div>
+          <div class="exp-opt" data-val="5+ years"><span>🏆</span><span>5+ yrs</span><small>Expert</small></div>
+        </div>
+      </div>
+
+      <!-- Availability -->
+      <div class="field-group">
+        <label class="field-label">Availability</label>
+        <div class="avail-row">
+          <span class="avail-label">Available for work right now</span>
+          <label class="toggle">
+            <input type="checkbox" id="available" checked/>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <label for="terms">
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm that the information provided is accurate.
+        </label>
+      </div>
+
+      <!-- Submit -->
+      <button class="submit-btn" id="submit-btn" type="button" onclick="handleRegister()">
+        <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span id="btn-text">Register as Worker</span>
+        <div class="spinner" id="btn-spinner"></div>
+      </button>
+
+    </div><!-- /form-body -->
+
+    <!-- SUCCESS -->
+    <div class="success-overlay" id="success-overlay">
+      <div class="success-circle">
+        <svg width="40" height="40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>Registration Successful! 🎉</h3>
+      <p>Welcome to LabourNearMe, <strong id="success-name"></strong>!</p>
+      <p style="font-size:.85rem;margin-top:.25rem">Your profile is now live. Employers near you can find you.</p>
+      <div class="success-id" id="success-id"></div>
+      <div class="success-actions">
+        <button class="btn-find-jobs" onclick="goToJobs()">Browse Jobs Near Me →</button>
+        <button class="btn-register-another" onclick="resetForm()">Register Another Worker</button>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <a href="index.html" class="fbot-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back to Homepage
+  </a>
+</footer>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────
+const BASE_URL = 'https://labournearme.onrender.com';
+
+// ── STATE ────────────────────────────────────────────
+let skills = [];
+let experience = '';
+
+// ── MINI STARS ───────────────────────────────────────
+const starSVG = `<svg width="16" height="16" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
+document.getElementById('mini-stars').innerHTML = starSVG.repeat(5);
+
+// ── PROGRESS ─────────────────────────────────────────
+function updateProgress() {
+  const requiredFields = ['name', 'phone', 'location'];
+  let filled = requiredFields.filter(id => document.getElementById(id).value.trim()).length;
+  if (skills.length > 0) filled++;
+  const pct = Math.round((filled / 4) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+['name', 'phone', 'location'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateProgress);
+});
+
+// ── SKILLS ───────────────────────────────────────────
+const skillsInput = document.getElementById('skills-input');
+
+function addSkill(val) {
+  const skill = val.trim();
+  if (!skill || skills.includes(skill)) return;
+  skills.push(skill);
+  renderChips();
+  updateProgress();
+}
+
+function removeSkill(skill) {
+  skills = skills.filter(s => s !== skill);
+  renderChips();
+  updateProgress();
+}
+
+function renderChips() {
+  document.getElementById('skills-chips').innerHTML = skills.map(s =>
+    `<div class="skill-chip">${s}<button type="button" onclick="removeSkill('${s.replace(/'/g,"\\'")}')">×</button></div>`
+  ).join('');
+}
+
+skillsInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    addSkill(skillsInput.value.replace(',', ''));
+    skillsInput.value = '';
+  }
+});
+skillsInput.addEventListener('blur', () => {
+  if (skillsInput.value.trim()) { addSkill(skillsInput.value); skillsInput.value = ''; }
+});
+
+document.querySelectorAll('.skill-sugg').forEach(btn => {
+  btn.addEventListener('click', () => addSkill(btn.textContent));
+});
+
+// ── EXPERIENCE ────────────────────────────────────────
+document.querySelectorAll('.exp-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.exp-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    experience = opt.dataset.val;
+  });
+});
+
+// ── VALIDATION ────────────────────────────────────────
+function showErr(fieldId, errId) {
+  document.getElementById(fieldId).classList.add('error');
+  document.getElementById(errId).classList.add('show');
+}
+function clearErr(fieldId, errId) {
+  document.getElementById(fieldId).classList.remove('error');
+  document.getElementById(errId).classList.remove('show');
+}
+
+['name', 'phone', 'location'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => clearErr(id, id + '-err'));
+});
+
+function validate() {
+  let ok = true;
+  if (!document.getElementById('name').value.trim())     { showErr('name', 'name-err');         ok = false; }
+  if (!document.getElementById('phone').value.trim())    { showErr('phone', 'phone-err');        ok = false; }
+  if (!document.getElementById('location').value.trim()) { showErr('location', 'location-err'); ok = false; }
+  if (skills.length === 0) {
+    document.getElementById('skills-input').classList.add('error');
+    document.getElementById('skills-err').classList.add('show');
+    ok = false;
+  } else {
+    document.getElementById('skills-input').classList.remove('error');
+    document.getElementById('skills-err').classList.remove('show');
+  }
+  return ok;
+}
+
+// ── SUBMIT ────────────────────────────────────────────
+async function handleRegister() {
+  if (!validate()) return;
+
+  if (!document.getElementById('terms').checked) {
+    showBanner('Please accept the Terms of Service to continue.');
+    return;
+  }
+
+  const payload = {
+    full_name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    skills: skills,
+    location: document.getElementById('location').value.trim(),
+    experience_years:
+      experience === 'fresher'   ? 0 :
+      experience === '1-2 years' ? 2 :
+      experience === '3-5 years' ? 4 :
+      experience === '5+ years'  ? 6 : 0,
+    expected_wage: 500,
+    location_lat: 22.7196,
+    location_lng: 75.8577,
+    category: skills[0] || "General",
+    available: document.getElementById('available').checked,
+  };
+
+  setLoading(true);
+  hideBanner();
+
+  const controller = new AbortController();
+  const timeoutId  = setTimeout(() => controller.abort(), 40000);
+
+  try {
+    const res = await fetch(`${BASE_URL}/workers/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    let data = {};
+    try { data = await res.json(); } catch (_) {}
+
+    if (!res.ok) {
+      const detail = data.detail || data.message || `Server error (${res.status})`;
+      throw new Error(typeof detail === 'object' ? JSON.stringify(detail) : detail);
+    }
+
+    // ✅ Store worker_id in localStorage for worker_jobs.html
+    const workerId = data.id || data.worker_id || null;
+    if (workerId) {
+      localStorage.setItem('worker_id', workerId);
+    }
+
+    setLoading(false);
+    showSuccess(payload.full_name, workerId);
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+    const msg = err.name === 'AbortError'
+      ? 'Server is waking up (Render cold start). Try again in a few seconds.'
+      : (err.message || 'Something went wrong.');
+    showBanner(msg);
+    setLoading(false);
+  }
+}
+
+
+// ── UI HELPERS ────────────────────────────────────────
+function setLoading(on) {
+  const btn = document.getElementById('submit-btn');
+  document.getElementById('btn-text').textContent = on ? 'Registering...' : 'Register as Worker';
+  document.getElementById('btn-spinner').style.display = on ? 'block' : 'none';
+  btn.disabled = on;
+}
+
+function showBanner(msg) {
+  const b = document.getElementById('error-banner');
+  document.getElementById('error-msg').textContent = msg;
+  b.classList.add('show');
+  b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideBanner() {
+  document.getElementById('error-banner').classList.remove('show');
+}
+
+function resetForm() {
+  ['name', 'phone', 'location'].forEach(id => document.getElementById(id).value = '');
+  skills = []; experience = '';
+  renderChips();
+  document.querySelectorAll('.exp-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('available').checked = true;
+  document.getElementById('terms').checked = false;
+  document.getElementById('success-id').style.display = '';
+  updateProgress();
+  hideBanner();
+  setLoading(false);
+  document.getElementById('success-overlay').classList.remove('show');
+  document.getElementById('form-body').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+let currentWorkerId = null; // global
+
+function showSuccess(name, id) {
+  document.getElementById('form-body').style.display = 'none';
+  document.getElementById('success-name').textContent = name;
+
+  const idEl = document.getElementById('success-id');
+
+  if (id) {
+    idEl.textContent = `Worker ID: ${id}`;
+    currentWorkerId = id; // 🔥 store it
+  } else {
+    idEl.style.display = 'none';
+  }
+
+  const overlay = document.getElementById('success-overlay');
+  overlay.classList.add('show');
+}
+function goToJobs() {
+  if (!currentWorkerId) {
+    alert("Worker ID missing!");
+    return;
+  }
+
+  // pass id in URL
+  window.location.href = `worker_jobs.html?worker_id=${currentWorkerId}`;
+}
+</script>
+</body>
+</html>

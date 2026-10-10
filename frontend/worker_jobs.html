@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jobs Near You — LabourNearMe</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────────────────
+   LabourNearMe — worker_jobs.html
+   Palette mirrors project: navy, saffron, green, surf
+───────────────────────────────────────────────────── */
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --navy:      #003580;
+  --navy-dk:   #002060;
+  --accent:    #0066CC;
+  --accent-lt: #E8F2FC;
+  --saffron:   #FF6600;
+  --saffron-lt:#FFF0E6;
+  --green:     #138808;
+  --green-lt:  #E6F4E6;
+  --surf:      #F0F4FA;
+  --surf2:     #E8EEF6;
+  --white:     #FFFFFF;
+  --text:      #1A2433;
+  --text2:     #2C3E55;
+  --muted:     #5A6475;
+  --border:    #D0DAE8;
+  --border2:   #B8C8DC;
+  --shadow:    rgba(0,53,128,.10);
+  --shadow-md: rgba(0,53,128,.16);
+  --red:       #DC2626;
+  --red-lt:    #FEF2F2;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--text);background:var(--surf);
+  overflow-x:hidden;font-size:16px;line-height:1.6;min-height:100vh;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;width:100%;z-index:100;
+  background:var(--navy);box-shadow:0 2px 16px rgba(0,0,0,.18);
+}
+.ni{
+  max-width:1280px;margin:0 auto;padding:0 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;height:72px;
+}
+.nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.li-box{
+  background:var(--saffron);padding:8px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,102,0,.35);
+}
+.lt h1{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.lt p{font-size:.62rem;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.02em}
+.nav-back{
+  display:flex;align-items:center;gap:.5rem;
+  color:rgba(255,255,255,.8);text-decoration:none;font-weight:600;font-size:.88rem;
+  padding:.4rem .85rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);transition:all .2s;
+}
+.nav-back:hover{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.1)}
+
+/* ── GOV STRIP ─────────────────────────────────────── */
+.gov-strip{
+  margin-top:72px;background:var(--accent-lt);border-bottom:2px solid var(--border2);
+  padding:.5rem 1.5rem;text-align:center;
+  font-size:.77rem;font-weight:600;color:var(--navy);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;letter-spacing:.01em;
+}
+
+/* ── PAGE WRAPPER ──────────────────────────────────── */
+.page{
+  max-width:1200px;margin:0 auto;padding:2.5rem 1.5rem 5rem;
+}
+
+/* ── PAGE HEADER ───────────────────────────────────── */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:1.25rem;margin-bottom:2.5rem;
+}
+.header-left{}
+.header-badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.3rem .85rem;background:var(--accent-lt);color:var(--accent);
+  font-weight:800;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:999px;border:1.5px solid var(--border2);margin-bottom:.75rem;
+}
+.page-title{
+  font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;
+  color:var(--text);letter-spacing:-.025em;line-height:1.15;
+}
+.page-title span{color:var(--accent)}
+.page-subtitle{
+  font-size:.95rem;color:var(--muted);margin-top:.4rem;line-height:1.6;
+}
+
+/* Refresh button */
+.refresh-btn{
+  display:inline-flex;align-items:center;gap:.55rem;
+  padding:.7rem 1.35rem;background:var(--saffron);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:.9rem;font-weight:700;
+  border:none;border-radius:8px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,102,0,.3);
+  transition:all .25s;flex-shrink:0;align-self:flex-end;
+}
+.refresh-btn:hover{background:#e55a00;box-shadow:0 6px 22px rgba(255,102,0,.4);transform:translateY(-2px)}
+.refresh-btn:active{transform:translateY(0)}
+.refresh-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.refresh-btn svg{transition:transform .5s}
+.refresh-btn.spinning svg{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── STATES CONTAINER ──────────────────────────────── */
+#state-container{min-height:320px}
+
+/* ── LOADING STATE ─────────────────────────────────── */
+.loading-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1.5rem;animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.loading-ring{
+  width:64px;height:64px;border-radius:50%;
+  border:5px solid var(--border2);
+  border-top-color:var(--accent);
+  animation:spin .9s linear infinite;
+}
+.loading-state p{
+  font-size:1rem;font-weight:600;color:var(--muted);
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ── ERROR STATE ───────────────────────────────────── */
+.error-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1rem;animation:fadeIn .3s ease;text-align:center;
+}
+.error-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--red-lt);border:2px solid #fecaca;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:.5rem;
+}
+.error-state h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+.error-state p{font-size:.9rem;color:var(--muted);max-width:32rem;line-height:1.6}
+.retry-link{
+  display:inline-flex;align-items:center;gap:.4rem;
+  margin-top:.5rem;padding:.55rem 1.2rem;
+  background:var(--red);color:#fff;font-weight:700;font-size:.86rem;
+  border:none;border-radius:7px;cursor:pointer;font-family:'Noto Sans',sans-serif;
+  transition:all .2s;
+}
+.retry-link:hover{background:#b91c1c}
+
+/* ── EMPTY STATE ───────────────────────────────────── */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:5rem 2rem;gap:1rem;animation:fadeIn .3s ease;text-align:center;
+}
+.empty-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--surf2);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:.5rem;
+}
+.empty-state h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+.empty-state p{font-size:.9rem;color:var(--muted);max-width:28rem;line-height:1.6}
+
+/* ── RESULTS HEADER ────────────────────────────────── */
+.results-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;animation:fadeIn .3s ease;
+}
+.results-count{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem 1rem;background:#fff;border-radius:999px;
+  border:1.5px solid var(--border);font-size:.82rem;font-weight:700;color:var(--text2);
+  box-shadow:0 2px 8px var(--shadow);
+}
+.count-dot{
+  width:8px;height:8px;background:var(--green);border-radius:50%;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.results-hint{font-size:.78rem;color:var(--muted)}
+
+/* ── JOBS GRID ─────────────────────────────────────── */
+.jobs-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:1.4rem;animation:fadeIn .4s ease;
+}
+
+/* ── JOB CARD ──────────────────────────────────────── */
+.job-card{
+  background:#fff;border-radius:14px;
+  border:1.5px solid var(--border);
+  box-shadow:0 3px 14px var(--shadow);
+  overflow:hidden;
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  animation:cardIn .4s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.job-card:hover{
+  border-color:var(--accent);
+  box-shadow:0 10px 36px var(--shadow-md);
+  transform:translateY(-4px);
+}
+
+/* Card top accent strip */
+.card-accent{height:4px;background:linear-gradient(90deg,var(--accent),var(--navy))}
+
+.card-body{padding:1.4rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.9rem}
+
+/* Title row */
+.card-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+.card-title{
+  font-size:1.05rem;font-weight:800;color:var(--text);
+  line-height:1.25;letter-spacing:-.01em;
+}
+.card-badge{
+  flex-shrink:0;padding:.25rem .65rem;border-radius:999px;
+  background:var(--saffron-lt);color:var(--saffron);
+  font-size:.68rem;font-weight:800;letter-spacing:.04em;
+  border:1.5px solid #ffcba4;white-space:nowrap;
+}
+
+/* Description */
+.card-desc{
+  font-size:.875rem;color:var(--muted);line-height:1.65;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+/* Budget */
+.card-budget{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.5rem .9rem;border-radius:8px;
+  background:var(--green-lt);border:1.5px solid #b8dfc0;
+  width:fit-content;
+}
+.budget-symbol{font-size:.78rem;font-weight:700;color:var(--green)}
+.budget-amount{font-size:1.3rem;font-weight:900;color:var(--green);letter-spacing:-.02em;line-height:1}
+.budget-label{font-size:.72rem;font-weight:600;color:var(--green);opacity:.75;margin-top:2px}
+
+/* Skills */
+.card-skills-section{}
+.skills-label{font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem}
+.skills-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.skill-tag{
+  padding:.22rem .65rem;border-radius:6px;
+  background:var(--accent-lt);border:1.5px solid var(--border2);
+  font-size:.74rem;font-weight:700;color:var(--accent);
+}
+
+/* Location */
+.card-location{
+  display:flex;align-items:center;gap:.45rem;
+  padding:.6rem .85rem;border-radius:8px;
+  background:var(--surf);border:1.5px solid var(--border);
+  margin-top:auto;
+}
+.card-location svg{flex-shrink:0;color:var(--muted)}
+.loc-text{font-size:.78rem;font-weight:600;color:var(--muted);font-family:'Noto Serif',serif;font-style:italic}
+
+/* Card footer */
+.card-footer{
+  padding:.85rem 1.5rem;
+  border-top:1.5px solid var(--border);
+  background:var(--surf);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:.75rem;
+}
+.apply-btn{
+  flex:1;padding:.6rem 1rem;background:var(--navy);color:#fff;
+  font-family:'Noto Sans',sans-serif;font-size:.84rem;font-weight:700;
+  border:none;border-radius:7px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+}
+.apply-btn:hover{background:var(--navy-dk);box-shadow:0 3px 12px var(--shadow-md)}
+.job-id{font-size:.68rem;color:var(--muted);font-weight:600}
+
+/* ── FOOTER ────────────────────────────────────────── */
+footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
+.fbot-p{color:rgba(255,255,255,.4);font-size:.78rem}
+.fbot-back{
+  display:inline-flex;align-items:center;gap:.4rem;
+  color:rgba(255,255,255,.5);text-decoration:none;font-size:.8rem;
+  margin-top:.4rem;transition:color .2s;
+}
+.fbot-back:hover{color:rgba(255,255,255,.85)}
+
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ── RESPONSIVE ────────────────────────────────────── */
+@media(max-width:640px){
+  .page-header{flex-direction:column;align-items:stretch}
+  .refresh-btn{align-self:stretch;justify-content:center}
+  .jobs-grid{grid-template-columns:1fr}
+  .page{padding:2rem 1rem 4rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="ni">
+    <a href="index.html" class="nl">
+      <div class="li-box">
+        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="lt">
+        <h1>LabourNearMe</h1>
+        <p>Shramik Setu · श्रमिक सेतु</p>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Back to Home
+    </a>
+  </div>
+</nav>
+
+<!-- GOV STRIP -->
+<div class="gov-strip">
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+  Personalised Job Recommendations · Based on Your Skills &amp; Location · Free &amp; Verified
+</div>
+
+<!-- PAGE -->
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-badge">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        Recommended for You
+      </div>
+      <h2 class="page-title">Jobs <span>Near You</span></h2>
+      <p class="page-subtitle">Matched to your skills and location — updated in real time.</p>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" onclick="fetchJobs()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh Jobs
+    </button>
+  </div>
+
+  <!-- STATE CONTAINER — loading / error / empty / jobs rendered here -->
+  <div id="state-container"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <a href="index.html" class="fbot-back">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back to Homepage
+  </a>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────
+// LabourNearMe — worker_jobs.html
+// Fetches personalised job recommendations for a worker.
+// ─────────────────────────────────────────────────────
+
+const BASE_URL = 'https://labournearme.onrender.com';
+const container   = document.getElementById('state-container');
+const refreshBtn  = document.getElementById('refresh-btn');
+
+// ── ICON HELPERS ──────────────────────────────────────
+const locationIconSVG = `
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>`;
+
+const arrowIconSVG = `
+  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"
+       stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+    <polyline points="12 5 19 12 12 19"/>
+  </svg>`;
+
+// ── showLoading() ─────────────────────────────────────
+// Renders an animated spinner while data is being fetched.
+function showLoading() {
+  container.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-ring"></div>
+      <p>Finding jobs near you…</p>
+    </div>`;
+}
+
+// ── showError(message) ────────────────────────────────
+// Renders a friendly error panel with an optional retry button.
+function showError(message) {
+  container.innerHTML = `
+    <div class="error-state">
+      <div class="error-icon">
+        <svg width="32" height="32" fill="none" stroke="#DC2626" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3>Couldn't Load Jobs</h3>
+      <p>${escapeHtml(message)}</p>
+      <button class="retry-link" onclick="fetchJobs()">
+        ${arrowIconSVG} Try Again
+      </button>
+    </div>`;
+}
+
+// ── showNoJobs() ──────────────────────────────────────
+// Renders an empty-state illustration when no jobs are matched.
+function showNoJobs() {
+  container.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="36" height="36" fill="none" stroke="var(--border2)" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+        </svg>
+      </div>
+      <h3>No Jobs Available Right Now</h3>
+      <p>We couldn't find any job matches near you at the moment. Check back soon — new jobs are posted every day!</p>
+    </div>`;
+}
+
+// ── renderJobs(jobs) ──────────────────────────────────
+// Builds and injects the results count bar + job cards grid.
+function renderJobs(jobs) {
+  const count = jobs.length;
+
+  // Stagger animation delays for cards
+  const cardsHTML = jobs.map((job, i) => buildJobCard(job, i)).join('');
+
+  container.innerHTML = `
+    <!-- Results meta bar -->
+    <div class="results-meta">
+      <div class="results-count">
+        <span class="count-dot"></span>
+        ${count} job${count !== 1 ? 's' : ''} found for you
+      </div>
+      <span class="results-hint">Sorted by relevance &amp; proximity</span>
+    </div>
+
+    <!-- Jobs grid -->
+    <div class="jobs-grid" id="jobs-grid">
+      ${cardsHTML}
+    </div>`;
+
+  // Apply staggered animation delays after insertion
+  document.querySelectorAll('.job-card').forEach((card, i) => {
+    card.style.animationDelay = `${i * 80}ms`;
+  });
+}
+
+// ── buildJobCard(job, index) ──────────────────────────
+// Returns the HTML string for a single job card.
+function buildJobCard(job, index) {
+  const title       = escapeHtml(job.title || 'Untitled Job');
+  const description = escapeHtml(job.description || 'No description provided.');
+  const wage        = job.wage ? `₹${Number(job.wage).toLocaleString('en-IN')}` : (job.budget ? `₹${Number(job.budget).toLocaleString('en-IN')}` : '—');
+  const jobId       = job.id || null;
+  const jobIdShort  = jobId ? `#${String(jobId).slice(0, 8).toUpperCase()}` : '';
+
+  // Skills: API may send strings or UUIDs; display as-is
+  const skills = Array.isArray(job.required_skills) ? job.required_skills : [];
+  const skillsHTML = skills.length > 0
+    ? skills.map(s => `<span class="skill-tag">${escapeHtml(String(s))}</span>`).join('')
+    : '<span class="skill-tag" style="color:var(--muted);border-color:var(--border)">Not specified</span>';
+
+  // Location: show formatted lat/lng
+  const lat = job.location_lat != null ? Number(job.location_lat).toFixed(4) : null;
+  const lng = job.location_lng != null ? Number(job.location_lng).toFixed(4) : null;
+  const locText = job.location_name || "Nearby Area";
+
+  return `
+    <div class="job-card">
+      <div class="card-accent"></div>
+      <div class="card-body">
+
+        <!-- Title + badge -->
+        <div class="card-title-row">
+          <h3 class="card-title">${title}</h3>
+          <span class="card-badge">OPEN</span>
+        </div>
+
+        <!-- Description -->
+        <p class="card-desc">${description}</p>
+
+        <!-- Budget -->
+        <div class="card-budget">
+          <span class="budget-symbol">₹</span>
+          <div>
+            <div class="budget-amount">${wage.replace('₹','')}</div>
+            <div class="budget-label">per day</div>
+          </div>
+        </div>
+
+        <!-- Required Skills -->
+        <div class="card-skills-section">
+          <p class="skills-label">Required Skills</p>
+          <div class="skills-tags">${skillsHTML}</div>
+        </div>
+
+        <!-- Location -->
+        <div class="card-location">
+          ${locationIconSVG}
+          <span class="loc-text">${escapeHtml(locText)}</span>
+        </div>
+
+      </div>
+
+      <!-- Card footer -->
+      <div class="card-footer">
+        <button class="apply-btn" id="apply-btn-${index}" onclick="handleApply('${escapeHtml(String(jobId || ''))}', '${escapeHtml(title)}', ${index})">
+          Apply Now ${arrowIconSVG}
+        </button>
+        ${jobIdShort ? `<span class="job-id" title="Job ID: ${escapeHtml(String(jobId))}">${jobIdShort}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+// ── handleApply(jobId, title, index) ─────────────────
+// POSTs an application to the backend and updates the button state.
+async function handleApply(jobId, title, index) {
+  if (!jobId) {
+    showToast('error', 'Job ID missing — cannot apply.');
+    return;
+  }
+
+  const workerId = localStorage.getItem('worker_id');
+  if (!workerId) {
+    showToast('error', 'Please register first — no worker ID found.');
+    return;
+  }
+
+  const btn = document.getElementById(`apply-btn-${index}`);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span style="opacity:.7">Applying…</span>`;
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/applications/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ worker_id: workerId, job_id: jobId })
+    });
+
+    if (!res.ok) {
+      let errMsg = `Failed (HTTP ${res.status})`;
+      try {
+        const errData = await res.json();
+        errMsg = errData.detail || errData.message || errMsg;
+      } catch (_) {}
+      throw new Error(typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg);
+    }
+
+    // Update button to "Applied" state permanently
+    if (btn) {
+      btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Applied!`;
+      btn.style.background = 'var(--green)';
+    }
+    showToast('success', `Applied for "${title}" successfully!`);
+
+  } catch (err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `Apply Now ${arrowIconSVG}`;
+    }
+    showToast('error', err.message || 'Apply failed. Please try again.');
+  }
+}
+
+// ── showToast(type, message) ──────────────────────────
+function showToast(type, message) {
+  let tc = document.getElementById('toast-container');
+  if (!tc) {
+    tc = document.createElement('div');
+    tc.id = 'toast-container';
+    tc.style.cssText = 'position:fixed;bottom:2rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:.65rem;pointer-events:none;';
+    document.body.appendChild(tc);
+  }
+  const colors = type === 'success'
+    ? 'background:var(--green-lt);color:var(--green);border:1.5px solid #b8dfc0;'
+    : 'background:var(--red-lt);color:var(--red);border:1.5px solid #fecaca;';
+  const toast = document.createElement('div');
+  toast.style.cssText = `${colors}display:flex;align-items:center;gap:.65rem;padding:.75rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.18);min-width:240px;max-width:340px;pointer-events:all;animation:toastIn .3s cubic-bezier(.34,1.56,.64,1) both;`;
+  toast.textContent = message;
+  tc.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .25s'; setTimeout(() => toast.remove(), 280); }, 3500);
+}
+
+// ── escapeHtml(str) ───────────────────────────────────
+// Prevents XSS by escaping unsafe HTML characters.
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ── setRefreshBtnState(loading) ───────────────────────
+// Toggles spinner animation + disabled state on refresh button.
+function setRefreshBtnState(loading) {
+  refreshBtn.disabled = loading;
+  if (loading) {
+    refreshBtn.classList.add('spinning');
+    refreshBtn.textContent = '';  // rebuild with SVG
+    refreshBtn.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refreshing…`;
+  } else {
+    refreshBtn.classList.remove('spinning');
+    refreshBtn.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+      </svg>
+      Refresh Jobs`;
+  }
+}
+
+function getLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      return resolve(null);
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        resolve({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        });
+      },
+      () => resolve(null)
+    );
+  });
+}
+
+// ── fetchJobs() ───────────────────────────────────────
+// Main fetch function. Reads worker_id from URL param OR localStorage,
+// calls the recommendations endpoint, and delegates to render helpers.
+async function fetchJobs() {
+  // 1. Try URL param first (set when coming from worker.html)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlWorkerId = urlParams.get('worker_id');
+  if (urlWorkerId) {
+    localStorage.setItem('worker_id', urlWorkerId); // persist for refresh
+  }
+
+  const workerId = urlWorkerId || localStorage.getItem('worker_id');
+
+  if (!workerId) {
+    showError('No worker ID found. Please register first via the Worker Registration page.');
+    return;
+  }
+
+  try {
+    showLoading();
+    setRefreshBtnState(true);
+
+    const res = await fetch(`${BASE_URL}/recommend/jobs/${workerId}`);
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch jobs (HTTP ${res.status})`);
+    }
+
+    const raw  = await res.json();
+
+    // Backend may return: plain array, { recommendations:[...] }, or a JSON-encoded string
+    let jobs = [];
+    if (typeof raw === 'string') {
+      try { jobs = JSON.parse(raw); } catch (_) {}
+    } else if (Array.isArray(raw)) {
+      jobs = raw;
+    } else {
+      jobs = raw.recommendations || raw.jobs || raw.results || [];
+    }
+
+    if (jobs.length === 0) {
+      showNoJobs();
+    } else {
+      renderJobs(jobs);
+    }
+
+  } catch (err) {
+    showError(err.message || 'Something went wrong. Please try again.');
+  } finally {
+    setRefreshBtnState(false);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────
+// Kick off on page load
+fetchJobs();
+</script>
+</body>
+</html>

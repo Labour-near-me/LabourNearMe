@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LabourNearMe — Find Work. Hire Fast.</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="ni">
+    <div class="nl">
+      <div class="li-box">
+        <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </div>
+      <div class="lt">
+        <h1>LabourNearMe</h1>
+        <p>Shramik Setu · श्रमिक सेतु</p>
+      </div>
+    </div>
+    <div class="nr">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#about">About</a>
+      <button class="btn-outline">Login</button>
+      <button class="btn-primary" onclick="location.href='worker.html'">Get Started</button>
+    </div>
+    <button class="ham" id="ham" aria-label="Open menu">
+      <svg id="hico" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="mm" id="mm">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#about">About</a>
+    <button class="btn-outline mm-btn">Login</button>
+    <button class="btn-primary mm-btn" onclick="location.href='worker.html'">Get Started</button>
+  </div>
+</nav>
+
+<!-- GOV NOTICE STRIP -->
+<div class="gov-strip">
+  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  A Digital India Initiative &nbsp;·&nbsp; Connecting Workers Across Bharat &nbsp;·&nbsp; सुरक्षित &nbsp;·&nbsp; विश्वसनीय &nbsp;·&nbsp; आसान
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-pattern"></div>
+  <div class="hi">
+    <div class="hero-text">
+      <div class="hbadge an d1">
+        <span><span class="pdot"></span>Trusted by 10,000+ Workers &amp; Employers</span>
+      </div>
+      <h2 class="an d1">
+        Find <span class="text-accent">Work</span> or<br>
+        <span class="text-saffron">Hire Workers</span><br>
+        Near You
+      </h2>
+      <p class="hero-desc an d2">India's trusted digital platform connecting daily-wage workers with local employers. Fast, transparent, and verified — for a dignified livelihood.</p>
+
+      <!-- ROLE SELECTION -->
+      <div class="role-cards an d2">
+        <button class="role-card role-worker" onclick="location.href='worker.html'">
+          <div class="role-icon">
+            <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="role-info">
+            <strong>Join as Worker</strong>
+            <span>Browse jobs near you &amp; get hired fast</span>
+          </div>
+          <svg class="role-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+        <button class="role-card role-employer" onclick="location.href='post-job.html'">
+          <div class="role-icon">
+            <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <div class="role-info">
+            <strong>Hire Workers</strong>
+            <span>Post a job &amp; find skilled workers today</span>
+          </div>
+          <svg class="role-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <div class="hsoc an d3">
+        <div class="avs">
+          <div class="av">A</div><div class="av">B</div><div class="av">C</div><div class="av">D</div>
+        </div>
+        <div class="ht">
+          <p>10,000+ Users Nationwide</p>
+          <div class="sr">
+            <svg width="13" height="13" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="13" height="13" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="13" height="13" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="13" height="13" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg width="13" height="13" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>4.8/5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Right Panel -->
+    <div class="hp an d4">
+      <div class="hcard">
+        <div class="hcard-header">
+          <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Workers Near You
+          <span class="live-badge">● LIVE</span>
+        </div>
+        <div class="wt wi">
+          <div class="ti ti-b"><svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <div class="tb"><h4>Rajesh — Carpenter</h4><p>2.3 km · ₹600/day</p><div class="ms2"><svg width="10" height="10" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>4.9 (120 jobs)</div></div>
+          <div class="tbadge tg"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        </div>
+        <div class="wt wv">
+          <div class="ti ti-o"><svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+          <div class="tb"><h4>Construction Helper</h4><p>1.5 km · ₹550/day</p><div class="ms2">Verified Employer</div></div>
+          <div class="tbadge tn">NEW</div>
+        </div>
+        <div class="wt wp">
+          <div class="ti ti-g"><svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <div class="tb"><h4>Priya — Painter</h4><p>3.1 km · ₹700/day</p><div class="ms2"><svg width="10" height="10" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>5.0 (85 jobs)</div></div>
+          <div class="tbadge tg"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        </div>
+        <div class="mbar">
+          <div class="mbl">
+            <div class="mic"><svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <div><p>Avg Match Time</p><p class="mn">12 mins</p></div>
+          </div>
+          <svg width="22" height="22" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <svg width="20" height="20" fill="none" stroke="var(--saffron)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Aadhaar-Verified Profiles</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="20" height="20" fill="none" stroke="var(--saffron)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>Encrypted &amp; Secure</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="20" height="20" fill="none" stroke="var(--saffron)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>24/7 Support</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="20" height="20" fill="none" stroke="var(--saffron)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>Pan-India Coverage</span>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-inner">
+    <div class="sc an d1">
+      <div class="siw siw-blue"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <p class="sn">10,000+</p><p class="sl">Active Workers</p>
+    </div>
+    <div class="sc an d2">
+      <div class="siw siw-orange"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+      <p class="sn">5,000+</p><p class="sl">Jobs Posted</p>
+    </div>
+    <div class="sc an d3">
+      <div class="siw siw-green"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <p class="sn">95%</p><p class="sl">Match Success</p>
+    </div>
+    <div class="sc an d4">
+      <div class="siw siw-amber"><svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <p class="sn">4.8/5</p><p class="sl">Average Rating</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="feats" id="features">
+  <div class="sh">
+    <div class="sh-label">Why LabourNearMe</div>
+    <h3>Built for Real India.<br><span class="text-accent">Designed with Trust.</span></h3>
+    <p>Accessible, fast, and transparent — because every worker deserves dignity and every employer deserves reliability.</p>
+  </div>
+  <div class="fg">
+    <div class="fc an d1">
+      <div class="fi fi1"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <h4>Location-Based Matching</h4>
+      <p>Find workers or jobs within your locality using intelligent geospatial matching that understands your neighbourhood.</p>
+    </div>
+    <div class="fc an d2">
+      <div class="fi fi2"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h4>Verified Profiles</h4>
+      <p>All workers and employers go through Aadhaar-based identity verification for your safety and complete peace of mind.</p>
+    </div>
+    <div class="fc an d3">
+      <div class="fi fi3"><svg width="24" height="24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <h4>Instant Hiring</h4>
+      <p>Post a job and get matched with qualified workers in minutes — no waiting, no middlemen, no commission cuts.</p>
+    </div>
+    <div class="fc an d4">
+      <div class="fi fi4"><svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <h4>Rating System</h4>
+      <p>Build trust through transparent reviews from real experiences on both sides of every hire, verified and tamper-proof.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="hiw" id="how-it-works">
+  <div class="hiwi">
+    <div class="sh">
+      <div class="sh-label">Simple Process</div>
+      <h3>How It <span class="text-accent">Works</span></h3>
+      <p>Three easy steps to transform your work life.</p>
+    </div>
+    <div class="hiwg">
+      <div class="hs an d1">
+        <div class="snum">1</div>
+        <svg class="sich" width="42" height="42" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <h4>Create Your Profile</h4>
+        <p>Sign up as a worker or employer in under 2 minutes with basic details and Aadhaar verification.</p>
+      </div>
+      <div class="hiw-connector">→</div>
+      <div class="hs an d2">
+        <div class="snum">2</div>
+        <svg class="sich" width="42" height="42" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <h4>Get Matched</h4>
+        <p>Our system finds best matches based on skills, location, and ratings automatically — within minutes.</p>
+      </div>
+      <div class="hiw-connector">→</div>
+      <div class="hs an d3">
+        <div class="snum">3</div>
+        <svg class="sich" width="42" height="42" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h4>Connect &amp; Work</h4>
+        <p>Chat, negotiate, and start working with verified professionals near you. No commission, full transparency.</p>
+      </div>
+    </div>
+    <div class="hiwcta">
+      <button class="btn-primary btn-lg-cta" onclick="location.href='worker.html'">
+        Start Your Journey
+        <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <div class="testi-i">
+    <div class="sh">
+      <div class="sh-label">Stories</div>
+      <h3>What People <span class="text-saffron">Say</span></h3>
+      <p>Real voices from workers and employers across India</p>
+    </div>
+    <div class="tcard">
+      <div class="tstars" id="tstars"></div>
+      <p class="tq" id="tq"></p>
+      <div class="tau">
+        <p class="tnm" id="tnm"></p>
+        <p class="trl" id="trl"></p>
+        <p class="tloc">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="tloc"></span>
+        </p>
+      </div>
+    </div>
+    <div class="tdots" id="tdots"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="about">
+  <div class="cta-pattern"></div>
+  <div class="ctai">
+    <div class="cta-emblem">🇮🇳</div>
+    <h3>Ready to Transform Your Work Life?</h3>
+    <p>Join thousands of workers and employers already on LabourNearMe across Bharat</p>
+    <div class="ctabtns">
+      <button class="cta-worker" onclick="location.href='worker.html'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Register as Worker
+      </button>
+      <button class="cta-employer" onclick="location.href='post-job.html'">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        Post as Employer
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="fgrid">
+      <div>
+        <div class="flogo">
+          <div class="fli"><svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <div><h4>LabourNearMe</h4><small>Shramik Setu</small></div>
+        </div>
+        <p class="fdesc">Connecting daily-wage workers with local employers across India. Dignified work for every hand.</p>
+      </div>
+      <div>
+        <h5>For Workers</h5>
+        <ul><li><a href="worker.html">Find Jobs</a></li><li><a href="worker.html">Create Profile</a></li><li><a href="#">Worker Support</a></li></ul>
+      </div>
+      <div>
+        <h5>For Employers</h5>
+        <ul><li><a href="post-job.html">Post Jobs</a></li><li><a href="#">Find Workers</a></li><li><a href="#">Employer Guide</a></li></ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+      </div>
+    </div>
+    <div class="fbot">
+      <p>© 2026 LabourNearMe. All rights reserved. · College Project · Digital India</p>
+      <div class="fsoc"><a href="#">Twitter</a><a href="#">Facebook</a><a href="#">Instagram</a><a href="#">LinkedIn</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>
