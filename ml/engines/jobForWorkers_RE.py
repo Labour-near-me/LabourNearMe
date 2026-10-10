@@ -201,8 +201,8 @@ def load_worker_skills():
 # INITIAL SKILL MAPS
 # ============================================================
 
-JOB_SKILL_MAP = load_job_skills()
-WORKER_SKILL_MAP = load_worker_skills()
+JOB_SKILL_MAP = {}
+WORKER_SKILL_MAP = {}
 
 
 # ============================================================
