@@ -1,10 +1,10 @@
 """Small, explicit skill taxonomy used by both recommendation directions."""
 
-from functools import lru_cache
+from threading import Lock
 
 import numpy as np
 
-from backend.services.embedding_service import encode_text
+from backend.services.embedding_service import encode_texts
 
 
 # Skill-name embeddings are compared separately from whole-profile embeddings.
@@ -32,6 +32,9 @@ _ELECTRICIAN_SKILLS = {
     "switch repair",
 }
 
+_SKILL_EMBEDDINGS = {}
+_SKILL_EMBEDDINGS_LOCK = Lock()
+
 
 def canonical_skill_name(value: str) -> str:
     normalized = normalize_skill_name(value)
@@ -54,11 +57,26 @@ def skills_match(worker_skill: str, required_skill: str) -> bool:
     return False
 
 
-@lru_cache(maxsize=512)
+def prepare_skill_embeddings(skill_names) -> None:
+    """Batch-encode the distinct skill labels used by a recommendation pass."""
+    names = {normalize_skill_name(name) for name in skill_names}
+    names.discard("")
+    with _SKILL_EMBEDDINGS_LOCK:
+        missing = sorted(names.difference(_SKILL_EMBEDDINGS))
+        if not missing:
+            return
+        vectors = encode_texts([f"Trade skill: {name}" for name in missing])
+        _SKILL_EMBEDDINGS.update(
+            (name, np.asarray(vector, dtype=float))
+            for name, vector in zip(missing, vectors)
+        )
+
+
 def _skill_embedding(skill_name: str) -> np.ndarray:
-    """Embed a normalized skill once per process and reuse it across matches."""
-    # Add a short context so terse catalog labels are compared as skills.
-    return np.asarray(encode_text(f"Trade skill: {skill_name}"), dtype=float)
+    """Get a cached embedding, encoding a single unseen label if necessary."""
+    name = normalize_skill_name(skill_name)
+    prepare_skill_embeddings([name])
+    return _SKILL_EMBEDDINGS[name]
 
 
 def semantic_skill_similarity(first_skill: str, second_skill: str) -> float:

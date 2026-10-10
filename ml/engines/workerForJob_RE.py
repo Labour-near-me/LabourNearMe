@@ -25,7 +25,11 @@ import pandas as pd
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sklearn.metrics.pairwise import cosine_similarity
-from ml.engines.skill_taxonomy import matched_required_skills, normalize_skill_name
+from ml.engines.skill_taxonomy import (
+    matched_required_skills,
+    normalize_skill_name,
+    prepare_skill_embeddings,
+)
 
 
 # ============================================================
@@ -331,6 +335,11 @@ def refresh_data():
     # data is refreshed.
     JOB_SKILL_MAP = load_job_skills()
     WORKER_SKILL_MAP = load_worker_skills()
+    prepare_skill_embeddings(
+        set().union(*JOB_SKILL_MAP.values(), *WORKER_SKILL_MAP.values())
+        if JOB_SKILL_MAP or WORKER_SKILL_MAP
+        else set()
+    )
 
 
 # ============================================================
