@@ -2,18 +2,24 @@
 
 from functools import lru_cache
 from threading import Lock
+from typing import TYPE_CHECKING
 
-from sentence_transformers import SentenceTransformer
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
 
 
 _model_lock = Lock()
 
 
 @lru_cache(maxsize=1)
-def _load_model() -> SentenceTransformer:
+def _load_model() -> "SentenceTransformer":
     # Serialize initial loading so simultaneous first requests cannot each
     # allocate a separate copy of the transformer model.
     with _model_lock:
+        # Keep torch/transformers out of API startup. They are needed only
+        # when an embedding is actually requested.
+        from sentence_transformers import SentenceTransformer
+
         return SentenceTransformer("all-MiniLM-L6-v2")
 
 

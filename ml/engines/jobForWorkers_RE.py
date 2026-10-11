@@ -21,6 +21,8 @@ Responsibilities:
 import os
 import ast
 import pickle
+from threading import Lock
+from time import monotonic
 
 import numpy as np
 import pandas as pd
@@ -41,6 +43,10 @@ from ml.engines.skill_taxonomy import (
 SIMILARITY_THRESHOLD = 0.15
 MIN_SKILL_OVERLAP = 1
 MAX_DISTANCE_KM = 50
+DATA_REFRESH_INTERVAL_SECONDS = 15
+
+_DATA_REFRESH_LOCK = Lock()
+_DATA_LAST_REFRESHED_AT = 0.0
 
 
 # ============================================================
@@ -301,7 +307,7 @@ def convert_embeddings(df, column):
 # REFRESH DATA
 # ============================================================
 
-def refresh_data():
+def refresh_data(force=False):
 
     global WORKERS_DF
     global JOBS_DF
@@ -309,26 +315,36 @@ def refresh_data():
     global JOB_VEC
     global JOB_SKILL_MAP
     global WORKER_SKILL_MAP
+    global _DATA_LAST_REFRESHED_AT
 
-    WORKERS_DF, JOBS_DF = load_data()
+    with _DATA_REFRESH_LOCK:
+        if (
+            not force
+            and _DATA_LAST_REFRESHED_AT
+            and monotonic() - _DATA_LAST_REFRESHED_AT < DATA_REFRESH_INTERVAL_SECONDS
+        ):
+            return
 
-    WORKER_VEC = convert_embeddings(
-        WORKERS_DF,
-        "worker_embedding"
-    )
+        WORKERS_DF, JOBS_DF = load_data()
 
-    JOB_VEC = convert_embeddings(
-        JOBS_DF,
-        "job_embedding"
-    )
+        WORKER_VEC = convert_embeddings(
+            WORKERS_DF,
+            "worker_embedding"
+        )
 
-    JOB_SKILL_MAP = load_job_skills()
-    WORKER_SKILL_MAP = load_worker_skills()
-    prepare_skill_embeddings(
-        set().union(*JOB_SKILL_MAP.values(), *WORKER_SKILL_MAP.values())
-        if JOB_SKILL_MAP or WORKER_SKILL_MAP
-        else set()
-    )
+        JOB_VEC = convert_embeddings(
+            JOBS_DF,
+            "job_embedding"
+        )
+
+        JOB_SKILL_MAP = load_job_skills()
+        WORKER_SKILL_MAP = load_worker_skills()
+        prepare_skill_embeddings(
+            set().union(*JOB_SKILL_MAP.values(), *WORKER_SKILL_MAP.values())
+            if JOB_SKILL_MAP or WORKER_SKILL_MAP
+            else set()
+        )
+        _DATA_LAST_REFRESHED_AT = monotonic()
 
 
 # ============================================================
