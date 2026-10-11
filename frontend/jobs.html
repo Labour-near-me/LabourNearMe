@@ -1,11 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Open Jobs — LabourNearMe</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body{background:#f0f4fa;color:#1a2433;font-family:'Noto Sans',Arial,sans-serif;margin:0}.jobs-page{max-width:1100px;margin:0 auto;padding:3rem 1.5rem}.jobs-page h1{color:#003580}.job-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}.job{background:white;border:1px solid #d0dae8;border-radius:12px;padding:1.25rem;box-shadow:0 4px 16px #00358012}.job h2{font-size:1.15rem;margin:0 0 .5rem}.meta{color:#5a6475;font-size:.9rem}.budget{color:#138808;font-weight:800}.state{background:#fff;border-radius:12px;padding:1.5rem;color:#5a6475}.nav{background:#003580;color:white;padding:1rem 1.5rem}.nav a{color:white;margin-right:1rem}
+  </style>
 </head>
 <body>
-    <h2>jobs html page by me</h2>
+  <header class="nav"><a href="index.html">LabourNearMe</a><a href="worker.html">Register</a><a href="worker_jobs.html">Recommended jobs</a><a href="post-job.html">Post a job</a></header>
+  <main class="jobs-page"><h1>Open jobs</h1><p>Current openings returned by LabourNearMe.</p><div id="jobs" class="state" aria-live="polite">Loading jobs…</div></main>
+  <script src="api.js"></script>
+  <script>
+    const root=document.getElementById('jobs');
+    const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    (async()=>{try{const jobs=await window.lnmRequest('/jobs/');if(!Array.isArray(jobs))throw new Error('Unexpected jobs response.');if(!jobs.length){root.textContent='There are no open jobs right now.';return;}root.className='job-list';root.innerHTML=jobs.map(job=>`<article class="job"><h2>${esc(job.title||'Untitled job')}</h2><p>${esc(job.description||'No description provided.')}</p><p class="budget">${job.budget!=null&&Number(job.budget)>0?'₹'+Number(job.budget).toLocaleString('en-IN')+' budget':'Budget not provided'}</p><p class="meta">Status: ${esc(job.status||'unknown')} · ${job.location_lat!=null&&job.location_lng!=null?'Coordinates available':'Location unavailable'}</p><p class="meta">Job ID: ${esc(job.id||'')}</p></article>`).join('');}catch(error){root.textContent=error.message||'Could not load jobs. Please try again later.';}})();
+  </script>
 </body>
 </html>

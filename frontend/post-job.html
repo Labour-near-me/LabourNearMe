@@ -402,7 +402,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- GOV STRIP -->
 <div class="gov-strip">
   <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-  Free Job Posting · No Middlemen · Verified Worker Network · सुरक्षित एवं विश्वसनीय
+  Employer registration · Job posting API
 </div>
 
 <!-- PAGE -->
@@ -418,24 +418,24 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       Hire <span class="saf">Skilled Workers</span><br>
       <span class="acc">Near You</span> Fast
     </h2>
-    <p class="desc">Post a job in under 2 minutes and get matched with verified, rated workers in your area. No commission, no middlemen.</p>
+    <p class="desc">Register an employer profile, post a job, and review applications returned by the backend.</p>
 
     <div class="left-stats">
       <div class="lstat">
-        <div class="ln">10K+</div>
-        <div class="ll">Verified Workers</div>
+        <div class="ln">Workers</div>
+        <div class="ll">Profile registration</div>
       </div>
       <div class="lstat">
-        <div class="ln">12 min</div>
-        <div class="ll">Avg. Match Time</div>
+        <div class="ln">Jobs</div>
+        <div class="ll">Posting and listing</div>
       </div>
       <div class="lstat">
-        <div class="ln">95%</div>
-        <div class="ll">Fill Rate</div>
+        <div class="ln">Applicants</div>
+        <div class="ll">Application review</div>
       </div>
       <div class="lstat">
-        <div class="ln">₹0</div>
-        <div class="ll">Commission</div>
+        <div class="ln">API</div>
+        <div class="ll">Current capabilities</div>
       </div>
     </div>
 
@@ -445,8 +445,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Instant Matching</strong>
-          <span>Get qualified worker profiles the moment you post — our algorithm does the heavy lifting</span>
+          <strong>Worker Recommendations</strong>
+          <span>The backend provides worker recommendations for a job. Applicants are listed separately.</span>
         </div>
       </div>
       <div class="benefit">
@@ -454,8 +454,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Aadhaar-Verified Profiles</strong>
-          <span>Every worker is identity-verified, so you hire with full confidence and zero risk</span>
+          <strong>Worker Profiles</strong>
+          <span>Worker details are returned by the profile endpoint when available. Identity verification is not supported.</span>
         </div>
       </div>
       <div class="benefit">
@@ -472,20 +472,20 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Transparent Ratings</strong>
-          <span>Browse worker reviews and ratings from verified employers — pick the best fit every time</span>
+          <strong>Applicant Status</strong>
+          <span>Accept or reject an application using the backend status update endpoint.</span>
         </div>
       </div>
     </div>
 
     <div class="mini-testi">
       <div class="mini-stars" id="mini-stars"></div>
-      <p class="mini-quote">"Posted a job for 3 electricians on Monday morning. Had all 3 confirmed and on-site by Tuesday. Incredible platform."</p>
+      <p class="mini-quote">Jobs are created with open status. Daily wage is sent using the backend's budget field; unsupported form details are included in the description.</p>
       <div class="mini-author">
         <div class="mini-av">S</div>
         <div>
-          <div class="mini-nm">Sunita Agarwal</div>
-          <div class="mini-rl">Construction Manager · Indore</div>
+          <div class="mini-nm">API capabilities</div>
+          <div class="mini-rl">Current backend</div>
         </div>
       </div>
     </div>
@@ -499,7 +499,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       </div>
       <div class="form-header-text">
         <h3>Post a Job</h3>
-        <p>Fill in the details and reach workers near you instantly</p>
+        <p>Enter job details to create an open listing through the backend API.</p>
       </div>
       <div class="form-step-indicator">Quick Form</div>
     </div>
@@ -584,7 +584,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           Job Location <span class="req">*</span>
         </label>
         <input type="text" id="location" name="location" placeholder="Enter site address, city or area" autocomplete="address-level2"/>
-        <div class="field-hint">Enter the actual work site location (not your office address)</div>
+        <div class="field-hint">The API accepts coordinates only. Allow location access while at the work site; the typed address is retained in the job description.</div>
         <div class="field-error" id="location-err">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Please enter the job location
@@ -686,21 +686,22 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         <label class="field-label">Job Status <span class="opt-tag">Optional</span></label>
         <div class="avail-row">
           <div>
-            <div class="avail-label">Post as Active Immediately</div>
-            <div class="avail-sub">Workers will see this job as soon as it's posted</div>
+            <div class="avail-label">Job status</div>
+          <div class="avail-sub">The backend currently creates every job with open status.</div>
           </div>
           <label class="toggle">
-            <input type="checkbox" id="is_active" checked/>
+            <input type="checkbox" id="is_active" checked disabled/>
             <span class="slider"></span>
           </label>
         </div>
       </div>
 
       <!-- Terms -->
+      <p class="field-hint">The employer ID is checked for an employer profile, but it is not a secure login or proof of the poster's identity.</p>
       <div class="terms-row">
         <input type="checkbox" id="terms"/>
         <label for="terms">
-          I agree to the <a href="#">Terms of Service</a> and <a href="#">Employer Guidelines</a>. I confirm the job details are accurate and the wage offered is fair and legal.
+          I confirm the job details are accurate and the wage offered is fair and legal. The current backend does not provide a separate terms page.
         </label>
       </div>
 
@@ -746,16 +747,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   </a>
 </footer>
 
+<script src="api.js"></script>
 <script>
 // ── CONFIG ─────────────────────────────────────────
-const BASE_URL = 'https://labournearme.onrender.com';
-const skillMap = {
-  "Electrician": "3a08cd81-a48f-4376-8b53-7250866e7140", // Wiring Installation
-  "Plumber": "85f64c86-6e1c-49a8-9566-9ca05ca11488",     // Pipe Fitting
-  "Painter": "4f919e84-d3a1-4fe0-8d9b-a18fa89ab4e3",     // Interior Painting
-  "Carpenter": "4f6a3469-9f64-4904-9e20-e5f55277c2bb",   // Furniture Assembly
-  "Mason": "19f5f26a-c12c-4861-ae89-7c5e9472ca1b"        // Cement Mixing
-};
 
 // ── STATE ──────────────────────────────────────────
 let skills        = [];
@@ -911,18 +905,12 @@ async function handleJobPost() {
     return;
   }
 
+  const wageVal = parseFloat(document.getElementById('wage').value) || 0;
   const payload = {
-    title:        document.getElementById('job_title').value.trim(),
-    description:      document.getElementById('description').value.trim(),
-    required_skills: skills.map(s => skillMap[s] || s),
-    location:         document.getElementById('location').value.trim(),
-    location_lat:     22.7196,
-    location_lng:     75.8577,
-    wage:             parseFloat(document.getElementById('wage').value),
-    workers_required: parseInt(document.getElementById('workers_required').value, 10),
-    urgency:          urgency,
-    employer_name:    document.getElementById('employer_name').value.trim(),
-    phone:            document.getElementById('phone').value.trim(),
+    title: document.getElementById('job_title').value.trim(),
+    description: document.getElementById('description').value.trim(),
+    required_skills: skills,
+    budget: wageVal
   };
 
   setLoading(true);
@@ -932,28 +920,41 @@ async function handleJobPost() {
   const timeoutId  = setTimeout(() => controller.abort(), 40000);
 
   try {
-    const res = await fetch(`${BASE_URL}/jobs/`, {
-      method:  'POST',
-      headers: {
-      'Content-Type': 'application/json',
-      'x-user-id': 'a184c5e8-f3f9-4415-98c0-b9d866deabac' // ⚠️ TODO: replace with real employer UUID from your DB
-      },
-      body:    JSON.stringify(payload),
-      signal:  controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    const rawText = await res.text();
-    let data = {};
-    try { data = JSON.parse(rawText); } catch (_) {}
-
-    if (!res.ok) {
-      const detail = data.detail || data.message || rawText || `Server error (${res.status})`;
-      throw new Error(typeof detail === 'object' ? JSON.stringify(detail) : detail);
+    const coordinates = await window.lnmGeolocation();
+    const employerId = localStorage.getItem('employer_id');
+    let confirmedEmployerId = employerId;
+    if (!confirmedEmployerId) {
+      const employer = await window.lnmRequest('/employers/register', {
+        method: 'POST', signal: controller.signal,
+        body: JSON.stringify({
+          full_name: document.getElementById('employer_name').value.trim(),
+          employer_name: document.getElementById('employer_name').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          description: 'Employer registered through LabourNearMe frontend.',
+          ...coordinates
+        })
+      });
+      if (employer.status !== 'success' || !employer.employer_id) throw new Error('The server did not confirm employer registration.');
+      confirmedEmployerId = employer.employer_id;
+      localStorage.setItem('employer_id', confirmedEmployerId);
     }
+    // The backend has no address field. Keep the typed site location in the stored description.
+    payload.description = [
+      `Work site: ${document.getElementById('location').value.trim()}`,
+      `Workers requested: ${document.getElementById('workers_required').value}`,
+      `Urgency: ${urgency}`,
+      payload.description
+    ].join('\n\n');
+    const data = await window.lnmRequest('/jobs/', {
+      method: 'POST', signal: controller.signal,
+      headers: { 'x-user-id': confirmedEmployerId },
+      body: JSON.stringify({ ...payload, ...coordinates })
+    });
+    clearTimeout(timeoutId);
+    if (data.status !== 'success' || !data.job_id) throw new Error('The server did not confirm job creation.');
 
-    showSuccess(payload.title, data.id || data.job_id || data.jobId || data.job?.id || null);
+    setLoading(false);
+    showSuccess(payload.title, data.job_id);
 
   } catch (err) {
     clearTimeout(timeoutId);
@@ -987,6 +988,7 @@ function hideBanner() {
 }
 
 function showSuccess(jobTitle, id) {
+  setLoading(false);
   document.getElementById('form-body').style.display = 'none';
 
   currentJobId = id || null; // store for goToWorkers()

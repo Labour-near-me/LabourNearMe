@@ -383,13 +383,14 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   </a>
 </footer>
 
+<script src="api.js"></script>
 <script>
 // ─────────────────────────────────────────────────────
 // LabourNearMe — worker_jobs.html
 // Fetches personalised job recommendations for a worker.
 // ─────────────────────────────────────────────────────
 
-const BASE_URL = 'https://labournearme.onrender.com';
+const BASE_URL = window.LNM_API_BASE;
 const container   = document.getElementById('state-container');
 const refreshBtn  = document.getElementById('refresh-btn');
 
@@ -441,7 +442,8 @@ function showError(message) {
 
 // ── showNoJobs() ──────────────────────────────────────
 // Renders an empty-state illustration when no jobs are matched.
-function showNoJobs() {
+function showNoJobs(openJobCount = 0) {
+  const hasOpenJobs = openJobCount > 0;
   container.innerHTML = `
     <div class="empty-state">
       <div class="empty-icon">
@@ -451,18 +453,25 @@ function showNoJobs() {
           <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
         </svg>
       </div>
-      <h3>No Jobs Available Right Now</h3>
-      <p>We couldn't find any job matches near you at the moment. Check back soon — new jobs are posted every day!</p>
+      <h3>${hasOpenJobs ? 'No Recommended Matches' : 'No Open Jobs Right Now'}</h3>
+      <p>${hasOpenJobs
+        ? `The recommendation service returned no matches for this worker. There are ${openJobCount} open job${openJobCount === 1 ? '' : 's'} in the general feed; they are not being shown as recommendations.`
+        : 'The recommendation service returned no matches, and the open-jobs feed is empty.'}</p>
+      ${hasOpenJobs ? '<a class="retry-link" href="jobs.html">Browse all open jobs</a>' : ''}
     </div>`;
 }
+
+// Cache of currently rendered jobs to avoid fragile string escaping in inline onclick handlers
+let currentJobs = [];
 
 // ── renderJobs(jobs) ──────────────────────────────────
 // Builds and injects the results count bar + job cards grid.
 function renderJobs(jobs) {
-  const count = jobs.length;
+  currentJobs = Array.isArray(jobs) ? jobs : [];
+  const count = currentJobs.length;
 
   // Stagger animation delays for cards
-  const cardsHTML = jobs.map((job, i) => buildJobCard(job, i)).join('');
+  const cardsHTML = currentJobs.map((job, i) => buildJobCard(job, i)).join('');
 
   container.innerHTML = `
     <!-- Results meta bar -->
@@ -488,10 +497,10 @@ function renderJobs(jobs) {
 // ── buildJobCard(job, index) ──────────────────────────
 // Returns the HTML string for a single job card.
 function buildJobCard(job, index) {
-  const title       = escapeHtml(job.title || 'Untitled Job');
+  const title       = escapeHtml(job.title || job.job_title || 'Untitled Job');
   const description = escapeHtml(job.description || 'No description provided.');
-  const wage        = job.wage ? `₹${Number(job.wage).toLocaleString('en-IN')}` : (job.budget ? `₹${Number(job.budget).toLocaleString('en-IN')}` : '—');
-  const jobId       = job.id || null;
+  const wage        = job.budget != null && Number(job.budget) > 0 ? `₹${Number(job.budget).toLocaleString('en-IN')}` : 'Not provided';
+  const jobId       = job.job_id || job.id || null;
   const jobIdShort  = jobId ? `#${String(jobId).slice(0, 8).toUpperCase()}` : '';
 
   // Skills: API may send strings or UUIDs; display as-is
@@ -503,7 +512,7 @@ function buildJobCard(job, index) {
   // Location: show formatted lat/lng
   const lat = job.location_lat != null ? Number(job.location_lat).toFixed(4) : null;
   const lng = job.location_lng != null ? Number(job.location_lng).toFixed(4) : null;
-  const locText = job.location_name || "Nearby Area";
+  const locText = job.location_name || 'Location coordinates are available';
 
   return `
     <div class="job-card">
@@ -544,56 +553,77 @@ function buildJobCard(job, index) {
 
       <!-- Card footer -->
       <div class="card-footer">
-        <button class="apply-btn" id="apply-btn-${index}" onclick="handleApply('${escapeHtml(String(jobId || ''))}', '${escapeHtml(title)}', ${index})">
-          Apply Now ${arrowIconSVG}
+        <button class="apply-btn" id="apply-btn-${index}" data-job-id="${escapeHtml(String(jobId || ''))}" onclick="handleApply(${index})" ${job.alreadyApplied ? 'disabled' : ''}>
+          ${job.alreadyApplied ? 'Already applied' : `Apply Now ${arrowIconSVG}`}
         </button>
         ${jobIdShort ? `<span class="job-id" title="Job ID: ${escapeHtml(String(jobId))}">${jobIdShort}</span>` : ''}
       </div>
     </div>`;
 }
 
-// ── handleApply(jobId, title, index) ─────────────────
+// ── handleApply(jobIndexOrId, titleParam, indexParam) ─
 // POSTs an application to the backend and updates the button state.
-async function handleApply(jobId, title, index) {
-  if (!jobId) {
-    showToast('error', 'Job ID missing — cannot apply.');
+async function handleApply(jobIndexOrId, titleParam, indexParam) {
+  let jobId, title, index;
+
+  if (typeof jobIndexOrId === 'number') {
+    index = jobIndexOrId;
+    const job = (currentJobs && currentJobs[index]) || {};
+    if (job.alreadyApplied) return;
+    jobId = job.job_id || job.id || null;
+    title = job.title || job.job_title || 'Untitled Job';
+  } else {
+    jobId = jobIndexOrId;
+    title = titleParam || 'Untitled Job';
+    index = indexParam;
+  }
+
+  // Fallback to data attribute on the button element if jobId is not resolved
+  if (!jobId && index != null) {
+    const btnEl = document.getElementById(`apply-btn-${index}`);
+    if (btnEl && btnEl.dataset && btnEl.dataset.jobId) {
+      jobId = btnEl.dataset.jobId;
+    }
+  }
+
+  if (!jobId || !String(jobId).trim()) {
+    showToast('error', 'Job ID is missing — cannot apply.');
     return;
   }
 
   const workerId = localStorage.getItem('worker_id');
-  if (!workerId) {
+  if (!workerId || !String(workerId).trim()) {
     showToast('error', 'Please register first — no worker ID found.');
     return;
   }
 
   const btn = document.getElementById(`apply-btn-${index}`);
+  if (btn && btn.disabled) {
+    return; // Prevent duplicate submission while in progress or already applied
+  }
+
   if (btn) {
     btn.disabled = true;
     btn.innerHTML = `<span style="opacity:.7">Applying…</span>`;
   }
 
   try {
-    const res = await fetch(`${BASE_URL}/applications/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ worker_id: workerId, job_id: jobId })
+    const resData = await window.lnmRequest('/applications/apply', {
+      method: 'POST', body: JSON.stringify({
+        worker_id: String(workerId).trim(),
+        job_id: String(jobId).trim()
+      })
     });
-
-    if (!res.ok) {
-      let errMsg = `Failed (HTTP ${res.status})`;
-      try {
-        const errData = await res.json();
-        errMsg = errData.detail || errData.message || errMsg;
-      } catch (_) {}
-      throw new Error(typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg);
-    }
+    if (resData.status !== 'success') throw new Error('The server did not confirm the application.');
 
     // Update button to "Applied" state permanently
     if (btn) {
       btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Applied!`;
       btn.style.background = 'var(--green)';
+      btn.disabled = true;
     }
-    showToast('success', `Applied for "${title}" successfully!`);
+    const successMsg = resData.message || `Applied for "${title}" successfully!`;
+    showToast('success', successMsg);
 
   } catch (err) {
     if (btn) {
@@ -700,26 +730,19 @@ async function fetchJobs() {
     showLoading();
     setRefreshBtnState(true);
 
-    const res = await fetch(`${BASE_URL}/recommend/jobs/${workerId}`);
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch jobs (HTTP ${res.status})`);
-    }
-
-    const raw  = await res.json();
-
-    // Backend may return: plain array, { recommendations:[...] }, or a JSON-encoded string
-    let jobs = [];
-    if (typeof raw === 'string') {
-      try { jobs = JSON.parse(raw); } catch (_) {}
-    } else if (Array.isArray(raw)) {
-      jobs = raw;
-    } else {
-      jobs = raw.recommendations || raw.jobs || raw.results || [];
-    }
+    const [raw, allJobs] = await Promise.all([
+      window.lnmRequest(`/recommend/jobs/${encodeURIComponent(workerId)}`),
+      window.lnmRequest('/jobs/')
+    ]);
+    const recommendations = Array.isArray(raw.recommendations) ? raw.recommendations : [];
+    const byId = new Map((Array.isArray(allJobs) ? allJobs : []).map(job => [String(job.id), job]));
+    let myApplications = [];
+    try { myApplications = await window.lnmRequest(`/applications/my-applications/${encodeURIComponent(workerId)}`); } catch (_) {}
+    const appliedIds = new Set((Array.isArray(myApplications) ? myApplications : []).map(app => String(app.job_id)));
+    const jobs = recommendations.map(rec => ({ ...(byId.get(String(rec.job_id)) || {}), ...rec, id: rec.job_id, alreadyApplied: appliedIds.has(String(rec.job_id)) }));
 
     if (jobs.length === 0) {
-      showNoJobs();
+      showNoJobs(Array.isArray(allJobs) ? allJobs.length : 0);
     } else {
       renderJobs(jobs);
     }

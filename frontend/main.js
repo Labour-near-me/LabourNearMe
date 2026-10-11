@@ -24,25 +24,11 @@ mmEl.querySelectorAll('a').forEach(a => {
 // ── Testimonials carousel ──────────────────────────────────
 const testimonials = [
   {
-    name:   'Rajesh Kumar',
-    role:   'Carpenter',
-    text:   'Earlier I used to wait at the chowk for hours. Now I get job notifications on my phone and choose the best ones nearby. LabourNearMe has changed my life.',
-    rating: 5,
-    loc:    'Delhi'
-  },
-  {
-    name:   'Priya Sharma',
-    role:   'Home Owner',
-    text:   'Needed a plumber urgently on a Sunday morning. Found a verified, rated worker within 15 minutes. Extremely professional service — highly recommended.',
-    rating: 5,
-    loc:    'Mumbai'
-  },
-  {
-    name:   'Amit Patel',
-    role:   'Construction Manager',
-    text:   'Hiring skilled labour for our sites has become so much easier. The location-based matching is precise and the Aadhaar verification gives us full confidence.',
-    rating: 5,
-    loc:    'Bangalore'
+    name:   'Current backend capabilities',
+    role:   'LabourNearMe integration',
+    text:   'Worker and employer registration, job posting and listing, job recommendations, applications, and application status updates are available through the connected API.',
+    rating: 0,
+    loc:    'Availability depends on the backend service'
   }
 ];
 

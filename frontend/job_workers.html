@@ -462,9 +462,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
 
+<script src="api.js"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────
-const BASE_URL = 'https://labournearme.onrender.com';
 
 // ── GLOBALS ───────────────────────────────────────────
 const container  = document.getElementById('state-container');
@@ -661,19 +661,22 @@ function buildWorkerCard(applicant, index) {
     </div>`;
 }
 
-// ── HANDLE ACCEPT / REJECT (frontend-only for demo) ──
-function handleAction(action, workerId, appId, index) {
+// ── HANDLE ACCEPT / REJECT through the backend status endpoint ──
+async function handleAction(action, workerId, appId, index) {
   const acceptBtn = document.getElementById(`accept-${index}`);
   const rejectBtn = document.getElementById(`reject-${index}`);
   const spinner   = document.getElementById(`${action}-spinner-${index}`);
   const isAccept  = action === 'accept';
 
-  // Show spinner briefly, then update UI
+  if (!appId) { showToast('error', 'Application ID is missing; status cannot be updated.'); return; }
   if (acceptBtn) acceptBtn.disabled = true;
   if (rejectBtn) rejectBtn.disabled = true;
   if (spinner)   spinner.style.display = 'block';
-
-  setTimeout(() => {
+  try {
+    const result = await window.lnmRequest('/applications/status-update', {
+      method: 'POST', body: JSON.stringify({ application_id: appId, new_status: action === 'accept' ? 'accepted' : 'rejected' })
+    });
+    if (result.status !== 'success') throw new Error('The server did not confirm the status update.');
     const card   = document.getElementById(`card-${index}`);
     const footer = document.getElementById(`footer-${index}`);
 
@@ -688,8 +691,14 @@ function handleAction(action, workerId, appId, index) {
       footer.innerHTML = `<span class="status-badge ${action}">${icon} ${label}</span>`;
     }
 
-    showToast('success', isAccept ? 'Worker accepted!' : 'Worker rejected.');
-  }, 600); // 600ms delay feels like a real API call
+    showToast('success', result.message || (isAccept ? 'Application accepted.' : 'Application rejected.'));
+  } catch (error) {
+    if (acceptBtn) acceptBtn.disabled = false;
+    if (rejectBtn) rejectBtn.disabled = false;
+    showToast('error', error.message || 'Could not update application status.');
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
 }
 
 // ── LOOKUP JOB BY ID (manual entry) ──────────────────
@@ -706,15 +715,6 @@ function lookupJob() {
   window.location.href = `job_workers.html?job_id=${encodeURIComponent(val)}`;
 }
 
-// ── HARDCODED DEMO APPLICANTS ─────────────────────────
-const DEMO_APPLICANTS = [
-  { id:'app-001', worker:{ id:'w-a1b2c3d4', full_name:'Ramesh Kumar Verma',  phone:'+91 94251 78340', skills:['Electrician','Wiring','Panel Installation'], rating:4.8 } },
-  { id:'app-002', worker:{ id:'w-e5f6g7h8', full_name:'Suresh Patel',        phone:'+91 98760 12345', skills:['Plumber','Pipe Fitting','Sanitation'],        rating:4.5 } },
-  { id:'app-003', worker:{ id:'w-i9j0k1l2', full_name:'Anita Sharma',        phone:'+91 70210 98765', skills:['Painter','Interior Painting','Texturing'],    rating:5.0 } },
-  { id:'app-004', worker:{ id:'w-m3n4o5p6', full_name:'Vikram Singh Rajput', phone:'+91 80900 44321', skills:['Carpenter','Furniture Assembly','Woodwork'],  rating:4.2 } },
-  { id:'app-005', worker:{ id:'w-q7r8s9t0', full_name:'Priya Devi',          phone:'+91 91234 56789', skills:['Mason','Cement Mixing','Bricklaying'],        rating:4.6 } },
-];
-
 // ── FETCH APPLICANTS ──────────────────────────────────
 async function loadApplicants() {
   if (!JOB_ID) {
@@ -723,9 +723,23 @@ async function loadApplicants() {
     return;
   }
   showLoading();
-  // Simulate realistic network delay then show demo applicants
-  await new Promise(r => setTimeout(r, 800));
-  renderApplicants(DEMO_APPLICANTS);
+  try {
+    const applications = await window.lnmRequest(`/applications/job/${encodeURIComponent(JOB_ID)}`);
+    if (!Array.isArray(applications)) throw new Error('Unexpected applications response from server.');
+    const applicants = await Promise.all(applications.map(async application => {
+      const workerId = application.worker_id;
+      if (!workerId) return application;
+      try {
+        const profile = await window.lnmRequest(`/workers/${encodeURIComponent(workerId)}`);
+        return { ...application, worker: { ...profile, id: workerId, ...(profile.workers || {}) } };
+      } catch (_) {
+        return { ...application, worker: { id: workerId } };
+      }
+    }));
+    if (applicants.length) renderApplicants(applicants); else showEmpty();
+  } catch (error) {
+    showError(error.message || 'Could not load applicants.');
+  }
 }
 
 // ── REFRESH BUTTON STATE ──────────────────────────────

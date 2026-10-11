@@ -314,7 +314,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- GOV STRIP -->
 <div class="gov-strip">
   <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-  Aadhaar-Verified · Free Registration · No Commission Cuts
+  Worker profile · API-connected registration
 </div>
 
 <!-- PAGE -->
@@ -330,7 +330,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       Start Finding<br>
       <span class="acc">Jobs Near</span> <span class="saf">You</span>
     </h2>
-    <p class="desc">Join over 10,000 workers across Bharat already earning through LabourNearMe. Free to register. No middlemen.</p>
+    <p class="desc">Create a worker profile with your contact details, skills, expected daily wage, and current coordinates.</p>
 
     <div class="benefits">
       <div class="benefit">
@@ -338,8 +338,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Get Matched Instantly</strong>
-          <span>Our algorithm finds the best jobs near you within minutes of registration</span>
+          <strong>Job Recommendations</strong>
+          <span>Browse open jobs and view recommendations returned by the matching API.</span>
         </div>
       </div>
       <div class="benefit">
@@ -347,8 +347,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Verified &amp; Trusted</strong>
-          <span>Your Aadhaar-linked badge builds trust with employers and secures better pay</span>
+          <strong>Profile Details</strong>
+          <span>Your name, phone, skills, wage, and coordinates are submitted to the backend.</span>
         </div>
       </div>
       <div class="benefit">
@@ -357,19 +357,19 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         </div>
         <div class="benefit-text">
           <strong>Jobs in Your Area</strong>
-          <span>Only see jobs near your location — no long commutes, no wasted time</span>
+          <span>The recommendation service considers saved coordinates; the frontend does not geocode the typed address.</span>
         </div>
       </div>
     </div>
 
     <div class="mini-testi">
       <div class="mini-stars" id="mini-stars"></div>
-      <p class="mini-quote">"I registered in the morning and had my first job confirmed by noon. The best thing I did for my work life."</p>
+      <p class="mini-quote">The current API supports worker registration and job recommendations. It does not provide identity verification or job notifications.</p>
       <div class="mini-author">
         <div class="mini-av">R</div>
         <div>
-          <div class="mini-nm">Ramu Yadav</div>
-          <div class="mini-rl">Plumber · Lucknow</div>
+          <div class="mini-nm">API capabilities</div>
+          <div class="mini-rl">Current backend</div>
         </div>
       </div>
     </div>
@@ -460,7 +460,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           Location <span class="req">*</span>
         </label>
         <input type="text" id="location" name="location" placeholder="Enter your city or area" autocomplete="address-level2"/>
-        <div class="field-hint">Enter your city, area, or neighbourhood</div>
+        <div class="field-hint">Enter your city or area. The backend stores device coordinates, not this address text; allow location access to share your current coordinates.</div>
         <div class="field-error" id="location-err">Please enter your location</div>
       </div>
 
@@ -480,23 +480,24 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         </div>
       </div>
 
+      <div class="field-group">
+        <label class="field-label" for="expected-wage">Expected daily wage (₹)</label>
+        <input type="number" id="expected-wage" min="1" step="1" value="500" required/>
+        <div class="field-hint">This amount is saved as your expected daily wage.</div>
+      </div>
+
       <!-- Availability -->
       <div class="field-group">
         <label class="field-label">Availability</label>
-        <div class="avail-row">
-          <span class="avail-label">Available for work right now</span>
-          <label class="toggle">
-            <input type="checkbox" id="available" checked/>
-            <span class="slider"></span>
-          </label>
-        </div>
+        <div class="field-hint">The current backend marks every new worker profile as available.</div>
       </div>
 
       <!-- Terms -->
+      <p class="field-hint">The worker ID returned by the API is saved in this browser for the recommendations workflow; it is not a secure login.</p>
       <div class="terms-row">
         <input type="checkbox" id="terms"/>
         <label for="terms">
-          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm that the information provided is accurate.
+          I confirm that the information provided is accurate. The current backend does not provide a separate terms or privacy page.
         </label>
       </div>
 
@@ -536,9 +537,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   </a>
 </footer>
 
+<script src="api.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────
-const BASE_URL = 'https://labournearme.onrender.com';
 
 // ── STATE ────────────────────────────────────────────
 let skills = [];
@@ -658,11 +659,8 @@ async function handleRegister() {
       experience === '1-2 years' ? 2 :
       experience === '3-5 years' ? 4 :
       experience === '5+ years'  ? 6 : 0,
-    expected_wage: 500,
-    location_lat: 22.7196,
-    location_lng: 75.8577,
+    expected_wage: Number(document.getElementById('expected-wage')?.value || 500),
     category: skills[0] || "General",
-    available: document.getElementById('available').checked,
   };
 
   setLoading(true);
@@ -672,28 +670,16 @@ async function handleRegister() {
   const timeoutId  = setTimeout(() => controller.abort(), 40000);
 
   try {
-    const res = await fetch(`${BASE_URL}/workers/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal
+    Object.assign(payload, await window.lnmGeolocation());
+    const data = await window.lnmRequest('/workers/', {
+      method: 'POST', body: JSON.stringify(payload), signal: controller.signal
     });
-
     clearTimeout(timeoutId);
 
-    let data = {};
-    try { data = await res.json(); } catch (_) {}
-
-    if (!res.ok) {
-      const detail = data.detail || data.message || `Server error (${res.status})`;
-      throw new Error(typeof detail === 'object' ? JSON.stringify(detail) : detail);
-    }
-
     // ✅ Store worker_id in localStorage for worker_jobs.html
-    const workerId = data.id || data.worker_id || null;
-    if (workerId) {
-      localStorage.setItem('worker_id', workerId);
-    }
+    const workerId = data.worker_id || null;
+    if (!workerId || data.status !== 'success') throw new Error('The server response did not confirm worker registration.');
+    localStorage.setItem('worker_id', workerId);
 
     setLoading(false);
     showSuccess(payload.full_name, workerId);
@@ -733,7 +719,6 @@ function resetForm() {
   skills = []; experience = '';
   renderChips();
   document.querySelectorAll('.exp-opt').forEach(o => o.classList.remove('selected'));
-  document.getElementById('available').checked = true;
   document.getElementById('terms').checked = false;
   document.getElementById('success-id').style.display = '';
   updateProgress();
