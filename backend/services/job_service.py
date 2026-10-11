@@ -75,6 +75,7 @@ class JobService:
                 "employer_id": employer_id,
                 "title": title,
                 "description": desc,
+                "location_text": data.get("location_text"),
                 "budget": data.get("budget"),
                 "location_lat": data.get("location_lat"),
                 "location_lng": data.get("location_lng"),
@@ -109,7 +110,7 @@ class JobService:
     @staticmethod
     def get_job_details(job_id: str):
         res = supabase.table("Jobs") \
-            .select("*, Job_required_skill(skill_id)") \
+            .select("id, employer_id, title, description, location_text, budget, status, created_at, location_lat, location_lng, Job_required_skill(skill_id)") \
             .eq("id", job_id) \
             .execute()
 
@@ -118,7 +119,7 @@ class JobService:
     @staticmethod
     def get_all_jobs():
         res = supabase.table("Jobs") \
-            .select("id, employer_id, title, description, budget, status, created_at, location_lat, location_lng") \
+            .select("id, employer_id, title, description, location_text, budget, status, created_at, location_lat, location_lng") \
             .eq("status", "open") \
             .execute()
 

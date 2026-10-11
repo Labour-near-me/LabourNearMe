@@ -1,8 +1,9 @@
 # backend/routes/jobs.py
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 from backend.services.job_service import JobService
+from backend.auth import require_role
 
 router = APIRouter()
 
@@ -10,6 +11,7 @@ router = APIRouter()
 class JobCreateSchema(BaseModel):
     title: str
     description: str
+    location_text: Optional[str] = None
     location_lat: float
     location_lng: float
     required_skills: List[str]
@@ -17,18 +19,10 @@ class JobCreateSchema(BaseModel):
 
 @router.post("/")
 def post_job(
-    data: JobCreateSchema, 
-    x_user_id: str = Header(..., description="Paste your Employer UUID here")
+    data: JobCreateSchema,
+    employer: dict = Depends(require_role("employer")),
 ):
-    """
-    Post a new job. 
-    Requires 'x-user-id' in the request header to identify the Employer.
-    """
-    if not x_user_id:
-        raise HTTPException(status_code=401, detail="Header 'x-user-id' missing")
-        
-    # .model_dump() handles the Pydantic to Dict conversion automatically
-    result = JobService.create_job(data.model_dump(), x_user_id)
+    result = JobService.create_job(data.model_dump(), employer["id"])
     
     if "error" in result:
         # If employer_id is invalid or skill not found, return 400

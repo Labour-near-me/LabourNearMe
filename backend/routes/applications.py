@@ -1,22 +1,32 @@
 
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from backend.database.supabase_client import supabase
+from backend.auth import require_role
 
 router = APIRouter()
 
-ALLOWED_APPLICATION_STATUSES = {"pending", "hired", "rejected"}
+class ApplicationCreate(BaseModel):
+    job_id: str
+    # Temporarily accepted for compatibility; identity is always taken from the token.
+    worker_id: str | None = None
+
+
+class ApplicationStatusUpdate(BaseModel):
+    application_id: str
+    new_status: str
 
 
 @router.post("/apply")
-def apply_for_job(data: dict):
-    job_id = data.get("job_id")
-    worker_id = data.get("worker_id")
+def apply_for_job(
+    data: ApplicationCreate,
+    worker: dict = Depends(require_role("worker")),
+):
+    job_id = data.job_id
+    worker_id = str(worker["id"])
 
-    if not job_id or not worker_id:
-        raise HTTPException(
-            status_code=400,
-            detail="job_id and worker_id are required"
-        )
+    if data.worker_id and str(data.worker_id) != worker_id:
+        raise HTTPException(status_code=403, detail="You can apply only as the signed-in worker")
 
     try:
         # Verify the job exists and is open.
@@ -72,24 +82,18 @@ def apply_for_job(data: dict):
     except HTTPException:
         raise
     except Exception as e:
+        if getattr(e, "code", None) == "23505" or "applications_job_worker_unique" in str(e):
+            raise HTTPException(status_code=409, detail="You have already applied for this job")
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/status-update")
-
-@router.post("/status-update")
 def update_application_status(
-    data: dict,
-    x_user_id: str = Header(..., description="Employer UUID")
+    data: ApplicationStatusUpdate,
+    employer: dict = Depends(require_role("employer")),
 ):
-    application_id = data.get("application_id")
-    new_status = data.get("new_status")
-
-    if not application_id or not new_status:
-        raise HTTPException(
-            status_code=400,
-            detail="application_id and new_status are required"
-        )
+    application_id = data.application_id
+    new_status = data.new_status
 
     if new_status not in {"hired", "rejected"}:
         raise HTTPException(
@@ -123,7 +127,7 @@ def update_application_status(
         # Verify that the requesting employer owns this job.
         job = (
             supabase.table("Jobs")
-            .select("id, employer_id")
+            .select("id, employer_id, status")
             .eq("id", app["job_id"])
             .execute()
         )
@@ -131,20 +135,33 @@ def update_application_status(
         if not job.data:
             raise HTTPException(status_code=404, detail="Job not found")
 
-        if str(job.data[0].get("employer_id")) != str(x_user_id):
+        if str(job.data[0].get("employer_id")) != str(employer["id"]):
             raise HTTPException(
                 status_code=403,
                 detail="You are not authorized to manage applications for this job"
             )
 
-        # Update only if the application is still pending.
-        result = (
-            supabase.table("applications")
-            .update({"status": new_status})
-            .eq("id", application_id)
-            .eq("status", "pending")
-            .execute()
-        )
+        if new_status == "hired":
+            if job.data[0].get("status") != "open":
+                raise HTTPException(status_code=409, detail="This job is no longer open for hiring")
+
+            # The database function closes the job, hires this application, and
+            # rejects the remaining pending applications in one transaction.
+            result = supabase.rpc(
+                "hire_application_for_job",
+                {
+                    "p_application_id": application_id,
+                    "p_employer_id": str(employer["id"]),
+                },
+            ).execute()
+        else:
+            result = (
+                supabase.table("applications")
+                .update({"status": "rejected"})
+                .eq("id", application_id)
+                .eq("status", "pending")
+                .execute()
+            )
 
         if not result.data:
             raise HTTPException(
@@ -155,7 +172,11 @@ def update_application_status(
         return {
             "status": "success",
             "message": f"Application status updated to {new_status}",
-            "updated_data": result.data[0]
+            "updated_data": result.data[0] if result.data else {
+                "id": application_id,
+                "status": new_status,
+                "job_id": app["job_id"],
+            }
         }
 
     except HTTPException:
@@ -165,7 +186,9 @@ def update_application_status(
 
 
 @router.get("/my-applications/{worker_id}")
-def get_worker_apps(worker_id: str):
+def get_worker_apps(worker_id: str, worker: dict = Depends(require_role("worker"))):
+    if str(worker["id"]) != worker_id:
+        raise HTTPException(status_code=403, detail="You can view only your own applications")
     try:
         result = (
             supabase.table("applications")
@@ -179,8 +202,19 @@ def get_worker_apps(worker_id: str):
 
 
 @router.get("/job/{job_id}")
-def get_applications_by_job(job_id: str):
+def get_applications_by_job(job_id: str, employer: dict = Depends(require_role("employer"))):
     try:
+        job = (
+            supabase.table("Jobs")
+            .select("id, employer_id")
+            .eq("id", job_id)
+            .execute()
+        )
+        if not job.data:
+            raise HTTPException(status_code=404, detail="Job not found")
+        if str(job.data[0].get("employer_id")) != str(employer["id"]):
+            raise HTTPException(status_code=403, detail="You can view applicants only for your own jobs")
+
         result = (
             supabase.table("applications")
             .select("*")
@@ -188,5 +222,7 @@ def get_applications_by_job(job_id: str):
             .execute()
         )
         return result.data
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from backend.routes import admin
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,10 +12,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Middleware (Frontend connectivity ke liye zaroori hai)
+# Set CORS_ALLOWED_ORIGINS to a comma-separated list of deployed frontend
+# origins. Local development defaults cover common React dev servers.
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+] or ["http://localhost:3000", "http://localhost:5173"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

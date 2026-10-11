@@ -29,7 +29,7 @@ class WorkerService:
         return new_skill.data[0]["id"]
 
     @staticmethod
-    def register_new_worker(data: dict):
+    def register_new_worker(data: dict, auth_user_id: str):
         try:
             category = data.get("category", "General")
             skills = data.get("skills", [])
@@ -52,6 +52,7 @@ class WorkerService:
 
             # --- Profile ---
             profile_resp = supabase.table("Profiles").insert({
+                "auth_user_id": auth_user_id,
                 "full_name": data.get("full_name"),
                 "phone": data.get("phone"),
                 "role": "worker"
@@ -97,7 +98,7 @@ class WorkerService:
     def get_worker_details(worker_id: str):
         try:
             result = supabase.table("Profiles") \
-                .select("*, workers(*)") \
+                .select("id, full_name, phone, role, workers(id, experience_years, expected_wage, location_lat, location_lng, availability_status, rating)") \
                 .eq("id", worker_id) \
                 .single() \
                 .execute()

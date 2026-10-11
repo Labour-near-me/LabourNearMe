@@ -1,24 +1,40 @@
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, StrictFloat, StrictInt
 from backend.database.supabase_client import supabase
+from backend.auth import require_role
 
 router = APIRouter()
 
 
+class CompleteAndRateRequest(BaseModel):
+    job_id: str
+    reviewee_id: str
+    reviewer_id: str | None = None
+    rating_value: StrictInt | StrictFloat
+    feedback: str = ""
+
+
 @router.post("/complete-and-rate")
-def complete_job(data: dict):
+def complete_job(
+    data: CompleteAndRateRequest,
+    employer: dict = Depends(require_role("employer")),
+):
     try:
-        job_id = data.get("job_id")
-        worker_id = data.get("reviewee_id")
-        employer_id = data.get("reviewer_id")
-        rating_val = data.get("rating_value")
-        feedback_text = data.get("feedback", "")
+        job_id = data.job_id
+        worker_id = data.reviewee_id
+        employer_id = str(employer["id"])
+        rating_val = data.rating_value
+        feedback_text = data.feedback
+
+        if data.reviewer_id and str(data.reviewer_id) != employer_id:
+            raise HTTPException(status_code=403, detail="Reviewer must be the signed-in employer")
 
         # Validate required fields
         if not all([job_id, worker_id, employer_id, rating_val is not None]):
             raise HTTPException(
                 status_code=400,
-                detail="job_id, reviewee_id, reviewer_id and rating_value are required"
+                detail="job_id, reviewee_id, and rating_value are required"
             )
 
         # Validate rating range
@@ -51,6 +67,9 @@ def complete_job(data: dict):
                 detail="Only the employer who owns this job can submit a rating"
             )
 
+        if job_res.data[0].get("status") != "closed":
+            raise HTTPException(status_code=409, detail="Only a closed job can be completed and rated")
+
         # Verify the worker exists
         worker_res = (
             supabase.table("workers")
@@ -62,48 +81,52 @@ def complete_job(data: dict):
         if not worker_res.data:
             raise HTTPException(status_code=404, detail="Worker not found")
 
-        # Save the rating using the existing database column name
-        rating_res = supabase.table("ratings").insert({
-            "job_id": job_id,
-            "reviewer_id": employer_id,
-            "reviewee_id": worker_id,
-            "rating_value": rating_val,
-            "feedbck": feedback_text
-        }).execute()
+        hired_application = (
+            supabase.table("applications")
+            .select("id")
+            .eq("job_id", job_id)
+            .eq("worker_id", worker_id)
+            .eq("status", "hired")
+            .execute()
+        )
+        if not hired_application.data:
+            raise HTTPException(status_code=409, detail="Only a worker hired for this job can be rated")
 
-        if not rating_res.data:
-            raise HTTPException(
-                status_code=500,
-                detail="Rating could not be saved"
-            )
-
-        # Recalculate the worker's average rating
-        ratings_res = (
+        existing_rating = (
             supabase.table("ratings")
-            .select("rating_value")
+            .select("id")
+            .eq("job_id", job_id)
+            .eq("reviewer_id", employer_id)
             .eq("reviewee_id", worker_id)
             .execute()
         )
+        if existing_rating.data:
+            raise HTTPException(status_code=409, detail="This worker has already been rated for this job")
 
-        if ratings_res.data:
-            values = [r["rating_value"] for r in ratings_res.data]
-            average = sum(values) / len(values)
+        # Keep the rating, average, and job completion update in one database transaction.
+        rating_res = supabase.rpc(
+            "complete_and_rate_job",
+            {
+                "p_job_id": job_id,
+                "p_employer_id": employer_id,
+                "p_worker_id": worker_id,
+                "p_rating_value": rating_val,
+                "p_feedback": feedback_text,
+            },
+        ).execute()
 
-            supabase.table("workers").update({
-                "rating": round(average, 2)
-            }).eq("id", worker_id).execute()
-
-        # Do not mark the entire job completed here.
-        # A job may involve multiple workers, so completion must
-        # be handled by the appropriate job-completion workflow.
+        if not rating_res.data:
+            raise HTTPException(status_code=500, detail="Rating could not be saved")
 
         return {
             "status": "success",
             "message": "Worker rated successfully!",
-            "rating": rating_res.data[0]
+            "rating": rating_res.data
         }
 
     except HTTPException:
         raise
     except Exception as e:
+        if getattr(e, "code", None) == "23505" or "ratings_job_reviewer_worker_unique" in str(e):
+            raise HTTPException(status_code=409, detail="This worker has already been rated for this job")
         raise HTTPException(status_code=400, detail=str(e))

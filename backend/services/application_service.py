@@ -27,43 +27,46 @@ def apply_job(worker_id: str, job_id: str):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def hire_worker(worker_id: str, job_id: str):
+def hire_worker(worker_id: str, job_id: str, employer_id: str):
     try:
-        response = (
+        application = (
             supabase.table("applications")
-            .update({"status": "accepted"})
+            .select("id")
             .eq("worker_id", worker_id)
             .eq("job_id", job_id)
+            .eq("status", "pending")
             .execute()
         )
-        # Update Jobs table status (Capital 'J' as per your schema)
-        supabase.table("Jobs").update({"status": "assigned"}).eq("id", job_id).execute()
+        if not application.data:
+            return {"success": False, "error": "No pending application found for this worker and job"}
 
-        return {"success": True, "data": {"worker_id": worker_id, "job_id": job_id, "status": "assigned"}}
+        response = supabase.rpc(
+            "hire_application_for_job",
+            {
+                "p_application_id": application.data[0]["id"],
+                "p_employer_id": employer_id,
+            },
+        ).execute()
+
+        return {"success": True, "data": response.data[0]}
 
     except Exception as e:
         return {"success": False, "error": str(e)}
 
 def rate_worker(job_id, reviewer_id, reviewee_id, rating_value, feedback):
     try:
-        data = {
-            "job_id": job_id,
-            "reviewer_id": reviewer_id,
-            "reviewee_id": reviewee_id,
-            "rating_value": rating_value,
-            "feedbck": feedback, # Matches your schema's typo 'feedbck'
-            "created_at": datetime.utcnow().isoformat()
-        }
+        response = supabase.rpc(
+            "complete_and_rate_job",
+            {
+                "p_job_id": job_id,
+                "p_employer_id": reviewer_id,
+                "p_worker_id": reviewee_id,
+                "p_rating_value": rating_value,
+                "p_feedback": feedback,
+            },
+        ).execute()
 
-        response = supabase.table("ratings").insert(data).execute()
-
-        # Optional worker rating update
-        try:
-            supabase.rpc("update_worker_rating", {"worker_id_input": reviewee_id}).execute()
-        except:
-            pass
-
-        return {"success": True, "data": response.data[0]}
+        return {"success": True, "data": response.data}
 
     except Exception as e:
         return {"success": False, "error": str(e)}

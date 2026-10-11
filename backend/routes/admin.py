@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from backend.database.supabase_client import supabase
+from backend.auth import require_role
 
 router = APIRouter()
 
 @router.get("/dashboard-stats")
-def get_admin_stats():
+def get_admin_stats(admin: dict = Depends(require_role("admin"))):
     try:
         # 1. Total Workers count
         workers = supabase.table("workers").select("id", count="exact").execute()
