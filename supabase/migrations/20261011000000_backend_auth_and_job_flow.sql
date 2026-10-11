@@ -4,6 +4,14 @@
 ALTER TABLE public."Jobs"
     ADD COLUMN IF NOT EXISTS location_text text;
 
+-- Hiring now moves a job from open to closed. Preserve the historical values
+-- already stored in this database while allowing the new closed value.
+ALTER TABLE public."Jobs"
+    DROP CONSTRAINT IF EXISTS jobs_status_check;
+ALTER TABLE public."Jobs"
+    ADD CONSTRAINT jobs_status_check
+    CHECK (status IN ('open', 'closed', 'assigned', 'completed', 'cancelled'));
+
 ALTER TABLE public."Profiles"
     ADD COLUMN IF NOT EXISTS auth_user_id uuid;
 
@@ -116,7 +124,7 @@ CREATE OR REPLACE FUNCTION public.complete_and_rate_job(
     p_job_id uuid,
     p_employer_id uuid,
     p_worker_id uuid,
-    p_rating_value numeric,
+    p_rating_value integer,
     p_feedback text DEFAULT ''
 )
 RETURNS jsonb
@@ -180,7 +188,7 @@ REVOKE EXECUTE ON FUNCTION public.hire_application_for_job(uuid, uuid)
 GRANT EXECUTE ON FUNCTION public.hire_application_for_job(uuid, uuid)
     TO service_role;
 
-REVOKE EXECUTE ON FUNCTION public.complete_and_rate_job(uuid, uuid, uuid, numeric, text)
+REVOKE EXECUTE ON FUNCTION public.complete_and_rate_job(uuid, uuid, uuid, integer, text)
     FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.complete_and_rate_job(uuid, uuid, uuid, numeric, text)
+GRANT EXECUTE ON FUNCTION public.complete_and_rate_job(uuid, uuid, uuid, integer, text)
     TO service_role;

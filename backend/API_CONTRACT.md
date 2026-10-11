@@ -1,8 +1,8 @@
 # LabourNearMe API contract for frontend integration
 
 This contract matches the current backend implementation on `ml-logic-final`.
-It is ready to use for frontend development, but the live Supabase migration
-and end-to-end journeys have not yet been verified.
+The Supabase schema migration has been applied. End-to-end journeys have not
+yet been verified.
 
 ## Authentication
 
@@ -81,6 +81,10 @@ Success: `{"status":"success","job_id":"<job-id>"}`.
 Application statuses are `pending`, `hired`, and `rejected`. The frontend's
 Accept action must send `hired`.
 
+Some older database rows still have the legacy status `accepted`. They were
+preserved because some old jobs have multiple accepted applicants; do not treat
+those historical rows as proof that the new one-worker hiring flow ran.
+
 ### Hire or reject an applicant
 
 `POST /applications/status-update` — employer who owns the job only.
@@ -141,13 +145,11 @@ its route and exact message have not been captured.
 
 ## Integration prerequisites
 
-1. Review and apply `supabase/migrations/20261011_backend_auth_and_job_flow.sql`
-   against the actual Supabase schema and data. It fails safely if duplicate
-   applications or ratings need cleanup first.
-2. Configure the backend `SUPABASE_KEY` as a server-only service-role key;
-   never expose it in frontend code. The two database RPCs are granted only to
-   `service_role`.
-3. Set `CORS_ALLOWED_ORIGINS` to the exact frontend origin(s), comma-separated.
-4. Existing profiles without `auth_user_id` need a deliberate account-linking
-   plan; new signups are linked during profile registration.
-5. Then verify the worker and employer journeys end to end.
+1. Configure `SUPABASE_SERVICE_ROLE_KEY` in the backend environment with the
+   Supabase service-role JWT. The backend rejects an anon key. Never put this
+   secret in frontend code or share it in chat.
+2. Set `CORS_ALLOWED_ORIGINS` to the exact frontend origin(s), comma-separated.
+3. Existing profiles have no Supabase Auth link yet. New accounts must create a
+   profile through `POST /workers/` or `POST /employers/register`; old profiles
+   need a deliberate account-linking plan before those accounts can sign in.
+4. Verify the worker and employer journeys end to end.

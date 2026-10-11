@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, StrictFloat, StrictInt
+from pydantic import BaseModel, StrictInt
 from backend.database.supabase_client import supabase
 from backend.auth import require_role
 
@@ -11,7 +11,7 @@ class CompleteAndRateRequest(BaseModel):
     job_id: str
     reviewee_id: str
     reviewer_id: str | None = None
-    rating_value: StrictInt | StrictFloat
+    rating_value: StrictInt
     feedback: str = ""
 
 
