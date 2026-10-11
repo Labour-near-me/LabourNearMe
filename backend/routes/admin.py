@@ -9,7 +9,7 @@ def get_admin_stats():
         # 1. Total Workers count
         workers = supabase.table("workers").select("id", count="exact").execute()
         # 2. Total Jobs count
-        jobs = supabase.table("Jobs").select("id", count="exact").execute()
+        jobs = supabase.table("Jobs").select("id", count="exact").eq("status", "open").execute()
         # 3. Successful Matches (Hired/Completed Applications)
         matches = supabase.table("applications").select("id", count="exact").in_("status", ["hired", "completed"]).execute()
         # 4. Total Ratings given
