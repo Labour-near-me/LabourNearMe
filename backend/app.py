@@ -13,12 +13,19 @@ app = FastAPI(
 )
 
 # Set CORS_ALLOWED_ORIGINS to a comma-separated list of deployed frontend
-# origins. Local development defaults cover common React dev servers.
-allowed_origins = [
+# origins. Keep local development origins available even when the deployment
+# environment variable is set, including Ashlesha's frontend on port 8000.
+configured_origins = [
     origin.strip()
     for origin in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
     if origin.strip()
-] or ["http://localhost:3000", "http://localhost:5173"]
+]
+local_dev_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:8000",
+]
+allowed_origins = list(dict.fromkeys(local_dev_origins + configured_origins))
 
 app.add_middleware(
     CORSMiddleware,

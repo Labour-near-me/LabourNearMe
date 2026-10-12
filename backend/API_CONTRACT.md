@@ -148,7 +148,9 @@ its route and exact message have not been captured.
 1. Configure `SUPABASE_SERVICE_ROLE_KEY` in the backend environment with the
    Supabase service-role JWT. The backend rejects an anon key. Never put this
    secret in frontend code or share it in chat.
-2. Set `CORS_ALLOWED_ORIGINS` to the exact frontend origin(s), comma-separated.
+2. Set `CORS_ALLOWED_ORIGINS` to the exact deployed frontend origin(s),
+   comma-separated. Local development origins on ports 3000, 5173, and 8000
+   are also allowed by the backend.
 3. Existing profiles have no Supabase Auth link yet. New accounts must create a
    profile through `POST /workers/` or `POST /employers/register`; old profiles
    need a deliberate account-linking plan before those accounts can sign in.
