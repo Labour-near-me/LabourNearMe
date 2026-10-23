@@ -1,5 +1,6 @@
 import os
 
+from backend.routes import auth
 from fastapi import FastAPI
 from backend.routes import admin
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,6 +45,7 @@ app.include_router(recommendations.router, prefix="/recommend", tags=["Recommend
 # Naya Feedback Router
 app.include_router(feedback.router, prefix="/feedback", tags=["Feedback & Completion"])
 app.include_router(admin.router, prefix="/admin", tags=["Admin Dashboard"])
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
 @app.get("/")
 def home():
