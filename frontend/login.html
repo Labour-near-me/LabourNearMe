@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#003580" />
+  <title>Sign in — LabourNearMe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="login.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js?v=otp-fix-20261024"></script>
+  <script src="api.js"></script>
+  <script src="i18n.js" defer></script>
+  <script src="login.js?v=otp-fix-20261024" defer onerror="document.getElementById('otp-message').textContent='The sign-in page could not load its script. Refresh the page and try again.'"></script>
+</head>
+<body>
+  <header class="login-header">
+    <a class="brand" href="index.html" aria-label="LabourNearMe home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </span>
+      <span><strong>LabourNearMe</strong><small>Shramik Setu · श्रमिक सेतु</small></span>
+    </a>
+    <a class="home-link" href="index.html"><span aria-hidden="true">←</span> <span data-i18n="backHome">Back to home</span></a>
+    <select data-language-selector aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option></select>
+    <button class="home-link auth-signout" type="button" data-auth-signout data-i18n="signOut" hidden>Sign out</button>
+  </header>
+
+  <main class="login-layout">
+    <aside class="welcome-panel" aria-label="About LabourNearMe">
+      <span class="eyebrow"><span class="status-dot"></span> <span data-i18n="welcomeEyebrow">A better way to find work</span></span>
+      <h1>Good work starts with a <span>connection.</span></h1>
+      <p>Sign in to continue your LabourNearMe journey, whether you’re looking for work or building your team.</p>
+      <div class="welcome-note"><span aria-hidden="true">✦</span><span>Connecting workers and local employers across Bharat</span></div>
+    </aside>
+
+    <section class="login-card" aria-labelledby="login-title">
+      <div class="card-heading">
+        <p class="kicker" data-i18n="phoneLoginWelcome">PHONE SIGN-IN</p>
+        <h2 id="login-title" data-i18n="loginTitle">Sign in with your phone</h2>
+        <p data-i18n="phoneAuthIntro">Sign in or create an account using a verified phone number.</p>
+      </div>
+
+      <div class="connection-note"><span aria-hidden="true">ⓘ</span> <span data-i18n="otpDivider">Use your phone number to receive a one-time verification code.</span></div>
+      <form id="otp-form" novalidate>
+        <div class="form-field">
+          <label for="otp-phone" data-i18n="phone">Phone Number</label>
+          <input id="otp-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+919876543210" aria-describedby="otp-phone-help" required />
+          <p class="field-error" id="otp-phone-error" aria-live="polite"></p>
+          <p class="field-hint" id="otp-phone-help" data-i18n="otpPhoneHint">Include your country code, for example +91.</p>
+        </div>
+        <button class="submit-button" id="request-otp" type="button" data-i18n="sendOtp">Send verification code</button>
+        <div class="form-field" id="otp-code-field" hidden>
+          <label for="otp-code" data-i18n="otpCode">Verification code</label>
+          <input id="otp-code" name="otp" type="text" inputmode="numeric" autocomplete="one-time-code" aria-describedby="otp-code-help" />
+          <p class="field-error" id="otp-code-error" aria-live="polite"></p>
+          <p class="field-hint" id="otp-code-help" data-i18n="otpCodeHint">Enter the code sent to your phone.</p>
+        </div>
+        <button class="submit-button" id="verify-otp" type="submit" hidden data-i18n="verifyOtp">Verify and continue</button>
+        <p class="form-message" id="otp-message" role="status" aria-live="polite"></p>
+        <div id="otp-profile-choice" hidden>
+          <p class="field-hint" data-i18n="otpMissingProfileNotice">No profile is linked to this phone account. If you registered before, stop and contact support before continuing.</p>
+          <p class="connection-note" data-i18n="chooseProfileType">Choose which profile to complete:</p>
+          <label class="field-hint"><input id="otp-new-user-confirm" type="checkbox" /> <span data-i18n="otpNewUserConfirm">I have not registered a profile before.</span></label>
+          <button class="continue-profile" type="button" data-otp-role="worker" data-i18n="worker" disabled>Worker</button>
+          <button class="continue-profile" type="button" data-otp-role="employer" data-i18n="employer" disabled>Employer</button>
+        </div>
+      </form>
+
+      <p class="form-message" id="auth-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <footer class="page-footer">LabourNearMe <span aria-hidden="true">·</span> Shramik Setu</footer>
+</body>
+</html>

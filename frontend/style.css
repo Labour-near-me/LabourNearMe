@@ -65,6 +65,15 @@ nav.sc{
 .nr{display:flex;align-items:center;gap:1.75rem}
 .nr a{font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;font-size:.9rem;transition:color .2s}
 .nr a:hover{color:#fff}
+.nr a.nav-login{
+  padding:.45rem 1rem;border:1px solid rgba(255,255,255,.9);border-bottom:3px solid var(--saffron);border-radius:6px;
+  background:#fff;color:var(--navy);font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.nr a.nav-login:hover{background:var(--accent-lt);border-color:var(--accent-lt);border-bottom-color:var(--saffron);color:var(--navy)}
+.nr a.nav-login:focus-visible,.mm a.nav-login:focus-visible{
+  outline:3px solid #ffd37a;outline-offset:3px;
+}
 
 .btn-outline{
   padding:.45rem 1.1rem;border:2px solid rgba(255,255,255,.45);
@@ -88,6 +97,11 @@ nav.sc{
 .mm.op{display:flex}
 .mm a{display:block;padding:.65rem 1rem;font-weight:600;color:rgba(255,255,255,.85);text-decoration:none;border-radius:6px;font-size:.9rem;transition:background .2s}
 .mm a:hover{background:rgba(255,255,255,.1)}
+.mm a.nav-login{
+  background:#fff;color:var(--navy);border:1px solid #fff;border-bottom:3px solid var(--saffron);
+  font-weight:800;text-align:center;
+}
+.mm a.nav-login:hover{background:var(--accent-lt);border-color:var(--accent-lt);border-bottom-color:var(--saffron);color:var(--navy)}
 .mm-btn{width:100%;margin-top:.25rem;padding:.7rem;font-size:.95rem;border-radius:6px;cursor:pointer;font-family:'Noto Sans',sans-serif;font-weight:700}
 .mm .btn-outline{color:#fff;border-color:rgba(255,255,255,.4)}
 .mm .btn-primary{background:var(--saffron);color:#fff;border:none}
@@ -181,6 +195,24 @@ nav.sc{
 .role-info span{font-size:.82rem;color:var(--muted);font-weight:500}
 .role-arrow{color:var(--muted);flex-shrink:0;transition:transform .2s}
 .role-card:hover .role-arrow{transform:translateX(4px);color:var(--text)}
+
+.hero-login-prompt{
+  display:flex;align-items:center;flex-wrap:wrap;gap:.75rem;
+  margin:-.8rem 0 2rem;color:var(--muted);font-size:.9rem;font-weight:600;
+}
+.hero-login-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.55rem 1.2rem;border:1px solid var(--border);border-bottom:3px solid var(--saffron);border-radius:7px;
+  background:#fff;color:var(--navy);text-decoration:none;font-weight:800;
+  box-shadow:0 3px 10px rgba(0,53,128,.16);transition:background .2s,border-color .2s,box-shadow .2s;
+}
+.hero-login-button:hover{background:var(--accent-lt);border-color:var(--border);border-bottom-color:var(--saffron);box-shadow:0 5px 15px rgba(0,53,128,.18)}
+.hero-login-button:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+
+.sample-badge{
+  margin-left:auto;padding:.18rem .55rem;border:1px solid rgba(255,255,255,.55);border-radius:999px;
+  color:#fff;background:rgba(255,255,255,.12);font-size:.65rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;
+}
 
 .hsoc{display:flex;align-items:center;gap:.9rem}
 .avs{display:flex}
@@ -460,6 +492,10 @@ footer a:hover{color:rgba(255,255,255,.9)}
   .hiwg{grid-template-columns:1fr;max-width:480px}
   .hiw-connector{display:none}
   .fgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .nr{display:none}
+  .ham{display:flex}
 }
 @media(max-width:640px){
   .nr{display:none}

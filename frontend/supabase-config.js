@@ -1,0 +1,4 @@
+window.LNM_SUPABASE_CONFIG = {
+  url: "https://ihnlpiujpjslpgesqimj.supabase.co",
+  publishableKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlobmxwaXVqcGpzbHBnZXNxaW1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMjE2MzYsImV4cCI6MjA4NjU5NzYzNn0.F-NhkVoLWDFLT2QfJrCgPjfzn79rbtJ4XoG_22OKxkE"
+};

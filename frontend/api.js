@@ -1,21 +1,36 @@
 // Shared API configuration and JSON request handling for the static frontend.
 window.LNM_API_BASE = 'https://labournearme.onrender.com';
 window.lnmRequest = async function (path, options = {}) {
+  const { authenticated = false, timeout: timeoutMs, ...requestOptions } = options;
+  let accessToken = null;
+  if (authenticated) {
+    if (!window.lnmAuth || typeof window.lnmAuth.getAccessToken !== 'function') {
+      throw new Error('Sign-in is required for this request.');
+    }
+    accessToken = await window.lnmAuth.getAccessToken();
+    if (!accessToken) throw new Error('Your session has expired. Sign in and try again.');
+  }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeout || 45000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs || 45000);
   try {
     const response = await fetch(`${window.LNM_API_BASE}${path}`, {
-      ...options,
-      timeout: undefined,
-      signal: options.signal || controller.signal,
-      headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) }
+      ...requestOptions,
+      signal: requestOptions.signal || controller.signal,
+      headers: {
+        ...(requestOptions.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(requestOptions.headers || {}),
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
+      }
     });
     const text = await response.text();
     let data = {};
     try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { detail: text }; }
     if (!response.ok) {
       const detail = data.detail || data.message || `Request failed (${response.status})`;
-      throw new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
+      const error = new Error(typeof detail === 'string' ? detail : JSON.stringify(detail));
+      error.status = response.status;
+      error.payload = data;
+      throw error;
     }
     return data;
   } catch (error) {

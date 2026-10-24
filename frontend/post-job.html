@@ -63,6 +63,7 @@ nav{
   padding:.45rem .9rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);transition:all .2s;
 }
 .nav-back:hover{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.1)}
+.nav-back[data-auth-signout]{background:transparent;font-family:inherit;cursor:pointer}
 
 /* ── GOV STRIP ─────────────────────────────────────── */
 .gov-strip{
@@ -350,6 +351,7 @@ textarea{resize:vertical;min-height:90px}
   font-size:.9rem;transition:all .25s;
 }
 .btn-post-another:hover{border-color:var(--border2);color:var(--text)}
+.listing-link{display:block;text-align:center;text-decoration:none}
 
 /* ── FOOTER ───────────────────────────────────────── */
 footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
@@ -396,6 +398,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Back to Home
     </a>
+    <select data-language-selector aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option></select>
+    <button class="nav-back" type="button" data-auth-signout data-i18n="signOut" hidden>Sign out</button>
   </div>
 </nav>
 
@@ -657,14 +661,14 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <!-- Employer name + phone -->
       <div class="field-row">
         <div class="field-group">
-          <label class="field-label" for="employer_name">
+          <label class="field-label" for="full_name">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Your Name <span class="req">*</span>
+            Your Full Name <span class="req">*</span>
           </label>
-          <input type="text" id="employer_name" name="employer_name" placeholder="Enter your full name" autocomplete="name"/>
-          <div class="field-error" id="employer_name-err">
+          <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" autocomplete="name"/>
+          <div class="field-error" id="full_name-err">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please enter your name
+            Please enter your full name
           </div>
         </div>
 
@@ -680,6 +684,20 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           </div>
         </div>
       </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="employer_name">Employer or business name <span class="req">*</span></label>
+          <input type="text" id="employer_name" name="employer_name" autocomplete="organization" placeholder="Enter your business name"/>
+          <div class="field-error" id="employer_name-err">Please enter your employer or business name</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="employer_description">Employer description <span class="req">*</span></label>
+          <textarea id="employer_description" rows="2" placeholder="Briefly describe your business"></textarea>
+          <div class="field-error" id="employer_description-err">Please enter an employer description</div>
+        </div>
+      </div>
+      <p class="field-hint" id="auth-help"><span data-i18n="phoneAuthRequired">A verified phone sign-in is required before profile registration.</span> <a href="login.html?next=employer-registration" data-i18n="phoneSignIn">Continue to phone sign-in</a>.</p>
 
       <!-- Job Active Toggle -->
       <div class="field-group">
@@ -697,7 +715,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       </div>
 
       <!-- Terms -->
-      <p class="field-hint">The employer ID is checked for an employer profile, but it is not a secure login or proof of the poster's identity.</p>
+      <p class="field-hint">Your authenticated Supabase session is used for protected profile and job requests.</p>
       <div class="terms-row">
         <input type="checkbox" id="terms"/>
         <label for="terms">
@@ -722,15 +740,15 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         </div>
       </div>
       <h3>Job Posted Successfully! 🎉</h3>
-      <p>Your job listing is now live. Matched workers near you will be notified.</p>
+      <p>The API reported that your job was created.</p>
       <div class="success-id" id="success-id"></div>
       <div class="success-job-title" id="success-job-title"></div>
-      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">Workers typically respond within 12–30 minutes.</p>
       <div class="success-actions">
         <button class="btn-view-workers" onclick="goToWorkers()">
           <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           View Workers Who Applied
         </button>
+        <a class="btn-post-another listing-link" href="jobs.html">Check public job listings</a>
         <button class="btn-post-another" onclick="resetForm()">Post Another Job</button>
       </div>
     </div>
@@ -747,7 +765,11 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   </a>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
 <script src="api.js"></script>
+<script src="i18n.js"></script>
 <script>
 // ── CONFIG ─────────────────────────────────────────
 
@@ -755,13 +777,51 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 let skills        = [];
 let urgency       = '';
 let currentJobId  = null; // stores job ID after successful post
+let employerProfileId = null;
+let profileRegistrationAttempted = false;
+const completingProfile = new URLSearchParams(window.location.search).get('complete_profile') === 'employer';
+
+function authText(key, fallback) {
+  return window.LNM_I18N ? window.LNM_I18N.t(key) : fallback;
+}
+
+async function checkEmployerProfileBeforePosting() {
+  const session = await window.lnmAuth.getSession();
+  const phone = session && session.user && session.user.phone;
+  if (!phone || !session.user.phone_confirmed_at) {
+    const error = new Error('verifiedPhoneRequired');
+    error.authKey = 'verifiedPhoneRequired';
+    throw error;
+  }
+
+  const phoneInput = document.getElementById('phone');
+  phoneInput.value = phone;
+  phoneInput.readOnly = true;
+
+  const result = await window.lnmRequest('/auth/me', { authenticated: true });
+  if (!result || typeof result.user_id !== 'string' || !result.user_id) throw new Error('profileResponseUnexpected');
+  if (result.profile_status === 'missing' && result.needs_registration === true && result.profile === null) return false;
+  if (result.profile_status !== 'complete' || result.needs_registration !== false || !result.profile || result.profile.id == null) {
+    throw new Error('profileResponseUnexpected');
+  }
+
+  if (result.profile.role === 'employer') {
+    employerProfileId = result.profile.id;
+    return true;
+  }
+  if (result.profile.role === 'worker') {
+    window.location.href = `worker_jobs.html?worker_id=${encodeURIComponent(result.profile.id)}`;
+    return 'redirected';
+  }
+  throw new Error('profileResponseUnexpected');
+}
 
 // ── MINI STARS ─────────────────────────────────────
 const starSVG = `<svg width="16" height="16" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 document.getElementById('mini-stars').innerHTML = starSVG.repeat(5);
 
 // ── PROGRESS ────────────────────────────────────────
-const TRACKED_FIELDS = ['job_title', 'description', 'location', 'wage', 'workers_required', 'employer_name', 'phone'];
+const TRACKED_FIELDS = ['job_title', 'description', 'location', 'wage', 'workers_required', 'full_name', 'employer_name', 'employer_description', 'phone'];
 
 function updateProgress() {
   let filled = TRACKED_FIELDS.filter(id => {
@@ -862,7 +922,7 @@ function clearFieldErr(fieldId) {
 function validate() {
   let ok = true;
 
-  const requiredText = ['job_title', 'description', 'location', 'employer_name', 'phone'];
+  const requiredText = ['job_title', 'description', 'location', ...(employerProfileId ? [] : ['full_name', 'employer_name', 'employer_description', 'phone'])];
   requiredText.forEach(id => {
     const el = document.getElementById(id);
     if (!el || !el.value.trim()) { showFieldErr(id); ok = false; }
@@ -895,48 +955,59 @@ function validate() {
 
 // ── MAIN SUBMIT FUNCTION ────────────────────────────
 async function handleJobPost() {
-  if (!validate()) {
-    showBanner('Please fill in all required fields before submitting.');
+  if (profileRegistrationAttempted && !employerProfileId) {
+    showBanner(authText('registrationOutcomeUnknown', 'Registration was already attempted; contact support before retrying.'));
     return;
   }
-
-  if (!document.getElementById('terms').checked) {
-    showBanner('Please accept the Terms of Service to continue.');
-    return;
-  }
-
-  const wageVal = parseFloat(document.getElementById('wage').value) || 0;
-  const payload = {
-    title: document.getElementById('job_title').value.trim(),
-    description: document.getElementById('description').value.trim(),
-    required_skills: skills,
-    budget: wageVal
-  };
-
   setLoading(true);
   hideBanner();
 
   const controller = new AbortController();
   const timeoutId  = setTimeout(() => controller.abort(), 40000);
+  let profileLookupComplete = false;
+  let blockRetry = false;
 
   try {
+    const hasEmployerProfile = await checkEmployerProfileBeforePosting();
+    profileLookupComplete = true;
+    if (hasEmployerProfile === 'redirected') return;
+    if (!validate()) {
+      showBanner('Please fill in all required fields before submitting.');
+      return;
+    }
+    if (!document.getElementById('terms').checked) {
+      showBanner('Please accept the Terms of Service to continue.');
+      return;
+    }
+
+    const wageVal = parseFloat(document.getElementById('wage').value) || 0;
+    const payload = {
+      title: document.getElementById('job_title').value.trim(),
+      description: document.getElementById('description').value.trim(),
+      required_skills: skills,
+      budget: wageVal
+    };
     const coordinates = await window.lnmGeolocation();
-    const employerId = localStorage.getItem('employer_id');
-    let confirmedEmployerId = employerId;
-    if (!confirmedEmployerId) {
+    if (!employerProfileId) {
+      const session = await window.lnmAuth.getSession();
+      if (!session || !session.user || !session.user.phone || !session.user.phone_confirmed_at) {
+        const error = new Error('verifiedPhoneRequired');
+        error.authKey = 'verifiedPhoneRequired';
+        throw error;
+      }
+      profileRegistrationAttempted = true;
       const employer = await window.lnmRequest('/employers/register', {
-        method: 'POST', signal: controller.signal,
+        method: 'POST', authenticated: true, signal: controller.signal,
         body: JSON.stringify({
-          full_name: document.getElementById('employer_name').value.trim(),
-          employer_name: document.getElementById('employer_name').value.trim(),
+          full_name: document.getElementById('full_name').value.trim(),
           phone: document.getElementById('phone').value.trim(),
-          description: 'Employer registered through LabourNearMe frontend.',
+          employer_name: document.getElementById('employer_name').value.trim(),
+          description: document.getElementById('employer_description').value.trim(),
           ...coordinates
         })
       });
-      if (employer.status !== 'success' || !employer.employer_id) throw new Error('The server did not confirm employer registration.');
-      confirmedEmployerId = employer.employer_id;
-      localStorage.setItem('employer_id', confirmedEmployerId);
+      if (employer.status !== 'success' || !employer.employer_id) throw new Error('The server did not confirm employer profile registration. Do not retry until its status is checked.');
+      employerProfileId = employer.employer_id;
     }
     // The backend has no address field. Keep the typed site location in the stored description.
     payload.description = [
@@ -946,8 +1017,7 @@ async function handleJobPost() {
       payload.description
     ].join('\n\n');
     const data = await window.lnmRequest('/jobs/', {
-      method: 'POST', signal: controller.signal,
-      headers: { 'x-user-id': confirmedEmployerId },
+      method: 'POST', authenticated: true, signal: controller.signal,
       body: JSON.stringify({ ...payload, ...coordinates })
     });
     clearTimeout(timeoutId);
@@ -958,13 +1028,26 @@ async function handleJobPost() {
 
   } catch (err) {
     clearTimeout(timeoutId);
-
-    const msg = err.name === 'AbortError'
-      ? 'Server is waking up (Render cold start). Please wait a few seconds and try again.'
-      : (err.message || 'Something went wrong. Please try again.');
-
+    let msg;
+    if (err.authKey) msg = authText(err.authKey, 'A verified phone sign-in is required.');
+    else if (err.status === 401) msg = authText('profileLookupUnauthorized', 'Sign in with phone OTP and try again.');
+    else if (err.status === 409) msg = authText('profileLookupConflict', 'A profile already exists for this account.');
+    else if (err.message === 'profileResponseUnexpected') msg = authText('profileResponseUnexpected', 'The server returned an unexpected profile response.');
+    else if (profileRegistrationAttempted && !employerProfileId) msg = authText('profileRegistrationFailed', 'Profile registration could not be confirmed. Do not retry until its status is checked.');
+    else if (!profileLookupComplete) msg = authText('profileLookupFailed', 'Could not verify your profile with the server.');
+    else msg = err.status ? `Request failed (${err.status}): ${err.message}` : (err.message || 'Something went wrong. Please try again.');
     showBanner(msg);
     setLoading(false);
+    if (profileRegistrationAttempted && !employerProfileId) {
+      blockRetry = true;
+    }
+  } finally {
+    clearTimeout(timeoutId);
+    setLoading(false);
+    if (blockRetry) {
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('btn-text').textContent = authText('registrationOutcomeUnknown', 'Registration not confirmed');
+    }
   }
 }
 
@@ -1014,12 +1097,11 @@ function goToWorkers() {
 
 function resetForm() {
   // Reset text/number inputs
-  [...TRACKED_FIELDS, 'description'].forEach(id => {
+  ['job_title', 'description', 'location', 'wage', 'workers_required'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.value = ''; el.classList.remove('error', 'valid'); }
     clearFieldErr(id);
   });
-
   // Reset skills
   skills = [];
   renderChips();
@@ -1048,6 +1130,10 @@ function resetForm() {
   setLoading(false);
   updateProgress();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+if (completingProfile) {
+  document.getElementById('btn-text').textContent = authText('completeProfileAndPostJob', 'Complete Profile and Post Job');
 }
 </script>
 </body>

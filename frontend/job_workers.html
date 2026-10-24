@@ -212,12 +212,12 @@ nav{
   box-shadow:0 10px 36px var(--shadow-md);
   transform:translateY(-4px);
 }
-.worker-card.accepted{border-color:var(--green);box-shadow:0 4px 18px rgba(19,136,8,.15)}
+.worker-card.hired,.worker-card.legacy-accepted{border-color:var(--green);box-shadow:0 4px 18px rgba(19,136,8,.15)}
 .worker-card.rejected{border-color:var(--border2);opacity:.72;transform:none!important}
 
 /* Card top accent */
 .card-accent{height:4px;background:linear-gradient(90deg,var(--navy),var(--accent))}
-.worker-card.accepted .card-accent{background:linear-gradient(90deg,var(--green),#22c55e)}
+.worker-card.hired .card-accent,.worker-card.legacy-accepted .card-accent{background:linear-gradient(90deg,var(--green),#22c55e)}
 .worker-card.rejected  .card-accent{background:var(--border2)}
 
 .card-body{padding:1.4rem 1.5rem;flex:1;display:flex;flex-direction:column;gap:.85rem}
@@ -267,7 +267,9 @@ nav{
   padding:.4rem .9rem;border-radius:8px;
   font-size:.82rem;font-weight:800;letter-spacing:.02em;
 }
-.status-badge.accepted{background:var(--green-lt);color:var(--green);border:1.5px solid #b8dfc0}
+.status-badge.hired,.status-badge.legacy-accepted{background:var(--green-lt);color:var(--green);border:1.5px solid #b8dfc0}
+.status-badge.pending{background:var(--accent-lt);color:var(--navy);border:1.5px solid var(--border2)}
+.status-badge.unknown{background:var(--surf);color:var(--muted);border:1.5px solid var(--border)}
 .status-badge.rejected{background:var(--red-lt);color:var(--red);border:1.5px solid #fecaca}
 
 /* Card footer */
@@ -395,7 +397,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- GOV STRIP -->
 <div class="gov-strip">
   <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-  Employer Dashboard · Review Applicants · Accept or Reject Workers
+  Employer Dashboard · Review Applicants · Hire or Reject Workers
 </div>
 
 <!-- PAGE -->
@@ -409,7 +411,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         Job Applicants
       </div>
       <h1 class="page-title">Workers Who <span>Applied</span></h1>
-      <p class="page-subtitle">Review each applicant and accept or reject them for this job.</p>
+      <p class="page-subtitle">Review each applicant and hire or reject them for this job.</p>
       <div class="job-id-pill" id="job-id-pill" style="display:none">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         <span id="job-id-display">—</span>
@@ -462,6 +464,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
 <script src="api.js"></script>
 <script>
 // ── CONFIG ────────────────────────────────────────────
@@ -570,7 +575,7 @@ function buildWorkerCard(applicant, index) {
   const phone    = worker.phone    || null;
   const rating   = worker.rating   || worker.avg_rating        || null;
   const skills   = Array.isArray(worker.skills) ? worker.skills : [];
-  const status   = applicant.status || null; // 'accepted' | 'rejected' | null
+  const status   = applicant.status == null || applicant.status === '' ? 'pending' : String(applicant.status).trim().toLowerCase();
 
   // Avatar initials
   const initials = name.trim().split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase() || '?';
@@ -600,22 +605,28 @@ function buildWorkerCard(applicant, index) {
 
   // Footer: decided or action buttons?
   let footerHTML = '';
-  if (status === 'accepted') {
+  if (status === 'hired') {
     footerHTML = `
       <div class="card-footer decided">
-        <span class="status-badge accepted">${checkIcon} Accepted</span>
+        <span class="status-badge hired">${checkIcon} Hired</span>
+      </div>`;
+  } else if (status === 'accepted') {
+    footerHTML = `
+      <div class="card-footer decided">
+        <span class="status-badge legacy-accepted">${checkIcon} Accepted (legacy)</span>
       </div>`;
   } else if (status === 'rejected') {
     footerHTML = `
       <div class="card-footer decided">
         <span class="status-badge rejected">${crossIcon} Rejected</span>
       </div>`;
-  } else {
+  } else if (status === 'pending') {
     footerHTML = `
       <div class="card-footer" id="footer-${index}">
+        <span class="status-badge pending">Pending</span>
         <button class="accept-btn" id="accept-${index}"
           onclick="handleAction('accept', '${escapeHtml(String(workerId || ''))}', '${escapeHtml(String(appId || ''))}', ${index})">
-          ${checkIcon} Accept
+          ${checkIcon} Hire
           <div class="btn-spinner" id="accept-spinner-${index}"></div>
         </button>
         <button class="reject-btn" id="reject-${index}"
@@ -624,9 +635,14 @@ function buildWorkerCard(applicant, index) {
           <div class="btn-spinner" id="reject-spinner-${index}"></div>
         </button>
       </div>`;
+  } else {
+    footerHTML = `
+      <div class="card-footer decided">
+        <span class="status-badge unknown">Unrecognized status: ${escapeHtml(status)}</span>
+      </div>`;
   }
 
-  const decidedClass = status === 'accepted' ? 'accepted' : status === 'rejected' ? 'rejected' : '';
+  const decidedClass = status === 'hired' ? 'hired' : status === 'accepted' ? 'legacy-accepted' : status === 'rejected' ? 'rejected' : '';
 
   return `
     <div class="worker-card ${decidedClass}" id="card-${index}">
@@ -674,24 +690,11 @@ async function handleAction(action, workerId, appId, index) {
   if (spinner)   spinner.style.display = 'block';
   try {
     const result = await window.lnmRequest('/applications/status-update', {
-      method: 'POST', body: JSON.stringify({ application_id: appId, new_status: action === 'accept' ? 'accepted' : 'rejected' })
+      method: 'POST', authenticated: true, body: JSON.stringify({ application_id: appId, new_status: action === 'accept' ? 'hired' : 'rejected' })
     });
     if (result.status !== 'success') throw new Error('The server did not confirm the status update.');
-    const card   = document.getElementById(`card-${index}`);
-    const footer = document.getElementById(`footer-${index}`);
-
-    if (card) {
-      card.classList.remove('accepted', 'rejected');
-      card.classList.add(isAccept ? 'accepted' : 'rejected');
-    }
-    if (footer) {
-      const label = isAccept ? 'Accepted' : 'Rejected';
-      const icon  = isAccept ? checkIcon : crossIcon;
-      footer.className = 'card-footer decided';
-      footer.innerHTML = `<span class="status-badge ${action}">${icon} ${label}</span>`;
-    }
-
-    showToast('success', result.message || (isAccept ? 'Application accepted.' : 'Application rejected.'));
+    showToast('success', result.message || (isAccept ? 'Application hired.' : 'Application rejected.'));
+    await loadApplicants();
   } catch (error) {
     if (acceptBtn) acceptBtn.disabled = false;
     if (rejectBtn) rejectBtn.disabled = false;
@@ -724,13 +727,13 @@ async function loadApplicants() {
   }
   showLoading();
   try {
-    const applications = await window.lnmRequest(`/applications/job/${encodeURIComponent(JOB_ID)}`);
+    const applications = await window.lnmRequest(`/applications/job/${encodeURIComponent(JOB_ID)}`, { authenticated: true });
     if (!Array.isArray(applications)) throw new Error('Unexpected applications response from server.');
     const applicants = await Promise.all(applications.map(async application => {
       const workerId = application.worker_id;
       if (!workerId) return application;
       try {
-        const profile = await window.lnmRequest(`/workers/${encodeURIComponent(workerId)}`);
+        const profile = await window.lnmRequest(`/workers/${encodeURIComponent(workerId)}`, { authenticated: true });
         return { ...application, worker: { ...profile, id: workerId, ...(profile.workers || {}) } };
       } catch (_) {
         return { ...application, worker: { id: workerId } };

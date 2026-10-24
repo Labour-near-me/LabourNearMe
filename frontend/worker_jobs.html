@@ -119,6 +119,18 @@ nav{
 
 /* ── STATES CONTAINER ──────────────────────────────── */
 #state-container{min-height:320px}
+.application-history{margin-top:2.5rem;padding:1.5rem;background:#fff;border:1.5px solid var(--border);border-radius:14px;box-shadow:0 3px 14px var(--shadow)}
+.application-history h3{font-size:1.2rem;color:var(--text);margin-bottom:.35rem}
+.history-note,.history-state{font-size:.86rem;color:var(--muted);line-height:1.6}
+.history-list{display:grid;gap:.65rem;list-style:none;margin-top:1rem}
+.history-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--surf)}
+.history-job{font-weight:700;color:var(--text2);overflow-wrap:anywhere}
+.history-status{display:inline-flex;align-items:center;padding:.25rem .65rem;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap;text-transform:capitalize}
+.history-status.pending{background:#fffbeb;color:#9a5b00;border:1px solid #fcd9a5}
+.history-status.hired{background:var(--green-lt);color:var(--green);border:1px solid #b8dfc0}
+.history-status.rejected{background:var(--red-lt);color:var(--red);border:1px solid #fecaca}
+.history-status.unknown{background:var(--surf2);color:var(--muted);border:1px solid var(--border2)}
+.history-retry{margin-top:.75rem}
 
 /* ── LOADING STATE ─────────────────────────────────── */
 .loading-state{
@@ -370,6 +382,12 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <!-- STATE CONTAINER — loading / error / empty / jobs rendered here -->
   <div id="state-container"></div>
 
+  <section class="application-history" aria-labelledby="application-history-title">
+    <h3 id="application-history-title">Application history</h3>
+    <p class="history-note">Statuses are shown as returned by the API. The Worker ID in this browser is a workflow reference, not secure sign-in.</p>
+    <div id="application-history-state" class="history-state" role="status" aria-live="polite">Loading application history…</div>
+  </section>
+
 </main>
 
 <!-- FOOTER -->
@@ -393,6 +411,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 const BASE_URL = window.LNM_API_BASE;
 const container   = document.getElementById('state-container');
 const refreshBtn  = document.getElementById('refresh-btn');
+const historyContainer = document.getElementById('application-history-state');
 
 // ── ICON HELPERS ──────────────────────────────────────
 const locationIconSVG = `
@@ -417,6 +436,32 @@ function showLoading() {
       <div class="loading-ring"></div>
       <p>Finding jobs near you…</p>
     </div>`;
+}
+
+function showApplicationHistoryLoading() {
+  historyContainer.textContent = 'Loading application history…';
+}
+
+function showApplicationHistoryError(message) {
+  historyContainer.innerHTML = `<p class="history-error"></p><button class="retry-link history-retry" type="button" onclick="fetchJobs()">Retry loading history</button>`;
+  historyContainer.querySelector('.history-error').textContent = message;
+}
+
+function renderApplicationHistory(applications) {
+  if (!applications.length) {
+    historyContainer.textContent = 'No applications were returned for this Worker ID.';
+    return;
+  }
+
+  const knownStatuses = new Set(['pending', 'hired', 'rejected']);
+  historyContainer.innerHTML = `<ul class="history-list">${applications.map(application => {
+    const jobId = application.job_id == null ? 'Unavailable' : `#${escapeHtml(String(application.job_id))}`;
+    const status = String(application.status || '').trim().toLowerCase();
+    const isKnown = knownStatuses.has(status);
+    const label = isKnown ? status : `Unrecognized API status${status ? `: ${escapeHtml(status)}` : ''}`;
+    const className = isKnown ? status : 'unknown';
+    return `<li class="history-row"><span class="history-job">Job ${jobId}</span><span class="history-status ${className}">${escapeHtml(label)}</span></li>`;
+  }).join('')}</ul>`;
 }
 
 // ── showError(message) ────────────────────────────────
@@ -463,6 +508,8 @@ function showNoJobs(openJobCount = 0) {
 
 // Cache of currently rendered jobs to avoid fragile string escaping in inline onclick handlers
 let currentJobs = [];
+let applicationHistoryAvailable = false;
+const applyingJobIds = new Set();
 
 // ── renderJobs(jobs) ──────────────────────────────────
 // Builds and injects the results count bar + job cards grid.
@@ -553,8 +600,8 @@ function buildJobCard(job, index) {
 
       <!-- Card footer -->
       <div class="card-footer">
-        <button class="apply-btn" id="apply-btn-${index}" data-job-id="${escapeHtml(String(jobId || ''))}" onclick="handleApply(${index})" ${job.alreadyApplied ? 'disabled' : ''}>
-          ${job.alreadyApplied ? 'Already applied' : `Apply Now ${arrowIconSVG}`}
+        <button class="apply-btn" id="apply-btn-${index}" data-job-id="${escapeHtml(String(jobId || ''))}" onclick="handleApply(${index})" ${job.alreadyApplied || !applicationHistoryAvailable || String(job.status || '').toLowerCase() !== 'open' ? 'disabled' : ''}>
+          ${job.alreadyApplied ? 'Already applied' : !applicationHistoryAvailable ? 'History unavailable' : String(job.status || '').toLowerCase() !== 'open' ? 'Job not open' : `Apply Now ${arrowIconSVG}`}
         </button>
         ${jobIdShort ? `<span class="job-id" title="Job ID: ${escapeHtml(String(jobId))}">${jobIdShort}</span>` : ''}
       </div>
@@ -598,9 +645,14 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
   }
 
   const btn = document.getElementById(`apply-btn-${index}`);
-  if (btn && btn.disabled) {
-    return; // Prevent duplicate submission while in progress or already applied
+  const jobKey = String(jobId).trim();
+  if ((btn && btn.disabled) || applyingJobIds.has(jobKey)) return;
+  const job = typeof index === 'number' ? currentJobs[index] : null;
+  if (job && String(job.status || '').toLowerCase() !== 'open') {
+    showToast('error', 'This job is no longer open for applications. Refresh the list to check current jobs.');
+    return;
   }
+  applyingJobIds.add(jobKey);
 
   if (btn) {
     btn.disabled = true;
@@ -614,7 +666,7 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
         job_id: String(jobId).trim()
       })
     });
-    if (resData.status !== 'success') throw new Error('The server did not confirm the application.');
+    if (resData.status !== 'success') throw new Error(resData.message || 'The server did not confirm the application.');
 
     // Update button to "Applied" state permanently
     if (btn) {
@@ -622,6 +674,7 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
       btn.style.background = 'var(--green)';
       btn.disabled = true;
     }
+    if (job) job.alreadyApplied = true;
     const successMsg = resData.message || `Applied for "${title}" successfully!`;
     showToast('success', successMsg);
 
@@ -631,6 +684,8 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
       btn.innerHTML = `Apply Now ${arrowIconSVG}`;
     }
     showToast('error', err.message || 'Apply failed. Please try again.');
+  } finally {
+    applyingJobIds.delete(jobKey);
   }
 }
 
@@ -712,41 +767,65 @@ function getLocation() {
 // Main fetch function. Reads worker_id from URL param OR localStorage,
 // calls the recommendations endpoint, and delegates to render helpers.
 async function fetchJobs() {
-  // 1. Try URL param first (set when coming from worker.html)
   const urlParams = new URLSearchParams(window.location.search);
   const urlWorkerId = urlParams.get('worker_id');
   if (urlWorkerId) {
-    localStorage.setItem('worker_id', urlWorkerId); // persist for refresh
+    localStorage.setItem('worker_id', urlWorkerId);
   }
 
-  const workerId = urlWorkerId || localStorage.getItem('worker_id');
+  const workerId = String(urlWorkerId || localStorage.getItem('worker_id') || '').trim();
 
   if (!workerId) {
     showError('No worker ID found. Please register first via the Worker Registration page.');
+    applicationHistoryAvailable = false;
+    historyContainer.textContent = 'Register as a worker to load application history. The browser-stored Worker ID is a workflow reference, not secure sign-in.';
     return;
   }
 
+  showLoading();
+  showApplicationHistoryLoading();
+  setRefreshBtnState(true);
   try {
-    showLoading();
-    setRefreshBtnState(true);
-
-    const [raw, allJobs] = await Promise.all([
-      window.lnmRequest(`/recommend/jobs/${encodeURIComponent(workerId)}`),
-      window.lnmRequest('/jobs/')
+    const [coreResult, historyResult] = await Promise.allSettled([
+      Promise.all([
+        window.lnmRequest(`/recommend/jobs/${encodeURIComponent(workerId)}`),
+        window.lnmRequest('/jobs/')
+      ]),
+      window.lnmRequest(`/applications/my-applications/${encodeURIComponent(workerId)}`)
     ]);
-    const recommendations = Array.isArray(raw.recommendations) ? raw.recommendations : [];
-    const byId = new Map((Array.isArray(allJobs) ? allJobs : []).map(job => [String(job.id), job]));
-    let myApplications = [];
-    try { myApplications = await window.lnmRequest(`/applications/my-applications/${encodeURIComponent(workerId)}`); } catch (_) {}
-    const appliedIds = new Set((Array.isArray(myApplications) ? myApplications : []).map(app => String(app.job_id)));
-    const jobs = recommendations.map(rec => ({ ...(byId.get(String(rec.job_id)) || {}), ...rec, id: rec.job_id, alreadyApplied: appliedIds.has(String(rec.job_id)) }));
 
-    if (jobs.length === 0) {
-      showNoJobs(Array.isArray(allJobs) ? allJobs.length : 0);
+    const appliedIds = new Set();
+    applicationHistoryAvailable = false;
+    if (historyResult.status === 'fulfilled' && Array.isArray(historyResult.value)) {
+      applicationHistoryAvailable = true;
+      historyResult.value.forEach(application => {
+        if (application.job_id != null) appliedIds.add(String(application.job_id));
+      });
+      renderApplicationHistory(historyResult.value);
+    } else if (historyResult.status === 'rejected') {
+      showApplicationHistoryError(`Could not load application history: ${historyResult.reason.message || 'the request failed.'}`);
     } else {
-      renderJobs(jobs);
+      showApplicationHistoryError('The server returned an unexpected application history response.');
     }
 
+    if (coreResult.status === 'rejected') throw coreResult.reason;
+    const [raw, allJobs] = coreResult.value;
+    if (!raw || !Array.isArray(raw.recommendations) || !Array.isArray(allJobs)) {
+      throw new Error('The server returned an unexpected recommendations or open-jobs response.');
+    }
+
+    const openJobs = allJobs.filter(job => String(job.status || '').toLowerCase() === 'open' && job.id != null);
+    const openJobsById = new Map(openJobs.map(job => [String(job.id), job]));
+    const recommendations = raw.recommendations;
+    const jobs = recommendations
+      .filter(recommendation => recommendation.job_id != null && openJobsById.has(String(recommendation.job_id)))
+      .map(recommendation => {
+        const openJob = openJobsById.get(String(recommendation.job_id));
+        return { ...recommendation, ...openJob, id: openJob.id, alreadyApplied: appliedIds.has(String(openJob.id)) };
+      });
+
+    if (jobs.length === 0) showNoJobs(openJobs.length);
+    else renderJobs(jobs);
   } catch (err) {
     showError(err.message || 'Something went wrong. Please try again.');
   } finally {
