@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Open Jobs — LabourNearMe</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body{background:#f0f4fa;color:#1a2433;font-family:'Noto Sans',Arial,sans-serif;margin:0}.jobs-page{max-width:1100px;margin:0 auto;padding:3rem 1.5rem}.jobs-page h1{color:#003580}.job-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}.job{background:white;border:1px solid #d0dae8;border-radius:12px;padding:1.25rem;box-shadow:0 4px 16px #00358012;display:flex;flex-direction:column;gap:.7rem}.job h2{font-size:1.15rem;margin:0}.meta{color:#5a6475;font-size:.9rem;margin:0}.budget{color:#138808;font-weight:800;margin:0}.state{background:#fff;border-radius:12px;padding:1.5rem;color:#5a6475}.nav{background:#003580;color:white;padding:1rem 1.5rem}.nav a{color:white;margin-right:1rem}.job-details{border-top:1px solid #d0dae8;padding-top:.7rem}.job-details summary{color:#003580;font-weight:700;cursor:pointer}.job-details p{margin:.65rem 0;color:#5a6475;white-space:pre-wrap}.job-details a,.worker-notice a{color:#0066cc;font-weight:700}.job-apply{border:0;border-radius:7px;padding:.7rem 1rem;background:#003580;color:#fff;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer}.job-apply:hover,.job-retry:hover{background:#002060}.job-apply:disabled{opacity:.65;cursor:not-allowed}.job-feedback{min-height:1.2em;margin:0;color:#5a6475;font-size:.82rem}.job-feedback.error{color:#b42318}.job-feedback a{color:#0066cc;font-weight:700}.worker-notice{grid-column:1/-1;padding:.8rem 1rem;border:1px solid #d0dae8;border-radius:8px;background:#fff;color:#5a6475}.job-load-error{color:#b42318}.job-retry{padding:.55rem .9rem;border:0;border-radius:6px;background:#003580;color:#fff;font-weight:700;cursor:pointer}@media(max-width:640px){.jobs-page{padding:2rem 1rem}.job-list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="nav"><a href="index.html">LabourNearMe</a><a href="worker.html">Register</a><a href="worker_jobs.html">Recommended jobs</a><a href="post-job.html">Post a job</a><a href="login.html">Sign in</a></header>
+  <main class="jobs-page"><h1>Open jobs</h1><p>Current openings returned by LabourNearMe.</p><div id="jobs" class="state" aria-live="polite">Loading jobs…</div></main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>
+    const root = document.getElementById('jobs');
+    const appliedJobIds = new Set();
+    const inFlightJobIds = new Set();
+    const uncertainJobIds = new Set();
+
+    const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+
+    function renderLoadError(message) {
+      root.className = 'state';
+      root.innerHTML = '<p class="job-load-error"></p><button class="job-retry" type="button">Try again</button>';
+      root.querySelector('.job-load-error').textContent = message;
+      root.querySelector('.job-retry').addEventListener('click', loadJobs);
+    }
+
+    function jobLocation(job) {
+      const lat = Number(job.location_lat);
+      const lng = Number(job.location_lng);
+      if (job.location_lat == null || job.location_lng == null || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return '<p class="meta">Location coordinates were not provided.</p>';
+      }
+      const coords = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(`${lat},${lng}`)}`;
+      return `<p class="meta">Coordinates: ${esc(coords)}</p><a href="${mapUrl}" target="_blank" rel="noopener noreferrer">Open location map</a>`;
+    }
+
+    function renderJobs(jobs) {
+      if (!jobs.length) {
+        root.className = 'state';
+        root.textContent = 'There are no open jobs right now.';
+        return;
+      }
+
+      root.className = 'job-list';
+      root.innerHTML = jobs.map((job, index) => {
+        const jobId = String(job.id ?? '');
+        const status = String(job.status ?? '').toLowerCase();
+        const isOpen = status === 'open';
+        const alreadyApplied = jobId && appliedJobIds.has(jobId);
+        const requestUncertain = jobId && uncertainJobIds.has(jobId);
+        const disabled = !isOpen || alreadyApplied || requestUncertain || !jobId;
+        const buttonText = alreadyApplied ? 'Application submitted' : requestUncertain ? 'Application status unknown' : !isOpen ? 'Not open for applications' : !jobId ? 'Job unavailable' : 'Apply for this job';
+        const description = job.description || 'No description provided.';
+        return `<article class="job" data-job-index="${index}">
+          <h2>${esc(job.title || 'Untitled job')}</h2>
+          <p class="budget">${job.budget != null && Number(job.budget) > 0 ? `₹${Number(job.budget).toLocaleString('en-IN')} budget` : 'Budget not provided'}</p>
+          <p class="meta">Status: ${esc(job.status || 'Status unavailable')} · Job ID: ${esc(jobId || 'unavailable')}</p>
+          <details class="job-details"><summary>View job details and location</summary>
+            <p>${esc(description)}</p>${jobLocation(job)}
+          </details>
+          <button class="job-apply" type="button" data-job-id="${esc(jobId)}" ${disabled ? 'disabled' : ''}>${esc(buttonText)}</button>
+          <p class="job-feedback${requestUncertain ? ' error' : ''}" role="status" aria-live="polite">${requestUncertain ? 'The server did not confirm whether this application was saved. Check your application status before trying again.' : ''}</p>
+        </article>`;
+      }).join('');
+
+      root.querySelectorAll('.job-apply:not(:disabled)').forEach(button => {
+        button.addEventListener('click', () => applyForJob(button));
+      });
+    }
+
+    function showSignInFeedback(feedback) {
+      feedback.classList.remove('error');
+      feedback.innerHTML = 'Sign in to apply. <a href="login.html">Go to sign in</a>, then return here and try again.';
+    }
+
+    async function applyForJob(button) {
+      const jobId = String(button.dataset.jobId || '').trim();
+      if (!jobId || inFlightJobIds.has(jobId) || appliedJobIds.has(jobId) || uncertainJobIds.has(jobId)) return;
+      inFlightJobIds.add(jobId);
+      button.disabled = true;
+      button.textContent = 'Checking sign-in…';
+      const feedback = button.parentElement.querySelector('.job-feedback');
+      feedback.classList.remove('error');
+      feedback.textContent = '';
+
+      let requestStarted = false;
+      try {
+        if (!window.lnmAuth || typeof window.lnmAuth.getSession !== 'function') {
+          throw new Error('Sign-in is unavailable on this page. Open the sign-in page and try again.');
+        }
+        const session = await window.lnmAuth.getSession();
+        if (!session || !session.access_token) {
+          showSignInFeedback(feedback);
+          button.textContent = 'Apply for this job';
+          button.disabled = false;
+          return;
+        }
+
+        button.textContent = 'Submitting…';
+        requestStarted = true;
+        const result = await window.lnmRequest('/applications/apply', {
+          method: 'POST',
+          authenticated: true,
+          body: JSON.stringify({ job_id: jobId })
+        });
+        if (result.status !== 'success') {
+          const error = new Error(result.message || 'The server did not confirm the application.');
+          error.responseReceived = true;
+          throw error;
+        }
+        appliedJobIds.add(jobId);
+        button.textContent = 'Application submitted';
+        feedback.textContent = result.message || 'The server confirmed your application.';
+      } catch (error) {
+        const message = error.message || 'Could not submit your application.';
+        feedback.classList.add('error');
+        if (!requestStarted) {
+          feedback.textContent = message;
+          button.textContent = 'Apply for this job';
+          button.disabled = false;
+        } else if (error.status === 409) {
+          feedback.textContent = `${message} The application may already exist; this page will not submit it again.`;
+          button.textContent = 'Application needs checking';
+        } else if (error.status && error.status < 500) {
+          feedback.textContent = error.status === 401
+            ? `${message} Your sign-in may have expired. Sign in again before retrying.`
+            : message;
+          button.textContent = 'Apply for this job';
+          button.disabled = false;
+        } else {
+          uncertainJobIds.add(jobId);
+          feedback.textContent = `${message} The server did not confirm whether this application was saved. Check your application status before trying again.`;
+          button.textContent = 'Application status unknown';
+        }
+      } finally {
+        inFlightJobIds.delete(jobId);
+      }
+    }
+
+    async function loadJobs() {
+      root.className = 'state';
+      root.textContent = 'Loading open jobs…';
+      try {
+        // Public browsing intentionally sends no authentication option or identity fields.
+        const jobs = await window.lnmRequest('/jobs/');
+        if (!Array.isArray(jobs)) {
+          renderLoadError('The server returned an unexpected jobs response.');
+          return;
+        }
+        const openJobs = jobs.filter(job => String(job.status || '').toLowerCase() === 'open');
+        renderJobs(openJobs);
+      } catch (error) {
+        renderLoadError(error.message || 'Could not load open jobs. Please try again.');
+      }
+    }
+
+    loadJobs();
+  </script>
+</body>
+</html>
