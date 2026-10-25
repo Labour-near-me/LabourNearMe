@@ -1,9 +1,12 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from backend.services.recommendation_service import RecommendationService
 from backend.auth import require_role
 from backend.database.supabase_client import supabase
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # 🔹 For Workers → Get Job Recommendations
 @router.get("/jobs/{worker_id}")
@@ -23,8 +26,9 @@ def get_job_recs(
             "recommendations": recs
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Job recommendation generation failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Job recommendations could not be generated")
 
 
 # 🔹 For Employers → Get Worker Recommendations
@@ -70,5 +74,6 @@ def get_worker_recs(
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Worker recommendation generation failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Worker recommendations could not be generated")

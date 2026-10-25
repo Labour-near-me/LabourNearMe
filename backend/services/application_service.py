@@ -1,5 +1,9 @@
 from datetime import datetime
+import logging
+
 from backend.database.supabase_client import supabase
+
+logger = logging.getLogger(__name__)
 
 def apply_job(worker_id: str, job_id: str):
     try:
@@ -24,8 +28,9 @@ def apply_job(worker_id: str, job_id: str):
         response = supabase.table("applications").insert(data).execute()
         return {"success": True, "data": response.data[0]}
 
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    except Exception as exc:
+        logger.error("Apply helper failed (exception_type=%s)", type(exc).__name__)
+        return {"success": False, "error": "Application could not be submitted"}
 
 def hire_worker(worker_id: str, job_id: str, employer_id: str):
     try:
@@ -50,8 +55,9 @@ def hire_worker(worker_id: str, job_id: str, employer_id: str):
 
         return {"success": True, "data": response.data[0]}
 
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    except Exception as exc:
+        logger.error("Hire helper failed (exception_type=%s)", type(exc).__name__)
+        return {"success": False, "error": "Application status could not be updated"}
 
 def rate_worker(job_id, reviewer_id, reviewee_id, rating_value, feedback):
     try:
@@ -68,5 +74,6 @@ def rate_worker(job_id, reviewer_id, reviewee_id, rating_value, feedback):
 
         return {"success": True, "data": response.data}
 
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    except Exception as exc:
+        logger.error("Rating helper failed (exception_type=%s)", type(exc).__name__)
+        return {"success": False, "error": "Job completion and rating could not be saved"}

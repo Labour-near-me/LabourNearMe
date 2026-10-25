@@ -309,7 +309,54 @@ def convert_embeddings(df, column):
                 np.zeros(384)
             )
 
-    return np.array(vectors)
+    try:
+        return np.array(vectors)
+    except ValueError:
+        # Keep ragged rows aligned with their source records so malformed
+        # candidates can be skipped by the recommendation function.
+        return np.array(vectors, dtype=object)
+
+
+def _aligned_cosine_similarities(query_vector, candidate_vectors, candidate_count):
+    """Return candidate-aligned scores, leaving invalid vectors as NaN."""
+    try:
+        query = np.asarray(query_vector, dtype=float)
+    except (TypeError, ValueError):
+        return None
+
+    if query.ndim != 1 or query.size == 0 or not np.isfinite(query).all():
+        return None
+
+    similarities = np.full(candidate_count, np.nan, dtype=float)
+    valid_positions = []
+    valid_vectors = []
+
+    try:
+        vector_count = len(candidate_vectors)
+    except TypeError:
+        return similarities
+
+    for position in range(min(candidate_count, vector_count)):
+        try:
+            candidate = np.asarray(candidate_vectors[position], dtype=float)
+        except (TypeError, ValueError):
+            continue
+
+        if (
+            candidate.ndim != 1
+            or candidate.size != query.size
+            or not np.isfinite(candidate).all()
+        ):
+            continue
+
+        valid_positions.append(position)
+        valid_vectors.append(candidate)
+
+    if valid_vectors:
+        scores = cosine_similarity(query.reshape(1, -1), np.vstack(valid_vectors))[0]
+        similarities[valid_positions] = scores
+
+    return similarities
 
 
 # ============================================================
@@ -589,16 +636,20 @@ def recommend_jobs_for_worker(
         WORKERS_DF["id"] == worker_id
     ]
 
-    worker_idx = worker_indices[0]
+    worker_idx = WORKERS_DF.index.get_loc(worker_indices[0])
 
-    worker_vector = WORKER_VEC[
-        worker_idx
-    ].reshape(1, -1)
+    try:
+        worker_vector = WORKER_VEC[worker_idx]
+    except (IndexError, TypeError):
+        return []
 
-    similarities = cosine_similarity(
+    similarities = _aligned_cosine_similarities(
         worker_vector,
-        JOB_VEC
-    )[0]
+        JOB_VEC,
+        len(JOBS_DF),
+    )
+    if similarities is None or not np.isfinite(similarities).any():
+        return []
 
     worker_skills = get_worker_skills(
         worker_id
@@ -615,7 +666,10 @@ def recommend_jobs_for_worker(
     # Apply hard eligibility filters and calculate ML scores.
     # ========================================================
 
-    for i, job in JOBS_DF.iterrows():
+    for position, (_, job) in enumerate(JOBS_DF.iterrows()):
+
+        if not np.isfinite(similarities[position]):
+            continue
 
         job_id = str(job["id"])
 
@@ -660,7 +714,7 @@ def recommend_jobs_for_worker(
         # ----------------------------------------------------
 
         similarity = safe_float(
-            similarities[i]
+            similarities[position]
         )
 
         similarity = max(

@@ -37,7 +37,10 @@ def register_worker(
         auth_user_id=str(user.id),
     )
     if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
+        raise HTTPException(
+            status_code=result.get("status_code", 500),
+            detail=result["error"],
+        )
     return result
 
 @router.get("/{worker_id}")

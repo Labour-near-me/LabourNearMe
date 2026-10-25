@@ -1,19 +1,28 @@
-import psycopg2
+import os
 import random
 from collections import defaultdict
 
-# -------------------------------------------------
-# DATABASE CONNECTION
-# -------------------------------------------------
+import psycopg2
+from dotenv import load_dotenv
 
-conn = psycopg2.connect(
-    host="aws-1-ap-south-1.pooler.supabase.com",
-    database="postgres",
-    user="postgres.ihnlpiujpjslpgesqimj",
-    password="subArAshii325",
-    port="6543"
-)
+load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is missing. Configure it in your environment."
+    )
+
+# This script replaces worker skill mappings.
+# Require explicit opt-in; never enable this for production.
+if os.getenv("ALLOW_DESTRUCTIVE_DATA_RESET") != "YES":
+    raise RuntimeError(
+        "Worker skill regeneration is disabled by default. "
+        "Use a separate test database before enabling it."
+    )
+
+conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
 print("Connected to database")

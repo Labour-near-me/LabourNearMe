@@ -1,8 +1,11 @@
 import os
 import base64
 import json
+import logging
 from supabase import create_client, Client
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -33,5 +36,5 @@ if _jwt_role(key) != "service_role":
 try:
     supabase = create_client(url, key)
     print("🚀 Supabase Client initialized successfully!")
-except Exception as e:
-    print(f"❌ Connection failed: {e}")
+except Exception as exc:
+    logger.error("Supabase client initialization failed (exception_type=%s)", type(exc).__name__)

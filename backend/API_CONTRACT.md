@@ -57,8 +57,10 @@ Success: `{"status":"success","employer_id":"<profile-id>"}`.
 
 ### Browse jobs
 
-- `GET /jobs/` — public; returns open jobs, including `location_text`.
-- `GET /jobs/{job_id}` — public; returns job details and required skill IDs.
+- `GET /jobs/` — public; returns open jobs with coordinates rounded to two
+  decimal places. Free-text `location_text` is not returned publicly.
+- `GET /jobs/{job_id}` — public; returns job details and required skill IDs,
+  with approximate coordinates and no free-text `location_text`.
 
 ### Post a job
 
@@ -129,6 +131,12 @@ scores are omitted. Recommendations are separate from applications.
 `GET /recommend/jobs/{worker_id}?top_n=5` — worker only; the ID must belong to
 the signed-in worker. Response contains `worker_id`, `count`, and
 `recommendations` (including job data and `job_title`).
+
+Both recommendation endpoints return an empty `recommendations` list when the
+engine completes successfully but finds no matches. If recommendation
+generation or its supporting database lookup fails, the API returns `500` and
+records the exception in the backend logs instead of reporting a false empty
+result.
 
 ## Common errors
 

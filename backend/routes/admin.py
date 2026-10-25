@@ -1,8 +1,11 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from backend.database.supabase_client import supabase
 from backend.auth import require_role
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 @router.get("/dashboard-stats")
 def get_admin_stats(admin: dict = Depends(require_role("admin"))):
@@ -25,5 +28,6 @@ def get_admin_stats(admin: dict = Depends(require_role("admin"))):
             },
             "system_health": "AI Engine Online (Sentence-Transformers Active)"
         }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Admin dashboard lookup failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Admin dashboard data could not be retrieved")

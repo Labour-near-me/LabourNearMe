@@ -1,4 +1,34 @@
-venv/
+# Secrets
 .env
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Temporary files and local backups
+tmp_*.py
+tmp_backup/
+tmp_backup*/
+supabase/.temp/
+
+# Local debug and audit artifacts
+audit_rls_readonly.py
+check_db_url.py
+check_match_workers.py
+service_diff.txt
+AUDIT_CHECKPOINT.md
+Project_Code_Dump.md
+worker_clusters.csv
+worker_scaler.pkl
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

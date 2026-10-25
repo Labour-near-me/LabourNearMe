@@ -1,4 +1,5 @@
 # backend/routes/jobs.py
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
@@ -6,6 +7,7 @@ from backend.services.job_service import JobService
 from backend.auth import require_role
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # Schema for validation and automated documentation
 class JobCreateSchema(BaseModel):
@@ -25,10 +27,29 @@ def post_job(
     result = JobService.create_job(data.model_dump(), employer["id"])
     
     if "error" in result:
-        # If employer_id is invalid or skill not found, return 400
-        raise HTTPException(status_code=400, detail=result["error"])
+        raise HTTPException(
+            status_code=result.get("status_code", 400),
+            detail=result["error"],
+        )
         
     return result
+
+@router.get("/mine")
+def get_my_jobs(employer: dict = Depends(require_role("employer"))):
+    """All jobs (open and closed) owned by the signed-in employer."""
+    try:
+        jobs = JobService.get_jobs_for_employer(employer["id"])
+    except Exception as exc:
+        logger.error(
+            "Employer job listing failed (exception_type=%s)",
+            type(exc).__name__,
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Your jobs could not be retrieved",
+        )
+    return {"count": len(jobs), "jobs": jobs}
+
 
 @router.get("/{job_id}")
 def get_job(job_id: str):

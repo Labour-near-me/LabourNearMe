@@ -1,21 +1,31 @@
-import psycopg2
+import os
 import random
 import uuid
 from datetime import datetime
 from collections import defaultdict
 
-# -------------------------------------------------
-# DATABASE CONNECTION
-# -------------------------------------------------
+import psycopg2
+import pandas as pd
+from dotenv import load_dotenv
 
-conn = psycopg2.connect(
-    host="aws-1-ap-south-1.pooler.supabase.com",
-    database="postgres",
-    user="postgres.ihnlpiujpjslpgesqimj",
-    password="subArAshii325",
-    port="6543"
-)
+load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is missing. Configure it in your environment."
+    )
+
+# This script deletes and regenerates database records.
+# Refuse to run unless explicitly enabled for a safe test database.
+if os.getenv("ALLOW_DESTRUCTIVE_DATA_RESET") != "YES":
+    raise RuntimeError(
+        "Data generation is disabled by default. "
+        "Use a separate test database and explicitly enable it first."
+    )
+
+conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
 print("Connected to database")

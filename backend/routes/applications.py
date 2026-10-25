@@ -1,10 +1,12 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+import logging
 from backend.database.supabase_client import supabase
 from backend.auth import require_role
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 class ApplicationCreate(BaseModel):
     job_id: str
@@ -81,10 +83,11 @@ def apply_for_job(
 
     except HTTPException:
         raise
-    except Exception as e:
-        if getattr(e, "code", None) == "23505" or "applications_job_worker_unique" in str(e):
+    except Exception as exc:
+        if getattr(exc, "code", None) == "23505" or "applications_job_worker_unique" in str(exc):
             raise HTTPException(status_code=409, detail="You have already applied for this job")
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error("Application submission failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Application could not be submitted")
 
 
 @router.post("/status-update")
@@ -181,8 +184,9 @@ def update_application_status(
 
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Application status update failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Application status could not be updated")
 
 
 @router.get("/my-applications/{worker_id}")
@@ -197,8 +201,9 @@ def get_worker_apps(worker_id: str, worker: dict = Depends(require_role("worker"
             .execute()
         )
         return result.data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Application history lookup failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Application history could not be retrieved")
 
 
 @router.get("/job/{job_id}")
@@ -224,5 +229,6 @@ def get_applications_by_job(job_id: str, employer: dict = Depends(require_role("
         return result.data
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        logger.error("Applicant list lookup failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Applicants could not be retrieved")

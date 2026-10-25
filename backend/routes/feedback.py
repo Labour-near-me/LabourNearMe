@@ -1,10 +1,13 @@
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, StrictInt
 from backend.database.supabase_client import supabase
 from backend.auth import require_role
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class CompleteAndRateRequest(BaseModel):
@@ -126,7 +129,8 @@ def complete_job(
 
     except HTTPException:
         raise
-    except Exception as e:
-        if getattr(e, "code", None) == "23505" or "ratings_job_reviewer_worker_unique" in str(e):
+    except Exception as exc:
+        if getattr(exc, "code", None) == "23505" or "ratings_job_reviewer_worker_unique" in str(exc):
             raise HTTPException(status_code=409, detail="This worker has already been rated for this job")
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error("Job completion and rating failed (exception_type=%s)", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Job completion and rating could not be saved")
