@@ -433,7 +433,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         </div>
       </div>
 
-      <p class="field-hint" id="auth-help"><span data-i18n="phoneAuthRequired">A verified phone sign-in is required before profile registration.</span> <a href="login.html?next=worker-registration" data-i18n="phoneSignIn">Continue to phone sign-in</a>.</p>
+      <p class="field-hint" id="auth-help"><span data-i18n="verifiedAuthRequired">A confirmed phone or email sign-in is required before profile registration.</span> <a href="login.html?next=worker-registration" data-i18n="authSignIn">Continue to sign-in</a>.</p>
 
       <!-- Skills -->
       <div class="field-group">
@@ -464,6 +464,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         <label class="field-label" for="category"><span data-i18n="category">Work category</span> <span class="req">*</span></label>
         <input type="text" id="category" placeholder="e.g. Cleaning" required/>
         <div class="field-error" id="category-err">Please enter a work category</div>
+        <button class="skill-sugg" id="voice-category-button" type="button" data-i18n="voiceSpeakCategory">Speak your work category</button>
+        <p class="field-hint" id="voice-category-status" role="status" aria-live="polite"></p>
       </div>
 
       <!-- Location -->
@@ -565,16 +567,22 @@ function authText(key, fallback) {
 
 async function checkWorkerProfileBeforeRegistration() {
   const session = await window.lnmAuth.getSession();
-  const phone = session && session.user && session.user.phone;
-  if (!phone || !session.user.phone_confirmed_at) {
+  const user = session && session.user;
+  const verifiedPhone = Boolean(user && user.phone && user.phone_confirmed_at);
+  const verifiedEmail = Boolean(user && user.email && user.email_confirmed_at);
+  if (!verifiedPhone && !verifiedEmail) {
     const error = new Error('verifiedPhoneRequired');
-    error.authKey = 'verifiedPhoneRequired';
+    error.authKey = 'verifiedAuthRequired';
     throw error;
   }
 
   const phoneInput = document.getElementById('phone');
-  phoneInput.value = phone;
-  phoneInput.readOnly = true;
+  if (verifiedPhone) {
+    phoneInput.value = user.phone;
+    phoneInput.readOnly = true;
+  } else {
+    phoneInput.readOnly = false;
+  }
 
   const result = await window.lnmRequest('/auth/me', { authenticated: true });
   if (!result || typeof result.user_id !== 'string' || !result.user_id) throw new Error('profileResponseUnexpected');
@@ -614,6 +622,56 @@ function updateProgress() {
 
 // ── SKILLS ───────────────────────────────────────────
 const skillsInput = document.getElementById('skills-input');
+
+// Dictate one reviewable profile field; this never submits the form.
+const voiceCategoryButton = document.getElementById('voice-category-button');
+const voiceCategoryStatus = document.getElementById('voice-category-status');
+let voiceRecognition = null;
+let voiceListening = false;
+
+function setVoiceStatus(key) {
+  voiceCategoryStatus.textContent = key ? authText(key, key) : '';
+}
+
+voiceCategoryButton.addEventListener('click', () => {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    setVoiceStatus('voiceUnsupported');
+    return;
+  }
+  if (voiceListening) return;
+
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.lang = ({ en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN', mr: 'mr-IN' }[
+    window.LNM_I18N ? window.LNM_I18N.getLanguage() : 'en'
+  ]) || 'en-IN';
+  voiceRecognition.continuous = false;
+  voiceRecognition.interimResults = false;
+  voiceRecognition.onresult = event => {
+    const transcript = event.results && event.results[0] && event.results[0][0]
+      ? event.results[0][0].transcript.trim() : '';
+    if (!transcript) {
+      setVoiceStatus('voiceNoSpeech');
+      return;
+    }
+    document.getElementById('category').value = transcript;
+    document.getElementById('category').dispatchEvent(new Event('input', { bubbles: true }));
+    setVoiceStatus('voiceRecognized');
+  };
+  voiceRecognition.onerror = event => {
+    setVoiceStatus(event.error === 'not-allowed' || event.error === 'service-not-allowed'
+      ? 'voicePermissionDenied' : event.error === 'no-speech' ? 'voiceNoSpeech' : 'voiceError');
+  };
+  voiceRecognition.onend = () => { voiceListening = false; };
+  try {
+    voiceListening = true;
+    setVoiceStatus('voiceListening');
+    voiceRecognition.start();
+  } catch (_) {
+    voiceListening = false;
+    setVoiceStatus('voiceError');
+  }
+});
 
 function addSkill(val) {
   const skill = val.trim();
@@ -719,9 +777,10 @@ async function handleRegister() {
     };
     Object.assign(payload, await window.lnmGeolocation());
     const session = await window.lnmAuth.getSession();
-    if (!session || !session.user || !session.user.phone || !session.user.phone_confirmed_at) {
+    const user = session && session.user;
+    if (!user || !(user.phone && user.phone_confirmed_at) && !(user.email && user.email_confirmed_at)) {
       const error = new Error('verifiedPhoneRequired');
-      error.authKey = 'verifiedPhoneRequired';
+      error.authKey = 'verifiedAuthRequired';
       throw error;
     }
     profileRegistrationAttempted = true;

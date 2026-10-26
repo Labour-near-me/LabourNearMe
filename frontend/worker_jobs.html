@@ -401,6 +401,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   </a>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
 <script src="api.js"></script>
 <script>
 // ─────────────────────────────────────────────────────
@@ -661,7 +664,7 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
 
   try {
     const resData = await window.lnmRequest('/applications/apply', {
-      method: 'POST', body: JSON.stringify({
+      method: 'POST', authenticated: true, body: JSON.stringify({
         worker_id: String(workerId).trim(),
         job_id: String(jobId).trim()
       })
@@ -788,10 +791,10 @@ async function fetchJobs() {
   try {
     const [coreResult, historyResult] = await Promise.allSettled([
       Promise.all([
-        window.lnmRequest(`/recommend/jobs/${encodeURIComponent(workerId)}`),
+        window.lnmRequest(`/recommend/jobs/${encodeURIComponent(workerId)}`, { authenticated: true }),
         window.lnmRequest('/jobs/')
       ]),
-      window.lnmRequest(`/applications/my-applications/${encodeURIComponent(workerId)}`)
+      window.lnmRequest(`/applications/my-applications/${encodeURIComponent(workerId)}`, { authenticated: true })
     ]);
 
     const appliedIds = new Set();

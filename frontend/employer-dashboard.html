@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Posted Jobs — LabourNearMe</title>
+  <style>
+    :root{font-family:Arial,sans-serif;color:#1a2433;background:#f0f4fa}*{box-sizing:border-box}body{margin:0}header{background:#003580;color:#fff;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}header a{color:#fff;text-decoration:none;font-weight:700}nav{display:flex;align-items:center;gap:1rem}nav button{border:1px solid #fff;border-radius:6px;background:transparent;color:#fff;padding:.5rem .8rem;cursor:pointer}main{max-width:1050px;margin:2rem auto;padding:0 1rem}h1{margin:.25rem 0;color:#003580}.intro{color:#596579;margin:.35rem 0 1.25rem}.state{padding:1rem;border-radius:9px;background:#fff;border:1px solid #d0dae8;color:#596579}.state.error{color:#a32121;border-color:#efbcbc}.jobs{display:grid;gap:1rem}.job{background:#fff;border:1px solid #d0dae8;border-radius:12px;padding:1.1rem;box-shadow:0 3px 12px #00358012}.job-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.job h2{margin:0;color:#003580;font-size:1.2rem}.status{border-radius:20px;padding:.25rem .7rem;background:#e8f2fc;color:#003580;font-size:.8rem;font-weight:700;text-transform:capitalize}.status.closed{background:#eee;color:#555}.description{white-space:pre-wrap;color:#35445a;margin:.75rem 0}.details{display:flex;flex-wrap:wrap;gap:.55rem 1.25rem;color:#596579;font-size:.9rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}.actions a{display:inline-block;padding:.65rem .9rem;border-radius:7px;text-decoration:none;background:#003580;color:#fff;font-size:.9rem;font-weight:700}.actions a.secondary{background:#e8f2fc;color:#003580;border:1px solid #b8c8dc}.empty-link{display:inline-block;margin-top:.75rem;color:#003580;font-weight:700}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}nav{width:100%;justify-content:space-between}.job-head{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">LabourNearMe · My Posted Jobs</a>
+    <nav><a href="post-job.html">Post a job</a><button type="button" data-auth-signout hidden>Sign out</button></nav>
+  </header>
+  <main>
+    <h1>My Posted Jobs</h1>
+    <p class="intro">Jobs are loaded from your signed-in employer account. Refresh this page to load the latest status.</p>
+    <div id="dashboard-state" class="state" role="status" aria-live="polite">Loading your jobs…</div>
+    <section id="jobs-list" class="jobs" aria-label="Your posted jobs"></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>
+    const stateBox = document.getElementById('dashboard-state');
+    const jobsList = document.getElementById('jobs-list');
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+    }
+
+    function showState(message, isError = false, linkText = '', linkHref = '') {
+      stateBox.className = `state${isError ? ' error' : ''}`;
+      stateBox.textContent = message;
+      jobsList.replaceChildren();
+      if (linkText && linkHref) {
+        const link = document.createElement('a');
+        link.className = 'empty-link';
+        link.href = linkHref;
+        link.textContent = linkText;
+        stateBox.appendChild(document.createElement('br'));
+        stateBox.appendChild(link);
+      }
+    }
+
+    function renderJob(job) {
+      const status = String(job.status || 'unknown').toLowerCase();
+      const budget = job.budget == null || !Number.isFinite(Number(job.budget))
+        ? 'Budget not provided' : `₹${Number(job.budget).toLocaleString('en-IN')}`;
+      const location = job.location_lat != null && job.location_lng != null
+        ? `${Number(job.location_lat).toFixed(4)}, ${Number(job.location_lng).toFixed(4)}`
+        : 'Location unavailable';
+      const posted = job.created_at && Number.isFinite(Date.parse(job.created_at))
+        ? new Date(job.created_at).toLocaleString() : 'Posting date unavailable';
+      const id = encodeURIComponent(String(job.id));
+      return `<article class="job">
+        <div class="job-head"><h2>${escapeHtml(job.title || 'Untitled job')}</h2><span class="status${status === 'closed' ? ' closed' : ''}">${escapeHtml(status)}</span></div>
+        <p class="description">${escapeHtml(job.description || 'No description provided.')}</p>
+        <div class="details"><span><strong>Budget:</strong> ${escapeHtml(budget)}</span><span><strong>Location:</strong> ${escapeHtml(location)}</span><span><strong>Posted:</strong> ${escapeHtml(posted)}</span></div>
+        <div class="actions"><a href="job_workers.html?view=recommended&amp;job_id=${id}">Recommended Workers</a><a class="secondary" href="job_workers.html?view=applied&amp;job_id=${id}">Applied Workers</a></div>
+      </article>`;
+    }
+
+    async function loadMyJobs() {
+      showState('Loading your jobs…');
+      try {
+        const session = await window.lnmAuth.getSession();
+        if (!session || !session.access_token) {
+          showState('Sign in with your employer account to see your posted jobs.', false, 'Sign in', 'login.html');
+          return;
+        }
+
+        const identity = await window.lnmRequest('/auth/me', { authenticated: true });
+        if (!identity || identity.profile_status !== 'complete' || !identity.profile || identity.profile.role !== 'employer') {
+          showState('This dashboard is available to completed employer accounts. Your existing profile role is never changed here.', true);
+          return;
+        }
+
+        const result = await window.lnmRequest('/jobs/mine', { authenticated: true });
+        if (!result || !Array.isArray(result.jobs)) throw new Error('The server returned an unexpected jobs response.');
+        if (result.jobs.length === 0) {
+          showState('You have not posted any jobs yet.', false, 'Post your first job', 'post-job.html');
+          return;
+        }
+        stateBox.className = 'state';
+        stateBox.textContent = `${result.jobs.length} job${result.jobs.length === 1 ? '' : 's'} loaded from your employer account.`;
+        jobsList.innerHTML = result.jobs.filter(job => job && job.id != null).map(renderJob).join('');
+        if (!jobsList.children.length) showState('The server returned no renderable job records.', true);
+      } catch (error) {
+        if (error.status === 401) showState('Your sign-in session could not be verified. Sign in again.', true, 'Sign in', 'login.html');
+        else showState(error.message || 'Could not load your jobs. Try again.', true);
+      }
+    }
+
+    loadMyJobs();
+  </script>
+</body>
+</html>
