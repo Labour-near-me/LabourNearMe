@@ -8,6 +8,35 @@
     mr: { phoneLoginWelcome: 'फोनद्वारे लॉग इन', phoneAuthIntro: 'पडताळलेल्या फोन नंबरने लॉग इन करा किंवा नवीन खाते तयार करा.', otpSending: 'कोड पाठवत आहे…', otpVerifying: 'पडताळणी सुरू आहे…', otpNewUserConfirm: 'मी यापूर्वी कोणतेही प्रोफाइल नोंदवलेले नाही.', signOut: 'लॉग आउट', signedOut: 'तुम्ही लॉग आउट झाला आहात.', signOutError: 'लॉग आउट करता आले नाही.', phoneAuthRequired: 'प्रोफाइल नोंदणीपूर्वी पडताळलेले फोन लॉग इन आवश्यक आहे.', phoneSignIn: 'फोनद्वारे लॉग इन सुरू ठेवा', verifiedPhoneRequired: 'या खात्यात पडताळलेला फोन नंबर नाही. पुढे जाण्यासाठी फोन OTP ने लॉग इन करा.', profileLookupUnauthorized: 'तुमच्या लॉग इनची पुष्टी होऊ शकली नाही. फोन OTP ने पुन्हा लॉग इन करा.', profileLookupConflict: 'या खात्याशी अनेक प्रोफाइल जोडलेली आहेत. पुढे जाण्यापूर्वी मदतीशी संपर्क साधा.', profileLookupFailed: 'सर्व्हरवर प्रोफाइलची पुष्टी होऊ शकली नाही. कनेक्शन तपासून पुन्हा प्रयत्न करा.', profileResponseUnexpected: 'सर्व्हरकडून प्रोफाइलबाबत अनपेक्षित उत्तर मिळाले. कोणतेही प्रोफाइल तयार केले नाही.', profileRegistrationFailed: 'प्रोफाइल नोंदणीची पुष्टी झाली नाही. स्थिती तपासल्याशिवाय पुन्हा प्रयत्न करू नका.', profileRegistering: 'प्रोफाइल नोंदवत आहे…', registrationOutcomeUnknown: 'नोंदणीची पुष्टी झाली नाही. पुन्हा प्रयत्न करू नका; मदतीशी संपर्क साधा.', completeProfileAndPostJob: 'प्रोफाइल पूर्ण करा आणि नोकरी पोस्ट करा' }
   };
 
+  Object.assign(authTranslations.en, {
+    voiceSpeakCategory: 'Speak your work category', voiceListening: 'Listening… speak your work category.',
+    voiceRecognized: 'Speech recognized. Review the category before submitting.',
+    voiceUnsupported: 'Voice input is not supported in this browser. Type your category instead.',
+    voicePermissionDenied: 'Microphone access was denied. Allow microphone access or type your category.',
+    voiceNoSpeech: 'No speech was detected. Try again or type your category.', voiceError: 'Voice input failed. Type your category instead.'
+  });
+  Object.assign(authTranslations.hi, {
+    voiceSpeakCategory: 'अपना काम बोलकर बताएँ', voiceListening: 'सुन रहा है… अपने काम की श्रेणी बोलें।',
+    voiceRecognized: 'आवाज़ पहचानी गई। जमा करने से पहले श्रेणी जाँचें।',
+    voiceUnsupported: 'इस ब्राउज़र में आवाज़ से लिखना उपलब्ध नहीं है। श्रेणी टाइप करें।',
+    voicePermissionDenied: 'माइक्रोफ़ोन की अनुमति नहीं मिली। अनुमति दें या श्रेणी टाइप करें।',
+    voiceNoSpeech: 'आवाज़ नहीं मिली। फिर कोशिश करें या श्रेणी टाइप करें।', voiceError: 'आवाज़ से लिखना विफल हुआ। श्रेणी टाइप करें।'
+  });
+  Object.assign(authTranslations.gu, {
+    voiceSpeakCategory: 'તમારું કામ બોલીને જણાવો', voiceListening: 'સાંભળી રહ્યું છે… તમારા કામની શ્રેણી બોલો.',
+    voiceRecognized: 'વાણી ઓળખાઈ. સબમિટ કરતાં પહેલાં શ્રેણી તપાસો.',
+    voiceUnsupported: 'આ બ્રાઉઝરમાં અવાજથી લખવાનું ઉપલબ્ધ નથી. શ્રેણી ટાઇપ કરો.',
+    voicePermissionDenied: 'માઇક્રોફોનની મંજૂરી ન મળી. મંજૂરી આપો અથવા શ્રેણી ટાઇપ કરો.',
+    voiceNoSpeech: 'અવાજ સંભળાયો નહીં. ફરી પ્રયાસ કરો અથવા શ્રેણી ટાઇપ કરો.', voiceError: 'અવાજથી લખવાનું નિષ્ફળ થયું. શ્રેણી ટાઇપ કરો.'
+  });
+  Object.assign(authTranslations.mr, {
+    voiceSpeakCategory: 'तुमचे काम बोलून सांगा', voiceListening: 'ऐकत आहे… तुमच्या कामाचा प्रकार सांगा.',
+    voiceRecognized: 'आवाज ओळखला. सबमिट करण्यापूर्वी प्रकार तपासा.',
+    voiceUnsupported: 'या ब्राउझरमध्ये आवाजाने टाइप करणे उपलब्ध नाही. कामाचा प्रकार टाइप करा.',
+    voicePermissionDenied: 'मायक्रोफोनची परवानगी नाकारली. परवानगी द्या किंवा कामाचा प्रकार टाइप करा.',
+    voiceNoSpeech: 'आवाज ऐकू आला नाही. पुन्हा प्रयत्न करा किंवा कामाचा प्रकार टाइप करा.', voiceError: 'आवाजाने टाइप करणे अयशस्वी झाले. कामाचा प्रकार टाइप करा.'
+  });
+
   const translations = {
     en: {
       ...authTranslations.en,
@@ -59,6 +88,51 @@
       fullName: 'पूर्ण नाव', phone: 'फोन नंबर', skills: 'कौशल्ये', category: 'कामाचा प्रकार', location: 'ठिकाण', experience: 'अनुभव', wage: 'अपेक्षित दैनिक मजुरी (₹)', enterName: 'तुमचे पूर्ण नाव लिहा', enterLocation: 'तुमचे शहर किंवा परिसर लिहा', addSkill: 'कौशल्य लिहा आणि Enter दाबा (उदा. सुतार)', registerWorker: 'कामगार म्हणून नोंदणी करा', profileTitle: 'कामगार नोंदणी', profileDesc: 'तुमचे संपर्क तपशील, कौशल्ये, अपेक्षित दैनिक मजुरी आणि सध्याचे स्थान देऊन प्रोफाइल तयार करा.', registration: 'कामगार नोंदणी', fillDetails: 'सुरू करण्यासाठी तपशील भरा — 2 मिनिटे लागतील', completion: 'प्रोफाइल पूर्णता', optional: 'पर्यायी तपशील', yearsHint: 'पूर्ण वर्षांची संख्या द्या. नवीन कामगार 0 वर्षे देऊ शकतो.', wageHint: 'ही रक्कम अपेक्षित दैनिक मजुरी म्हणून जतन केली जाईल.', selectLanguage: 'भाषा निवडा'
     }
   };
+
+  const emailAuthTranslations = {
+    en: {
+      emailFallbackHeading: 'Email/password demo fallback', emailFallbackDescription: 'Use an email account if SMS delivery is unavailable.',
+      authSignIn: 'Continue to sign-in',
+      emailRoleLabel: 'Profile type for a new account', emailRoleOptional: 'Choose only when creating an account',
+      emailSignIn: 'Sign in with email', emailSignUp: 'Create email account', emailWorking: 'Checking your account…',
+      emailConfirmRequired: 'Account creation is not complete yet. Check your email and confirm the address; your profile has not been submitted.',
+      emailNoSession: 'Supabase did not return a sign-in session. No profile was submitted.', emailRoleRequired: 'Choose Worker or Employer before creating an account.', emailSignOutFirst: 'Sign out of the current account before creating a separate email account. Accounts are not linked automatically.',
+      emailAuthFailed: 'Email sign-in or registration failed:', profileMissingNotice: 'No application profile is linked to this account. If you already registered, stop and contact support before continuing; creating another profile could duplicate it.',
+      verifiedAuthRequired: 'A confirmed phone or email sign-in is required before profile registration.'
+    },
+    hi: {
+      emailFallbackHeading: 'डेमो के लिए ईमेल/पासवर्ड विकल्प', emailFallbackDescription: 'SMS न मिलने पर ईमेल खाते का उपयोग करें।',
+      authSignIn: 'लॉग इन जारी रखें',
+      emailRoleLabel: 'नए खाते के लिए प्रोफ़ाइल प्रकार', emailRoleOptional: 'केवल नया खाता बनाते समय चुनें',
+      emailSignIn: 'ईमेल से लॉग इन करें', emailSignUp: 'ईमेल खाता बनाएँ', emailWorking: 'खाते की जाँच हो रही है…',
+      emailConfirmRequired: 'खाता बनाना अभी पूरा नहीं हुआ है। ईमेल देखें और पते की पुष्टि करें; प्रोफ़ाइल अभी जमा नहीं की गई है।',
+      emailNoSession: 'Supabase से लॉग इन सत्र नहीं मिला। प्रोफ़ाइल जमा नहीं की गई।', emailRoleRequired: 'खाता बनाने से पहले श्रमिक या नियोक्ता चुनें।', emailSignOutFirst: 'अलग ईमेल खाता बनाने से पहले मौजूदा खाते से लॉग आउट करें। खाते अपने आप नहीं जुड़ते।',
+      emailAuthFailed: 'ईमेल लॉग इन या पंजीकरण विफल हुआ:', profileMissingNotice: 'इस खाते से कोई प्रोफ़ाइल जुड़ी नहीं है। पहले पंजीकरण किया हो तो रुकें और सहायता से संपर्क करें; दूसरी प्रोफ़ाइल से दोहराव हो सकता है।',
+      verifiedAuthRequired: 'प्रोफ़ाइल पंजीकरण से पहले पुष्टि किया हुआ फ़ोन या ईमेल लॉग इन आवश्यक है।'
+    },
+    gu: {
+      emailFallbackHeading: 'ડેમો માટે ઇમેઇલ/પાસવર્ડ વિકલ્પ', emailFallbackDescription: 'SMS ન મળે તો ઇમેઇલ ખાતાનો ઉપયોગ કરો.',
+      authSignIn: 'લૉગ ઇન ચાલુ રાખો',
+      emailRoleLabel: 'નવા ખાતા માટે પ્રોફાઇલનો પ્રકાર', emailRoleOptional: 'ખાતું બનાવતી વખતે જ પસંદ કરો',
+      emailSignIn: 'ઇમેઇલથી લૉગ ઇન કરો', emailSignUp: 'ઇમેઇલ ખાતું બનાવો', emailWorking: 'તમારા ખાતાની તપાસ થઈ રહી છે…',
+      emailConfirmRequired: 'ખાતું બનાવવાની પ્રક્રિયા હજુ પૂર્ણ નથી. ઇમેઇલ તપાસીને સરનામું ચકાસો; પ્રોફાઇલ મોકલાઈ નથી.',
+      emailNoSession: 'Supabase તરફથી લૉગ ઇન સત્ર મળ્યું નથી. પ્રોફાઇલ મોકલાઈ નથી.', emailRoleRequired: 'ખાતું બનાવતાં પહેલાં કામદાર અથવા નોકરીદાતા પસંદ કરો.', emailSignOutFirst: 'અલગ ઇમેઇલ ખાતું બનાવતાં પહેલાં વર્તમાન ખાતામાંથી લૉગ આઉટ કરો. ખાતાં આપમેળે જોડાતા નથી.',
+      emailAuthFailed: 'ઇમેઇલ લૉગ ઇન અથવા નોંધણી નિષ્ફળ:', profileMissingNotice: 'આ ખાતા સાથે કોઈ પ્રોફાઇલ જોડાયેલી નથી. અગાઉ નોંધણી કરી હોય તો અટકો અને સહાયનો સંપર્ક કરો; બીજી પ્રોફાઇલથી નકલ થઈ શકે છે.',
+      verifiedAuthRequired: 'પ્રોફાઇલ નોંધણી પહેલાં ચકાસેલું ફોન અથવા ઇમેઇલ લૉગ ઇન જરૂરી છે.'
+    },
+    mr: {
+      emailFallbackHeading: 'डेमोसाठी ईमेल/पासवर्ड पर्याय', emailFallbackDescription: 'SMS मिळत नसल्यास ईमेल खाते वापरा.',
+      authSignIn: 'लॉग इन सुरू ठेवा',
+      emailRoleLabel: 'नवीन खात्यासाठी प्रोफाइलचा प्रकार', emailRoleOptional: 'फक्त खाते तयार करताना निवडा',
+      emailSignIn: 'ईमेलने लॉग इन करा', emailSignUp: 'ईमेल खाते तयार करा', emailWorking: 'खात्याची तपासणी सुरू आहे…',
+      emailConfirmRequired: 'खाते तयार करणे अजून पूर्ण झालेले नाही. ईमेल तपासून पत्त्याची पुष्टी करा; प्रोफाइल पाठवलेले नाही.',
+      emailNoSession: 'Supabase कडून लॉग इन सत्र मिळाले नाही. प्रोफाइल पाठवलेले नाही.', emailRoleRequired: 'खाते तयार करण्यापूर्वी कामगार किंवा नियोक्ता निवडा.', emailSignOutFirst: 'वेगळे ईमेल खाते तयार करण्यापूर्वी सध्याच्या खात्यातून लॉग आउट करा. खाती आपोआप जोडली जात नाहीत.',
+      emailAuthFailed: 'ईमेल लॉग इन किंवा नोंदणी अयशस्वी:', profileMissingNotice: 'या खात्याशी कोणतेही प्रोफाइल जोडलेले नाही. आधी नोंदणी केली असल्यास थांबा आणि मदतीशी संपर्क साधा; दुसऱ्या प्रोफाइलमुळे डुप्लिकेट होऊ शकते.',
+      verifiedAuthRequired: 'प्रोफाइल नोंदणीपूर्वी पुष्टी केलेले फोन किंवा ईमेल लॉग इन आवश्यक आहे.'
+    }
+  };
+
+  Object.keys(emailAuthTranslations).forEach((language) => Object.assign(translations[language], emailAuthTranslations[language]));
 
   const storageKey = 'lnm-language';
 
