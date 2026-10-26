@@ -398,6 +398,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Back to Home
     </a>
+    <a href="employer-dashboard.html" class="nav-back">My Posted Jobs</a>
     <select data-language-selector aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option></select>
     <button class="nav-back" type="button" data-auth-signout data-i18n="signOut" hidden>Sign out</button>
   </div>
@@ -697,7 +698,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <div class="field-error" id="employer_description-err">Please enter an employer description</div>
         </div>
       </div>
-      <p class="field-hint" id="auth-help"><span data-i18n="phoneAuthRequired">A verified phone sign-in is required before profile registration.</span> <a href="login.html?next=employer-registration" data-i18n="phoneSignIn">Continue to phone sign-in</a>.</p>
+      <p class="field-hint" id="auth-help"><span data-i18n="verifiedAuthRequired">A confirmed phone or email sign-in is required before profile registration.</span> <a href="login.html?next=employer-registration" data-i18n="authSignIn">Continue to sign-in</a>.</p>
 
       <!-- Job Active Toggle -->
       <div class="field-group">
@@ -744,6 +745,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <div class="success-id" id="success-id"></div>
       <div class="success-job-title" id="success-job-title"></div>
       <div class="success-actions">
+        <a class="btn-post-another listing-link" id="dashboard-link" href="employer-dashboard.html">Open My Posted Jobs</a>
         <button class="btn-view-workers" onclick="goToWorkers()">
           <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           View Workers Who Applied
@@ -787,16 +789,22 @@ function authText(key, fallback) {
 
 async function checkEmployerProfileBeforePosting() {
   const session = await window.lnmAuth.getSession();
-  const phone = session && session.user && session.user.phone;
-  if (!phone || !session.user.phone_confirmed_at) {
+  const user = session && session.user;
+  const verifiedPhone = Boolean(user && user.phone && user.phone_confirmed_at);
+  const verifiedEmail = Boolean(user && user.email && user.email_confirmed_at);
+  if (!verifiedPhone && !verifiedEmail) {
     const error = new Error('verifiedPhoneRequired');
-    error.authKey = 'verifiedPhoneRequired';
+    error.authKey = 'verifiedAuthRequired';
     throw error;
   }
 
   const phoneInput = document.getElementById('phone');
-  phoneInput.value = phone;
-  phoneInput.readOnly = true;
+  if (verifiedPhone) {
+    phoneInput.value = user.phone;
+    phoneInput.readOnly = true;
+  } else {
+    phoneInput.readOnly = false;
+  }
 
   const result = await window.lnmRequest('/auth/me', { authenticated: true });
   if (!result || typeof result.user_id !== 'string' || !result.user_id) throw new Error('profileResponseUnexpected');
@@ -990,9 +998,10 @@ async function handleJobPost() {
     const coordinates = await window.lnmGeolocation();
     if (!employerProfileId) {
       const session = await window.lnmAuth.getSession();
-      if (!session || !session.user || !session.user.phone || !session.user.phone_confirmed_at) {
+      const user = session && session.user;
+      if (!user || !(user.phone && user.phone_confirmed_at) && !(user.email && user.email_confirmed_at)) {
         const error = new Error('verifiedPhoneRequired');
-        error.authKey = 'verifiedPhoneRequired';
+        error.authKey = 'verifiedAuthRequired';
         throw error;
       }
       profileRegistrationAttempted = true;
@@ -1075,6 +1084,9 @@ function showSuccess(jobTitle, id) {
   document.getElementById('form-body').style.display = 'none';
 
   currentJobId = id || null; // store for goToWorkers()
+  document.getElementById('dashboard-link').href = currentJobId
+    ? `employer-dashboard.html?job_id=${encodeURIComponent(currentJobId)}`
+    : 'employer-dashboard.html';
 
   const idEl = document.getElementById('success-id');
   if (id) { idEl.textContent = `Job ID: ${id}`; }

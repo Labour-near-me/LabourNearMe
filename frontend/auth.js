@@ -48,6 +48,16 @@
     verifyPhoneOtp(phone, token) {
       return requireClient().auth.verifyOtp({ phone, token, type: 'sms' });
     },
+    signInWithPassword(email, password) {
+      return requireClient().auth.signInWithPassword({ email, password });
+    },
+    signUpWithPassword(email, password, emailRedirectTo) {
+      return requireClient().auth.signUp({
+        email,
+        password,
+        options: emailRedirectTo ? { emailRedirectTo } : {}
+      });
+    },
     async signOut() {
       const { error } = await requireClient().auth.signOut();
       if (error) throw error;

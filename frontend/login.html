@@ -60,13 +60,39 @@
         <button class="submit-button" id="verify-otp" type="submit" hidden data-i18n="verifyOtp">Verify and continue</button>
         <p class="form-message" id="otp-message" role="status" aria-live="polite"></p>
         <div id="otp-profile-choice" hidden>
-          <p class="field-hint" data-i18n="otpMissingProfileNotice">No profile is linked to this phone account. If you registered before, stop and contact support before continuing.</p>
+          <p class="field-hint" data-i18n="profileMissingNotice">No application profile is linked to this account. If you already registered, stop and contact support before continuing.</p>
           <p class="connection-note" data-i18n="chooseProfileType">Choose which profile to complete:</p>
           <label class="field-hint"><input id="otp-new-user-confirm" type="checkbox" /> <span data-i18n="otpNewUserConfirm">I have not registered a profile before.</span></label>
           <button class="continue-profile" type="button" data-otp-role="worker" data-i18n="worker" disabled>Worker</button>
           <button class="continue-profile" type="button" data-otp-role="employer" data-i18n="employer" disabled>Employer</button>
         </div>
       </form>
+
+      <section class="email-auth" aria-labelledby="email-auth-title">
+        <h3 id="email-auth-title" data-i18n="emailFallbackHeading">Email/password demo fallback</h3>
+        <p class="field-hint" data-i18n="emailFallbackDescription">Use an email account if SMS delivery is unavailable.</p>
+        <form id="email-auth-form" novalidate>
+          <div class="form-field">
+            <label for="email-auth-email" data-i18n="email">Email address</label>
+            <input id="email-auth-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="form-field">
+            <label for="email-auth-password" data-i18n="password">Password</label>
+            <input id="email-auth-password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+          <div class="form-field">
+            <label for="email-auth-role" data-i18n="emailRoleLabel">Profile type for a new account</label>
+            <select id="email-auth-role" name="role">
+              <option value="" selected data-i18n="emailRoleOptional">Choose only when creating an account</option>
+              <option value="worker" data-i18n="worker">Worker</option>
+              <option value="employer" data-i18n="employer">Employer</option>
+            </select>
+          </div>
+          <button class="submit-button" id="email-sign-in" type="submit" data-i18n="emailSignIn">Sign in with email</button>
+          <button class="continue-profile" id="email-sign-up" type="button" data-i18n="emailSignUp">Create email account</button>
+        </form>
+        <p class="form-message" id="email-auth-message" role="status" aria-live="polite"></p>
+      </section>
 
       <p class="form-message" id="auth-status" role="status" aria-live="polite"></p>
     </section>
