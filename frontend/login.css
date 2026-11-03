@@ -17,3 +17,17 @@ a{color:inherit}
 .mode-toggle{border:0;padding:0;background:none;color:var(--blue);font:inherit;font-weight:700;cursor:pointer}.mode-toggle:hover{text-decoration:underline}.continue-profile{width:100%;min-height:44px;margin-top:.5rem;border:1px solid var(--blue);border-radius:7px;background:#f3f8ff;color:var(--navy);font:inherit;font-weight:700;cursor:pointer}.continue-profile:hover{background:#e8f2fc}.continue-profile:focus-visible,.mode-toggle:focus-visible{outline:3px solid #0066cc55;outline-offset:3px}[hidden]{display:none!important}
 
 .form-message.status-success{display:block;width:100%;padding:.7rem .8rem;border:1px solid #a8d5a2;border-radius:7px;background:#eff9ed;color:#138808;font-weight:700}.form-message.status-info{display:block;width:100%;padding:.7rem .8rem;border:1px solid #f5d9ad;border-radius:7px;background:#fff8ed;color:#77501f}
+
+.google-auth{margin:1.05rem 0 1.15rem}
+.auth-divider{display:flex;align-items:center;gap:.75rem;margin:.15rem 0 .85rem;color:var(--muted);font-size:.75rem}
+.auth-divider::before,.auth-divider::after{content:"";height:1px;flex:1;background:#e1e7f0}
+.google-signin-button{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:.65rem;padding:.65rem .9rem;border:1px solid #c8d3e2;border-radius:7px;background:#fff;color:#263750;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.google-signin-button:hover:not(:disabled){border-color:#9aaabe;background:#f8fafc;box-shadow:0 2px 8px #00358012}
+.google-signin-button:focus-visible{outline:3px solid #0066cc55;outline-offset:3px}
+.google-signin-button:disabled{cursor:wait;opacity:.78}
+.google-signin-button.is-loading{background:#f8fafc}
+.google-mark{width:19px;height:19px;flex:none}
+.google-spinner{width:17px;height:17px;flex:none;border:2px solid #d0dae8;border-top-color:var(--blue);border-radius:50%;animation:google-spin .8s linear infinite}
+.google-auth-message{margin-top:.55rem}
+@keyframes google-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.google-spinner{animation:none}}

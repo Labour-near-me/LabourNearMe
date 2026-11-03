@@ -132,7 +132,55 @@
     }
   };
 
+  const googleAuthTranslations = {
+    en: {
+      googleSignIn: 'Continue with Google', googleWorking: 'Connecting to Google…',
+      googleStarting: 'Opening Google sign-in…', googleCheckingProfile: 'Checking your LabourNearMe profile…',
+      googleCancelled: 'Google sign-in was cancelled. You can try again.',
+      googleNoSession: 'Google sign-in returned no active session. Please try again.',
+      googleAuthRequired: 'Your sign-in session could not be verified. Please sign in again.',
+      googleServiceUnavailable: 'Sign-in service temporarily unavailable. Please try again later.',
+      googleProfileLookupError: 'Could not verify your profile with the server. Check your connection and try again.',
+      googleFailed: 'Could not sign in with Google. Please try again.',
+      googleRedirectFailed: 'Google sign-in did not start. Please try again.'
+    },
+    hi: {
+      googleSignIn: 'Google से जारी रखें', googleWorking: 'Google से कनेक्ट हो रहा है…',
+      googleStarting: 'Google साइन-इन खोला जा रहा है…', googleCheckingProfile: 'आपकी LabourNearMe प्रोफ़ाइल जाँची जा रही है…',
+      googleCancelled: 'Google साइन-इन रद्द हुआ। आप फिर से कोशिश कर सकते हैं।',
+      googleNoSession: 'Google साइन-इन से सक्रिय सत्र नहीं मिला। कृपया फिर कोशिश करें।',
+      googleAuthRequired: 'आपके साइन-इन सत्र की पुष्टि नहीं हो सकी। कृपया फिर साइन इन करें।',
+      googleServiceUnavailable: 'साइन-इन सेवा अभी उपलब्ध नहीं है। कृपया बाद में फिर कोशिश करें।',
+      googleProfileLookupError: 'सर्वर से आपकी प्रोफ़ाइल की पुष्टि नहीं हो सकी। कनेक्शन जाँचकर फिर कोशिश करें।',
+      googleFailed: 'Google से साइन इन नहीं हो सका। कृपया फिर कोशिश करें।',
+      googleRedirectFailed: 'Google साइन-इन शुरू नहीं हुआ। कृपया फिर कोशिश करें.'
+    },
+    gu: {
+      googleSignIn: 'Google સાથે ચાલુ રાખો', googleWorking: 'Google સાથે કનેક્ટ થઈ રહ્યું છે…',
+      googleStarting: 'Google લૉગ ઇન ખોલાઈ રહ્યું છે…', googleCheckingProfile: 'તમારી LabourNearMe પ્રોફાઇલ તપાસાઈ રહી છે…',
+      googleCancelled: 'Google લૉગ ઇન રદ થયું. તમે ફરી પ્રયાસ કરી શકો છો.',
+      googleNoSession: 'Google લૉગ ઇનથી સક્રિય સત્ર મળ્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+      googleAuthRequired: 'તમારા લૉગ ઇન સત્રની પુષ્ટિ થઈ શકી નથી. કૃપા કરીને ફરી લૉગ ઇન કરો.',
+      googleServiceUnavailable: 'લૉગ ઇન સેવા અત્યારે ઉપલબ્ધ નથી. કૃપા કરીને પછી ફરી પ્રયાસ કરો.',
+      googleProfileLookupError: 'સર્વર પરથી તમારી પ્રોફાઇલ ચકાસી શકાઈ નથી. કનેક્શન તપાસીને ફરી પ્રયાસ કરો.',
+      googleFailed: 'Googleથી લૉગ ઇન થઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+      googleRedirectFailed: 'Google લૉગ ઇન શરૂ થયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.'
+    },
+    mr: {
+      googleSignIn: 'Google सह पुढे जा', googleWorking: 'Google शी जोडत आहे…',
+      googleStarting: 'Google साइन-इन उघडत आहे…', googleCheckingProfile: 'तुमचे LabourNearMe प्रोफाइल तपासत आहे…',
+      googleCancelled: 'Google साइन-इन रद्द झाले. तुम्ही पुन्हा प्रयत्न करू शकता.',
+      googleNoSession: 'Google साइन-इनमधून सक्रिय सत्र मिळाले नाही. कृपया पुन्हा प्रयत्न करा.',
+      googleAuthRequired: 'तुमच्या साइन-इन सत्राची पुष्टी झाली नाही. कृपया पुन्हा साइन इन करा.',
+      googleServiceUnavailable: 'साइन-इन सेवा सध्या उपलब्ध नाही. कृपया नंतर पुन्हा प्रयत्न करा.',
+      googleProfileLookupError: 'सर्व्हरवरून तुमच्या प्रोफाइलची पुष्टी झाली नाही. कनेक्शन तपासून पुन्हा प्रयत्न करा.',
+      googleFailed: 'Google द्वारे साइन इन करता आले नाही. कृपया पुन्हा प्रयत्न करा.',
+      googleRedirectFailed: 'Google साइन-इन सुरू झाले नाही. कृपया पुन्हा प्रयत्न करा.'
+    }
+  };
+
   Object.keys(emailAuthTranslations).forEach((language) => Object.assign(translations[language], emailAuthTranslations[language]));
+  Object.keys(googleAuthTranslations).forEach((language) => Object.assign(translations[language], googleAuthTranslations[language]));
 
   const storageKey = 'lnm-language';
 
