@@ -1255,5 +1255,42 @@ class EmployerOwnJobsTests(BackendWorkflowTests):
         self.assertEqual(worker.status_code, 403)
 
 
+class AuthServiceFailureTests(BackendWorkflowTests):
+    """Invalid tokens give 401; Supabase outages give 503 (not 401)."""
+
+    def call_me(self, error):
+        import httpx  # noqa: F401  (ensures httpx is available)
+        with patch.object(fake_supabase.auth, "get_user", side_effect=error):
+            return self.client.get("/auth/me", headers=self.headers("worker-token"))
+
+    def test_network_failure_returns_503_not_401(self):
+        import httpx
+        response = self.call_me(httpx.ConnectError("network down"))
+        self.assertEqual(response.status_code, 503)
+
+    def test_retryable_supabase_error_returns_503(self):
+        from gotrue.errors import AuthRetryableError
+        response = self.call_me(AuthRetryableError("bad gateway", 502))
+        self.assertEqual(response.status_code, 503)
+
+    def test_supabase_server_error_returns_503(self):
+        from gotrue.errors import AuthApiError
+        response = self.call_me(AuthApiError("server error", 500, "unexpected_failure"))
+        self.assertEqual(response.status_code, 503)
+
+    def test_invalid_or_expired_token_still_returns_401(self):
+        from gotrue.errors import AuthApiError
+        response = self.call_me(AuthApiError("invalid JWT", 401, "bad_jwt"))
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.json()["detail"], "The sign-in token is invalid or expired"
+        )
+
+    def test_503_response_does_not_leak_error_details(self):
+        import httpx
+        response = self.call_me(httpx.ConnectError("secret-host.internal refused"))
+        self.assertNotIn("secret-host", response.text)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,20 +1,49 @@
 """Authentication and profile dependencies for protected API routes."""
 
+import logging
 from typing import Any, Callable
 
+import httpx
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+try:
+    from gotrue.errors import AuthApiError, AuthRetryableError
+except ImportError:  # newer Supabase packages renamed gotrue
+    from supabase_auth.errors import AuthApiError, AuthRetryableError
 
 from backend.database.supabase_client import supabase
 
 
+logger = logging.getLogger(__name__)
+
 _bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def _is_auth_service_failure(exc: Exception) -> bool:
+    """True when Supabase could not be reached or failed on its side.
+
+    These are NOT problems with the user's token, so they must not be
+    reported as invalid credentials. Everything else is rejected (fail closed).
+    """
+    if isinstance(exc, (AuthRetryableError, httpx.HTTPError)):
+        return True
+
+    if isinstance(exc, AuthApiError):
+        status_code = getattr(exc, "status", None)
+        return isinstance(status_code, int) and status_code >= 500
+
+    return False
 
 
 def get_authenticated_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
 ) -> Any:
-    """Validate a Supabase access token and return its authenticated user."""
+    """Validate a Supabase access token and return its authenticated user.
+
+    Works for any Supabase sign-in method (phone OTP, Google, ...) because
+    the token is always a Supabase-issued access token.
+    """
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -25,7 +54,17 @@ def get_authenticated_user(
     try:
         response = supabase.auth.get_user(credentials.credentials)
         user = response.user
-    except Exception:
+    except Exception as exc:
+        if _is_auth_service_failure(exc):
+            # Log only the exception type, never the token.
+            logger.error(
+                "Supabase auth service unavailable (exception_type=%s)",
+                type(exc).__name__,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Sign-in service is temporarily unavailable. Please try again.",
+            ) from exc
         user = None
 
     if user is None:

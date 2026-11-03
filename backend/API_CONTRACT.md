@@ -6,16 +6,50 @@ yet been verified.
 
 ## Authentication
 
-The frontend signs up and signs in with Supabase Auth. Send the returned access
-token on every protected request:
+The frontend signs users in with Supabase Auth (email and password, and Google
+sign-in once enabled). Every sign-in method produces the same kind of Supabase
+access token. Send it on every protected request:
 
 ```http
 Authorization: Bearer <supabase_access_token>
 ```
 
-The backend verifies that token with Supabase, then looks up the app profile by
-`Profiles.auth_user_id`. Profile registration happens after Supabase signup.
-Do not send `worker_id`, `employer_id`, or `x-user-id` as identity proof.
+The backend does not issue or verify its own tokens. It asks Supabase to validate
+the access token, then looks up the app profile by `Profiles.auth_user_id`. The
+role (`worker`, `employer`, `admin`) always comes from that profile row, never from
+the request. A Google identity does not say whether someone is a worker or an
+employer; that is decided by the profile registration step.
+
+Profile registration happens after sign-in. Do not send `worker_id`,
+`employer_id`, or `x-user-id` as identity proof.
+
+Authentication failures:
+
+- `401`: token missing, invalid or expired. Sign in again.
+- `503`: Supabase could not be reached or failed on its side. The token may be
+  fine; retry shortly. Do not sign the user out on a `503`.
+
+### Current user
+
+`GET /auth/me`  any signed-in user.
+
+User with a profile:
+
+```json
+{
+  "user_id": "<auth-user-id>",
+  "email": "asha@example.com",
+  "profile": {"id": "<profile-id>", "role": "worker", "full_name": "Asha Kumar", "phone": "9876543210"},
+  "profile_status": "complete",
+  "needs_registration": false
+}
+```
+
+Signed-in user without a profile yet (for example a first-time Google user):
+`profile` is `null`, `profile_status` is `"missing"` and `needs_registration` is
+`true`. The frontend then asks for Worker or Employer and calls
+`POST /workers/` or `POST /employers/register`. `409` means several profiles are
+linked to the account.
 
 ## Endpoints
 
@@ -117,7 +151,7 @@ Only pending applications can be changed.
       "skill_similarity": 0.9,
       "distance_km": 2.4,
       "rating": 4.7,
-      "match_type": "hybrid"
+      "match_type": "skill_matched"
     }
   ]
 }
@@ -141,6 +175,7 @@ result.
 ## Common errors
 
 - `401`: missing, invalid, or expired Supabase access token.
+- `503`: authentication service (Supabase) temporarily unavailable; retry.
 - `403`: wrong account/role or attempting to access another user's resource.
 - `404`: job or application does not exist.
 - `409`: duplicate application, profile already registered, stale application,
