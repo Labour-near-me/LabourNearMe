@@ -60,7 +60,7 @@ app.include_router(skills.router, prefix="/skills", tags=["Skills"])
 @app.get("/")
 def home():
     return {
-        "message": "LabourNearMe Backend is Live! ðŸš€",
+        "message": "LabourNearMe Backend is Live! 🚀",
         "status": "Healthy",
         "engine": "AI Matching + ML Ranking Active"
     }
