@@ -594,6 +594,73 @@ async function checkWorkerProfileBeforeRegistration() {
   throw new Error('profileResponseUnexpected');
 }
 
+
+// Check whether registration succeeded even if the POST response was lost.
+async function recoverWorkerRegistration() {
+  const maxAttempts = 5;
+  const delayBetweenAttempts = 2000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    try {
+      const result = await window.lnmRequest('/auth/me', {
+        authenticated: true,
+        signal: controller.signal
+      });
+
+      if (
+        result &&
+        result.profile_status === 'complete' &&
+        result.needs_registration === false &&
+        result.profile &&
+        result.profile.role === 'worker' &&
+        result.profile.id
+      ) {
+        console.log('Worker registration confirmed during recovery.');
+        return {
+          workerId: result.profile.id,
+          fullName: result.profile.full_name || ''
+        };
+      }
+
+      if (
+        result &&
+        result.profile_status === 'complete' &&
+        result.profile &&
+        result.profile.role !== 'worker'
+      ) {
+        console.warn('A non-worker profile was found during recovery.');
+        return null;
+      }
+
+      if (
+        !result ||
+        (result.profile_status !== 'missing' &&
+        result.profile_status !== 'complete')
+      ) {
+        console.warn('Unexpected response during registration recovery.');
+      }
+
+      console.log(`Registration not visible yet. Check ${attempt}/${maxAttempts}`);
+    } catch (error) {
+      console.warn(`Registration recovery check ${attempt} failed:`, error.message);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (attempt < maxAttempts) {
+      await new Promise(resolve =>
+        setTimeout(resolve, delayBetweenAttempts)
+      );
+    }
+  }
+
+  return null;
+}
+
+
 // ── MINI STARS ───────────────────────────────────────
 const starSVG = `<svg width="16" height="16" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 document.getElementById('mini-stars').innerHTML = starSVG.repeat(5);
@@ -736,28 +803,83 @@ async function handleRegister() {
     setLoading(false);
     showSuccess(payload.full_name, workerId);
 
-  } catch (err) {
-    clearTimeout(timeoutId);
+
+} catch (err) {
+  clearTimeout(timeoutId);
+
+  // The POST may have completed even though its response was lost.
+  if (profileRegistrationAttempted) {
+    console.warn(
+      'Registration response was uncertain. Checking the saved worker profile...',
+      err
+    );
+
+    const recovered = await recoverWorkerRegistration();
+
+    if (recovered) {
+      setLoading(false);
+
+      const submittedName =
+        document.getElementById('name').value.trim();
+
+      showSuccess(
+        recovered.fullName || submittedName,
+        recovered.workerId
+      );
+
+      return;
+    }
+
+    // Do not allow another POST while the outcome remains uncertain.
+    blockRetry = true;
+
+    showBanner(
+      'We could not confirm your registration yet. Your profile may already have been created. Please sign in again or contact support before trying again.'
+    );
+  } else {
     let msg;
-    if (err.authKey) msg = authText(err.authKey, 'A verified phone sign-in is required.');
-    else if (err.status === 401) msg = authText('profileLookupUnauthorized', 'Sign in with phone OTP and try again.');
-    else if (err.status === 409) msg = authText('profileLookupConflict', 'A profile already exists for this account.');
-    else if (err.message === 'profileResponseUnexpected') msg = authText('profileResponseUnexpected', 'The server returned an unexpected profile response.');
-    else if (profileRegistrationAttempted) msg = authText('profileRegistrationFailed', 'Profile registration could not be confirmed. Do not retry until its status is checked.');
-    else if (!profileLookupComplete) msg = authText('profileLookupFailed', 'Could not verify your profile with the server.');
-    else msg = err.message || 'Could not complete profile registration.';
+
+    if (err.authKey) {
+      msg = authText(
+        err.authKey,
+        'A verified phone sign-in is required.'
+      );
+    } else if (err.status === 401) {
+      msg = authText(
+        'profileLookupUnauthorized',
+        'Sign in with phone OTP and try again.'
+      );
+    } else if (err.status === 409) {
+      msg = authText(
+        'profileLookupConflict',
+        'A profile already exists for this account.'
+      );
+    } else if (err.message === 'profileResponseUnexpected') {
+      msg = authText(
+        'profileResponseUnexpected',
+        'The server returned an unexpected profile response.'
+      );
+    } else if (!profileLookupComplete) {
+      msg = authText(
+        'profileLookupFailed',
+        'Could not verify your profile with the server.'
+      );
+    } else {
+      msg = err.message || 'Could not complete profile registration.';
+    }
+
     showBanner(msg);
-    if (profileRegistrationAttempted) {
-      blockRetry = true;
-    }
-  } finally {
-    clearTimeout(timeoutId);
-    setLoading(false);
-    if (blockRetry) {
-      document.getElementById('submit-btn').disabled = true;
-      document.getElementById('btn-text').textContent = authText('registrationOutcomeUnknown', 'Registration not confirmed');
-    }
   }
+} finally {
+  clearTimeout(timeoutId);
+  setLoading(false);
+
+  if (blockRetry) {
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('btn-text').textContent =
+      authText('registrationOutcomeUnknown', 'Registration not confirmed');
+  }
+}
 }
 
 
