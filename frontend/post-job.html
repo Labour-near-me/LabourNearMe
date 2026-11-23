@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style>[data-auth-login][hidden],[data-auth-signout][hidden]{display:none!important}</style>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Post a Job — LabourNearMe</title>
+<title>Post a Job — Shramik Setu</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -51,10 +52,13 @@ nav{
 }
 .nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
 .li-box{
-  background:var(--saffron);padding:8px;border-radius:8px;
+  width:44px;height:44px;padding:5px;border-radius:12px;
+  background:linear-gradient(145deg,#0b54a2,var(--navy-dk));
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(255,102,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 12px rgba(0,20,55,.28),inset 0 1px 0 rgba(255,255,255,.14);
 }
+.brand-symbol{display:block;width:34px;height:34px;flex:none}
 .lt h1{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.01em}
 .lt p{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.02em}
 .nav-back{
@@ -243,6 +247,16 @@ textarea{resize:vertical;min-height:90px}
 @keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 .skill-chip button{background:none;border:none;cursor:pointer;padding:0;color:var(--muted);display:flex;line-height:1;font-size:1rem;transition:color .15s}
 .skill-chip button:hover{color:var(--red)}
+.skill-catalogue-controls{display:flex;gap:.5rem;align-items:stretch}
+.skill-catalogue-select{flex:1;min-width:0}
+.skill-catalogue-add,.skill-catalogue-retry{border:1.5px solid var(--saffron);border-radius:8px;background:var(--saffron);color:#fff;font:inherit;font-size:.82rem;font-weight:700;padding:.65rem .9rem;cursor:pointer}
+.skill-catalogue-add:disabled{opacity:.55;cursor:not-allowed}
+.skill-catalogue-status{font-size:.78rem;color:var(--muted);margin-top:.45rem}
+.skill-catalogue-status.is-error{color:var(--red)}
+.skill-catalogue-retry{margin-left:.35rem;padding:.2rem .55rem}
+.skill-catalogue-selected-section{margin-top:.65rem}
+.skill-catalogue-selected-heading{font-size:.76rem;font-weight:700;color:var(--muted);margin-bottom:.25rem}
+.skill-catalogue-no-selection{font-size:.76rem;color:var(--muted)}
 .skill-suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
 .skill-sugg{
   padding:.25rem .65rem;border-radius:6px;background:var(--surf);border:1.5px solid var(--border);
@@ -387,13 +401,20 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <div class="ni">
     <a href="index.html" class="nl">
       <div class="li-box">
-        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <svg class="brand-symbol" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+  <circle cx="11" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <circle cx="29" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <path d="M4.5 29v-3.5a6.5 6.5 0 0 1 13 0V29M22.5 29v-3.5a6.5 6.5 0 0 1 13 0V29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M13.5 19c3.7-4.2 9.3-4.2 13 0" stroke="#FFB15E" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="20" cy="17.5" r="2" fill="#FFB15E"/>
+</svg>
       </div>
       <div class="lt">
-        <h1>LabourNearMe</h1>
-        <p>Shramik Setu · श्रमिक सेतु</p>
+        <h1>Shramik Setu</h1>
+        <p>श्रमिक सेतु</p>
       </div>
     </a>
+    <a href="login.html" class="nav-back" data-auth-login data-i18n="login" hidden>Login</a>
     <a href="index.html" class="nav-back">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Back to Home
@@ -407,7 +428,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- GOV STRIP -->
 <div class="gov-strip">
   <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-  Employer registration · Job posting API
+  <span data-i18n="employerRegistrationStrip">Patron registration · Job posting API</span>
 </div>
 
 <!-- PAGE -->
@@ -417,30 +438,30 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <div class="left-panel">
     <div class="page-badge">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-      Employer Job Posting
+      <span data-i18n="employerPageBadge">Patron Job Posting</span>
     </div>
     <h2>
-      Hire <span class="saf">Skilled Workers</span><br>
-      <span class="acc">Near You</span> Fast
+      <span class="saf" data-i18n="employerHeadlineWorkers">Hire Skilled Pros</span><br>
+      <span class="acc" data-i18n="employerHeadlineNearby">Near You Fast</span>
     </h2>
-    <p class="desc">Register an employer profile, post a job, and review applications returned by the backend.</p>
+    <p class="desc" data-i18n="employerIntro">Register a patron profile, post a job, and review applications returned by the backend.</p>
 
     <div class="left-stats">
       <div class="lstat">
-        <div class="ln">Workers</div>
-        <div class="ll">Profile registration</div>
+        <div class="ln" data-i18n="employerStatWorkers">Pros</div>
+        <div class="ll" data-i18n="employerStatProfile">Profile registration</div>
       </div>
       <div class="lstat">
-        <div class="ln">Jobs</div>
-        <div class="ll">Posting and listing</div>
+        <div class="ln" data-i18n="employerStatJobs">Jobs</div>
+        <div class="ll" data-i18n="employerStatPosting">Posting and listing</div>
       </div>
       <div class="lstat">
-        <div class="ln">Applicants</div>
-        <div class="ll">Application review</div>
+        <div class="ln" data-i18n="employerStatApplicants">Applicants</div>
+        <div class="ll" data-i18n="employerStatReview">Application review</div>
       </div>
       <div class="lstat">
         <div class="ln">API</div>
-        <div class="ll">Current capabilities</div>
+        <div class="ll" data-i18n="employerStatCapabilities">Current capabilities</div>
       </div>
     </div>
 
@@ -450,8 +471,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Worker Recommendations</strong>
-          <span>The backend provides worker recommendations for a job. Applicants are listed separately.</span>
+          <strong data-i18n="workerRecommendationsTitle">Pro Recommendations</strong>
+          <span data-i18n="workerRecommendationsText">The backend provides pro recommendations for a job. Applicants are listed separately.</span>
         </div>
       </div>
       <div class="benefit">
@@ -459,8 +480,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Worker Profiles</strong>
-          <span>Worker details are returned by the profile endpoint when available. Identity verification is not supported.</span>
+          <strong data-i18n="workerProfilesTitle">Pro Profiles</strong>
+          <span data-i18n="workerProfilesText">Pro details are returned by the profile endpoint when available. Identity verification is not supported.</span>
         </div>
       </div>
       <div class="benefit">
@@ -468,8 +489,8 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Hyperlocal Results</strong>
-          <span>Workers matched by proximity — reducing commute time for everyone and improving reliability</span>
+          <strong data-i18n="hyperlocalResultsTitle">Hyperlocal Results</strong>
+          <span data-i18n="hyperlocalResultsText">Pros matched by proximity — reducing commute time for everyone and improving reliability</span>
         </div>
       </div>
       <div class="benefit">
@@ -477,20 +498,20 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="benefit-text">
-          <strong>Applicant Status</strong>
-          <span>Accept or reject an application using the backend status update endpoint.</span>
+          <strong data-i18n="applicantStatusTitle">Applicant Status</strong>
+          <span data-i18n="applicantStatusText">Accept or reject an application using the backend status update endpoint.</span>
         </div>
       </div>
     </div>
 
     <div class="mini-testi">
       <div class="mini-stars" id="mini-stars"></div>
-      <p class="mini-quote">Jobs are created with open status. Daily wage is sent using the backend's budget field; unsupported form details are included in the description.</p>
+      <p class="mini-quote" data-i18n="jobStatusQuote">Jobs are created with open status. Daily wage is sent using the backend's budget field; unsupported form details are included in the description.</p>
       <div class="mini-author">
         <div class="mini-av">S</div>
         <div>
-          <div class="mini-nm">API capabilities</div>
-          <div class="mini-rl">Current backend</div>
+          <div class="mini-nm" data-i18n="apiCapabilities">API capabilities</div>
+          <div class="mini-rl" data-i18n="currentBackend">Current backend</div>
         </div>
       </div>
     </div>
@@ -503,10 +524,10 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
       </div>
       <div class="form-header-text">
-        <h3>Post a Job</h3>
-        <p>Enter job details to create an open listing through the backend API.</p>
+        <h3 data-i18n="postJobHeading">Post a Job</h3>
+        <p data-i18n="postJobIntro">Enter job details to create an open listing through the backend API.</p>
       </div>
-      <div class="form-step-indicator">Quick Form</div>
+      <div class="form-step-indicator" data-i18n="quickForm">Quick Form</div>
     </div>
 
     <div class="form-body" id="form-body">
@@ -514,7 +535,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <!-- Progress -->
       <div class="progress-wrap">
         <div class="progress-label">
-          <span>Form Completion</span>
+          <span data-i18n="formCompletion">Form Completion</span>
           <span id="progress-pct">0%</span>
         </div>
         <div class="progress-track">
@@ -525,60 +546,45 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <!-- Error banner -->
       <div class="error-banner" id="error-banner">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="error-msg">Something went wrong. Please try again.</span>
+        <span id="error-msg" data-i18n="jobGenericError">Something went wrong. Please try again.</span>
       </div>
 
       <!-- SECTION: Job Details -->
       <div class="field-group">
         <label class="field-label" for="job_title">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-          Job Title <span class="req">*</span>
+          <span data-i18n="jobTitleLabel">Job Title</span> <span class="req">*</span>
         </label>
-        <input type="text" id="job_title" name="job_title" placeholder="e.g. Experienced Electrician Needed"/>
+        <input type="text" id="job_title" name="job_title" placeholder="e.g. Experienced Electrician Needed" data-i18n-placeholder="jobTitlePlaceholder"/>
         <div class="field-error" id="job_title-err">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Please enter a job title
+          <span data-i18n="jobTitleRequired">Please enter a job title</span>
         </div>
       </div>
 
       <div class="field-group">
         <label class="field-label" for="description">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-          Job Description <span class="req">*</span>
+          <span data-i18n="jobDescriptionLabel">Job Description</span> <span class="req">*</span>
         </label>
-        <textarea id="description" name="description" placeholder="Describe the job role, duties, timings, and any special requirements..." rows="4"></textarea>
-        <div class="field-hint">Be specific about the work, timings, and expectations to attract the right workers</div>
+        <textarea id="description" name="description" placeholder="Describe the job role, duties, timings, and any special requirements..." data-i18n-placeholder="jobDescriptionPlaceholder" rows="4"></textarea>
+        <div class="field-hint" data-i18n="jobDescriptionHint">Be specific about the work, timings, and expectations to attract the right pros</div>
         <div class="field-error" id="description-err">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Please add a job description
+          <span data-i18n="jobDescriptionRequired">Please add a job description</span>
         </div>
       </div>
 
       <!-- Skills required -->
       <div class="field-group">
-        <label class="field-label" for="skills-input">
+        <label class="field-label" for="job-skills-select">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          Required Skills <span class="req">*</span>
+          <span data-i18n="requiredSkills">Required skills</span> <span class="req">*</span>
         </label>
-        <input type="text" id="skills-input" placeholder="Type a skill and press Enter (e.g. Electrician)"/>
+        <div id="job-skill-catalogue"></div>
         <div class="field-error" id="skills-err">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Please add at least one required skill
-        </div>
-        <div class="skills-chips" id="skills-chips"></div>
-        <p class="field-hint">Press <strong>Enter</strong> or <strong>comma</strong> to add · Click × to remove</p>
-        <div style="margin-top:.65rem">
-          <p class="field-hint" style="margin-bottom:.4rem">Quick add:</p>
-          <div class="skill-suggestions" id="skill-suggestions">
-            <button class="skill-sugg" type="button">Carpenter</button>
-            <button class="skill-sugg" type="button">Painter</button>
-            <button class="skill-sugg" type="button">Plumber</button>
-            <button class="skill-sugg" type="button">Electrician</button>
-            <button class="skill-sugg" type="button">Mason</button>
-            <button class="skill-sugg" type="button">Driver</button>
-            <button class="skill-sugg" type="button">Helper</button>
-            <button class="skill-sugg" type="button">Welder</button>
-          </div>
+          <span data-i18n="skillRequiredJob">Please select at least one required skill</span>
         </div>
       </div>
 
@@ -586,13 +592,13 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <div class="field-group">
         <label class="field-label" for="location">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Job Location <span class="req">*</span>
+          <span data-i18n="jobLocationLabel">Job Location</span> <span class="req">*</span>
         </label>
-        <input type="text" id="location" name="location" placeholder="Enter site address, city or area" autocomplete="address-level2"/>
-        <div class="field-hint">The API accepts coordinates only. Allow location access while at the work site; the typed address is retained in the job description.</div>
+        <input type="text" id="location" name="location" placeholder="Enter site address, city or area" data-i18n-placeholder="jobLocationPlaceholder" autocomplete="address-level2"/>
+        <div class="field-hint" data-i18n="jobLocationHint">The API accepts coordinates only. Allow location access while at the work site; the typed address is retained in the job description.</div>
         <div class="field-error" id="location-err">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Please enter the job location
+          <span data-i18n="jobLocationRequired">Please enter the job location</span>
         </div>
       </div>
 
@@ -601,29 +607,29 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         <div class="field-group">
           <label class="field-label" for="wage">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Daily Wage (₹) <span class="req">*</span>
+            <span data-i18n="dailyWageLabel">Daily Wage (₹)</span> <span class="req">*</span>
           </label>
           <div class="input-prefix-wrap">
-            <input type="number" id="wage" name="wage" placeholder="500" min="100" max="99999"/>
+            <input type="number" id="wage" name="wage" placeholder="500" data-i18n-placeholder="wagePlaceholder" min="100" max="99999"/>
             <span class="input-prefix">₹</span>
           </div>
-          <div class="field-hint">Per worker, per day</div>
+          <div class="field-hint" data-i18n="perWorkerPerDay">Per pro, per day</div>
           <div class="field-error" id="wage-err">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please enter a valid wage
+            <span data-i18n="wageRequired">Please enter a valid wage</span>
           </div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="workers_required">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Workers Needed <span class="req">*</span>
+            <span data-i18n="workersNeededLabel">Pros Needed</span> <span class="req">*</span>
           </label>
-          <input type="number" id="workers_required" name="workers_required" placeholder="e.g. 3" min="1" max="999"/>
-          <div class="field-hint">Number of workers required</div>
+          <input type="number" id="workers_required" name="workers_required" placeholder="e.g. 3" data-i18n-placeholder="prosNeededPlaceholder" min="1" max="999"/>
+          <div class="field-hint" data-i18n="workersNeededHint">Number of pros required</div>
           <div class="field-error" id="workers_required-err">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please enter how many workers you need
+            <span data-i18n="workersNeededRequired">Please enter how many pros you need</span>
           </div>
         </div>
       </div>
@@ -632,81 +638,81 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <div class="field-group">
         <label class="field-label">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Urgency Level <span class="req">*</span>
+          <span data-i18n="urgencyLabel">Urgency Level</span> <span class="req">*</span>
         </label>
         <div class="urgency-opts" id="urgency-opts">
           <div class="urg-opt" data-val="Low">
             <span class="urg-emoji">🟢</span>
-            <span class="urg-label">Low</span>
-            <span class="urg-sub">Within a week</span>
+            <span class="urg-label" data-i18n="urgencyLow">Low</span>
+            <span class="urg-sub" data-i18n="urgencyLowHint">Within a week</span>
           </div>
           <div class="urg-opt" data-val="Medium">
             <span class="urg-emoji">🟡</span>
-            <span class="urg-label">Medium</span>
-            <span class="urg-sub">Within 2–3 days</span>
+            <span class="urg-label" data-i18n="urgencyMedium">Medium</span>
+            <span class="urg-sub" data-i18n="urgencyMediumHint">Within 2–3 days</span>
           </div>
           <div class="urg-opt" data-val="High">
             <span class="urg-emoji">🔴</span>
-            <span class="urg-label">High</span>
-            <span class="urg-sub">ASAP / Today</span>
+            <span class="urg-label" data-i18n="urgencyHigh">High</span>
+            <span class="urg-sub" data-i18n="urgencyHighHint">ASAP / Today</span>
           </div>
         </div>
         <div class="field-error" id="urgency-err" style="margin-top:.45rem">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Please select an urgency level
+          <span data-i18n="urgencyRequired">Please select an urgency level</span>
         </div>
       </div>
 
-      <div class="form-divider"><span>YOUR DETAILS</span></div>
+      <div class="form-divider"><span data-i18n="yourDetails">YOUR DETAILS</span></div>
 
       <!-- Employer name + phone -->
       <div class="field-row">
         <div class="field-group">
           <label class="field-label" for="full_name">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            Your Full Name <span class="req">*</span>
+            <span data-i18n="yourFullName">Your Full Name</span> <span class="req">*</span>
           </label>
-          <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" autocomplete="name"/>
+          <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" data-i18n-placeholder="fullNamePlaceholder" autocomplete="name"/>
           <div class="field-error" id="full_name-err">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please enter your full name
+            <span data-i18n="fullNameRequired">Please enter your full name</span>
           </div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="phone">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.09h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.94-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            Contact Number <span class="req">*</span>
+            <span data-i18n="contactNumber">Contact Number</span> <span class="req">*</span>
           </label>
-          <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210" maxlength="15" autocomplete="tel"/>
+          <input type="tel" id="phone" name="phone" placeholder="e.g. 9876543210" data-i18n-placeholder="phonePlaceholder" maxlength="15" autocomplete="tel"/>
           <div class="field-error" id="phone-err">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Please enter a valid phone number
+            <span data-i18n="phoneRequired">Please enter a valid phone number</span>
           </div>
         </div>
       </div>
 
       <div class="field-row">
         <div class="field-group">
-          <label class="field-label" for="employer_name">Employer or business name <span class="req">*</span></label>
-          <input type="text" id="employer_name" name="employer_name" autocomplete="organization" placeholder="Enter your business name"/>
-          <div class="field-error" id="employer_name-err">Please enter your employer or business name</div>
+          <label class="field-label" for="employer_name"><span data-i18n="businessName">Patron or business name</span> <span class="req">*</span></label>
+          <input type="text" id="employer_name" name="employer_name" autocomplete="organization" placeholder="Enter your business name" data-i18n-placeholder="businessNamePlaceholder"/>
+          <div class="field-error" id="employer_name-err" data-i18n="businessNameRequired">Please enter your patron or business name</div>
         </div>
         <div class="field-group">
-          <label class="field-label" for="employer_description">Employer description <span class="req">*</span></label>
-          <textarea id="employer_description" rows="2" placeholder="Briefly describe your business"></textarea>
-          <div class="field-error" id="employer_description-err">Please enter an employer description</div>
+          <label class="field-label" for="employer_description"><span data-i18n="employerDescriptionLabel">Patron description</span> <span class="req">*</span></label>
+          <textarea id="employer_description" rows="2" placeholder="Briefly describe your business" data-i18n-placeholder="patronDescriptionPlaceholder"></textarea>
+          <div class="field-error" id="employer_description-err" data-i18n="employerDescriptionRequired">Please enter a patron description</div>
         </div>
       </div>
       <p class="field-hint" id="auth-help"><span data-i18n="verifiedAuthRequired">A confirmed phone or email sign-in is required before profile registration.</span> <a href="login.html?next=employer-registration" data-i18n="authSignIn">Continue to sign-in</a>.</p>
 
       <!-- Job Active Toggle -->
       <div class="field-group">
-        <label class="field-label">Job Status <span class="opt-tag">Optional</span></label>
+        <label class="field-label"><span data-i18n="jobStatusLabel">Job Status</span> <span class="opt-tag" data-i18n="optional">Optional</span></label>
         <div class="avail-row">
           <div>
-            <div class="avail-label">Job status</div>
-          <div class="avail-sub">The backend currently creates every job with open status.</div>
+            <div class="avail-label" data-i18n="jobStatusValue">Job status</div>
+          <div class="avail-sub" data-i18n="jobStatusHint">The backend currently creates every job with open status.</div>
           </div>
           <label class="toggle">
             <input type="checkbox" id="is_active" checked disabled/>
@@ -716,18 +722,18 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       </div>
 
       <!-- Terms -->
-      <p class="field-hint">Your authenticated Supabase session is used for protected profile and job requests.</p>
+      <p class="field-hint" data-i18n="authSessionHint">Your authenticated Supabase session is used for protected profile and job requests.</p>
       <div class="terms-row">
         <input type="checkbox" id="terms"/>
         <label for="terms">
-          I confirm the job details are accurate and the wage offered is fair and legal. The current backend does not provide a separate terms page.
+          <span data-i18n="termsConfirmation">I confirm the job details are accurate and the wage offered is fair and legal. The current backend does not provide a separate terms page.</span>
         </label>
       </div>
 
       <!-- Submit -->
       <button class="submit-btn" id="submit-btn" type="button" onclick="handleJobPost()">
         <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-        <span id="btn-text">Post Job Now</span>
+        <span id="btn-text" data-i18n="postJobNow">Post Job Now</span>
         <div class="spinner" id="btn-spinner"></div>
       </button>
 
@@ -740,18 +746,18 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
           <svg width="40" height="40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
       </div>
-      <h3>Job Posted Successfully! 🎉</h3>
-      <p>The API reported that your job was created.</p>
-      <div class="success-id" id="success-id"></div>
+      <h3 data-i18n="jobPostedSuccess">Job Posted Successfully! 🎉</h3>
+      <p data-i18n="jobCreatedConfirmation">The API reported that your job was created.</p>
+      <div class="success-id" id="success-id"><span data-i18n="jobIdLabel">Job ID</span>: <span id="success-id-value"></span></div>
       <div class="success-job-title" id="success-job-title"></div>
       <div class="success-actions">
-        <a class="btn-post-another listing-link" id="dashboard-link" href="employer-dashboard.html">Open My Posted Jobs</a>
+        <a class="btn-post-another listing-link" id="dashboard-link" href="employer-dashboard.html" data-i18n="openMyPostedJobs">Open My Posted Jobs</a>
         <button class="btn-view-workers" onclick="goToWorkers()">
           <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          View Workers Who Applied
+          <span data-i18n="viewAppliedWorkers">View Pros Who Applied</span>
         </button>
-        <a class="btn-post-another listing-link" href="jobs.html">Check public job listings</a>
-        <button class="btn-post-another" onclick="resetForm()">Post Another Job</button>
+        <a class="btn-post-another listing-link" href="jobs.html" data-i18n="checkPublicJobListings">Check public job listings</a>
+        <button class="btn-post-another" onclick="resetForm()" data-i18n="postAnotherJob">Post Another Job</button>
       </div>
     </div>
 
@@ -760,18 +766,19 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
 <!-- FOOTER -->
 <footer>
-  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <p class="fbot-p" data-i18n="footerCopyright">© 2026 Shramik Setu · Digital India</p>
   <a href="index.html" class="fbot-back">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    Back to Homepage
+    <span data-i18n="backHomepage">Back to Homepage</span>
   </a>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="auth.js"></script>
+<script src="auth.js?v=auth-controls-20261123"></script>
 <script src="api.js"></script>
-<script src="i18n.js"></script>
+<script src="i18n.js?v=footer-brand-20261123"></script>
+<script src="skill-catalogue.js"></script>
 <script>
 // ── CONFIG ─────────────────────────────────────────
 
@@ -781,6 +788,7 @@ let urgency       = '';
 let currentJobId  = null; // stores job ID after successful post
 let employerProfileId = null;
 let profileRegistrationAttempted = false;
+let jobPostOutcomeUnknown = false;
 const completingProfile = new URLSearchParams(window.location.search).get('complete_profile') === 'employer';
 
 function authText(key, fallback) {
@@ -851,45 +859,16 @@ TRACKED_FIELDS.forEach(id => {
 });
 
 // ── SKILLS ─────────────────────────────────────────
-const skillsInput = document.getElementById('skills-input');
-
-function addSkill(val) {
-  const skill = val.trim();
-  if (!skill || skills.includes(skill)) return;
-  skills.push(skill);
-  renderChips();
-  updateProgress();
-}
-
-function removeSkill(skill) {
-  skills = skills.filter(s => s !== skill);
-  renderChips();
-  updateProgress();
-}
-
-function renderChips() {
-  document.getElementById('skills-chips').innerHTML = skills.map(s =>
-    `<div class="skill-chip">${s}<button type="button" onclick="removeSkill('${s.replace(/'/g, "\\'")}')">×</button></div>`
-  ).join('');
-}
-
-skillsInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    addSkill(skillsInput.value.replace(',', ''));
-    skillsInput.value = '';
+const skillCatalogue = window.SkillCatalogue.create({
+  root: document.getElementById('job-skill-catalogue'),
+  selectId: 'job-skills-select',
+  errorElement: document.getElementById('skills-err'),
+  path: '/skills/',
+  onChange(selected) {
+    skills = selected.map(skill => skill.id);
+    updateProgress();
+    if (skills.length) document.getElementById('skills-err').classList.remove('show');
   }
-});
-
-skillsInput.addEventListener('blur', () => {
-  if (skillsInput.value.trim()) {
-    addSkill(skillsInput.value);
-    skillsInput.value = '';
-  }
-});
-
-document.querySelectorAll('.skill-sugg').forEach(btn => {
-  btn.addEventListener('click', () => addSkill(btn.textContent.trim()));
 });
 
 // ── URGENCY ─────────────────────────────────────────
@@ -943,12 +922,10 @@ function validate() {
   if (!workers || workers < 1) { showFieldErr('workers_required'); ok = false; }
 
   if (skills.length === 0) {
-    document.getElementById('skills-input').classList.add('error');
-    document.getElementById('skills-err').classList.add('show');
+    skillCatalogue.setInvalid(true);
     ok = false;
   } else {
-    document.getElementById('skills-input').classList.remove('error');
-    document.getElementById('skills-err').classList.remove('show');
+    skillCatalogue.setInvalid(false);
   }
 
   if (!urgency) {
@@ -963,8 +940,12 @@ function validate() {
 
 // ── MAIN SUBMIT FUNCTION ────────────────────────────
 async function handleJobPost() {
+  if (jobPostOutcomeUnknown) {
+    showBanner('jobOutcomeUnknown');
+    return;
+  }
   if (profileRegistrationAttempted && !employerProfileId) {
-    showBanner(authText('registrationOutcomeUnknown', 'Registration was already attempted; contact support before retrying.'));
+    showBanner('registrationOutcomeUnknown');
     return;
   }
   setLoading(true);
@@ -974,17 +955,18 @@ async function handleJobPost() {
   const timeoutId  = setTimeout(() => controller.abort(), 40000);
   let profileLookupComplete = false;
   let blockRetry = false;
+  let jobPostStarted = false;
 
   try {
     const hasEmployerProfile = await checkEmployerProfileBeforePosting();
     profileLookupComplete = true;
     if (hasEmployerProfile === 'redirected') return;
     if (!validate()) {
-      showBanner('Please fill in all required fields before submitting.');
+      showBanner('jobRequiredFieldsMessage');
       return;
     }
     if (!document.getElementById('terms').checked) {
-      showBanner('Please accept the Terms of Service to continue.');
+      showBanner('jobAcceptTerms');
       return;
     }
 
@@ -1015,22 +997,27 @@ async function handleJobPost() {
           ...coordinates
         })
       });
-      if (employer.status !== 'success' || !employer.employer_id) throw new Error('The server did not confirm employer profile registration. Do not retry until its status is checked.');
+      if (employer.status !== 'success' || !employer.employer_id) throw new Error('The server did not confirm patron profile registration. Do not retry until its status is checked.');
       employerProfileId = employer.employer_id;
     }
     // The backend has no address field. Keep the typed site location in the stored description.
     payload.description = [
       `Work site: ${document.getElementById('location').value.trim()}`,
-      `Workers requested: ${document.getElementById('workers_required').value}`,
+      `Pros requested: ${document.getElementById('workers_required').value}`,
       `Urgency: ${urgency}`,
       payload.description
     ].join('\n\n');
     const data = await window.lnmRequest('/jobs/', {
       method: 'POST', authenticated: true, signal: controller.signal,
+      onRequestStart: () => { jobPostStarted = true; },
       body: JSON.stringify({ ...payload, ...coordinates })
     });
     clearTimeout(timeoutId);
-    if (data.status !== 'success' || !data.job_id) throw new Error('The server did not confirm job creation.');
+    if (data.status !== 'success' || !data.job_id) {
+      const error = new Error('The server did not confirm job creation.');
+      error.jobResponseUnexpected = true;
+      throw error;
+    }
 
     setLoading(false);
     showSuccess(payload.title, data.job_id);
@@ -1038,14 +1025,23 @@ async function handleJobPost() {
   } catch (err) {
     clearTimeout(timeoutId);
     let msg;
-    if (err.authKey) msg = authText(err.authKey, 'A verified phone sign-in is required.');
-    else if (err.status === 401) msg = authText('profileLookupUnauthorized', 'Sign in with phone OTP and try again.');
-    else if (err.status === 409) msg = authText('profileLookupConflict', 'A profile already exists for this account.');
-    else if (err.message === 'profileResponseUnexpected') msg = authText('profileResponseUnexpected', 'The server returned an unexpected profile response.');
-    else if (profileRegistrationAttempted && !employerProfileId) msg = authText('profileRegistrationFailed', 'Profile registration could not be confirmed. Do not retry until its status is checked.');
-    else if (!profileLookupComplete) msg = authText('profileLookupFailed', 'Could not verify your profile with the server.');
-    else msg = err.status ? `Request failed (${err.status}): ${err.message}` : (err.message || 'Something went wrong. Please try again.');
-    showBanner(msg);
+    if (err.authKey) msg = err.authKey;
+    else if (err.status === 401) msg = 'profileLookupUnauthorized';
+    else if (err.status === 409) msg = 'profileLookupConflict';
+    else if (err.message === 'profileResponseUnexpected') msg = 'profileResponseUnexpected';
+    else if (profileRegistrationAttempted && !employerProfileId) msg = 'profileRegistrationFailed';
+    else if (!profileLookupComplete) msg = 'profileLookupFailed';
+    else if (jobPostStarted && (err.jobResponseUnexpected || !err.status || err.status < 400 || err.status >= 500)) {
+      jobPostOutcomeUnknown = true;
+      blockRetry = true;
+      msg = 'jobOutcomeUnknown';
+    }
+    else if (err.status) msg = 'jobRequestFailedStatus';
+    else if (err.message && /location access|location permission/i.test(err.message)) msg = 'jobLocationPermissionError';
+    else if (err.message && /could not determine|could not detect/i.test(err.message)) msg = 'jobLocationDetectionError';
+    else if (err.message && /location.*unavailable/i.test(err.message)) msg = 'jobLocationUnavailable';
+    else msg = 'jobUnexpectedError';
+    showBanner(msg, err.status ? { status: err.status } : null);
     setLoading(false);
     if (profileRegistrationAttempted && !employerProfileId) {
       blockRetry = true;
@@ -1055,7 +1051,8 @@ async function handleJobPost() {
     setLoading(false);
     if (blockRetry) {
       document.getElementById('submit-btn').disabled = true;
-      document.getElementById('btn-text').textContent = authText('registrationOutcomeUnknown', 'Registration not confirmed');
+      submitTextKey = jobPostOutcomeUnknown ? 'jobOutcomeUnknown' : 'registrationOutcomeUnknown';
+      renderSubmitText();
     }
   }
 }
@@ -1063,19 +1060,46 @@ async function handleJobPost() {
 // ── UI HELPERS ──────────────────────────────────────
 function setLoading(on) {
   const btn = document.getElementById('submit-btn');
-  document.getElementById('btn-text').textContent    = on ? 'Posting Job...' : 'Post Job Now';
+  submitTextKey = on ? 'postingJob' : 'postJobNow';
+  renderSubmitText();
   document.getElementById('btn-spinner').style.display = on ? 'block' : 'none';
   btn.disabled = on;
 }
 
-function showBanner(msg) {
+let bannerKey = null;
+let bannerValues = null;
+let submitTextKey = 'postJobNow';
+
+function renderSubmitText() {
+  const key = completingProfile && submitTextKey === 'postJobNow' ? 'completeProfileAndPostJob' : submitTextKey;
+  const fallback = key === 'postingJob' ? 'Posting job…' : key === 'registrationOutcomeUnknown' ? 'Registration not confirmed' : key === 'jobOutcomeUnknown' ? 'Verify My Posted Jobs before retrying' : 'Post Job Now';
+  document.getElementById('btn-text').textContent = authText(key, fallback);
+}
+
+function renderBanner() {
+  if (!bannerKey) return;
+  let message = authText(bannerKey, 'Something went wrong. Please try again.');
+  if (bannerValues) Object.keys(bannerValues).forEach((key) => { message = message.replace(`{{${key}}}`, bannerValues[key]); });
+  document.getElementById('error-msg').textContent = message;
+}
+
+document.addEventListener('lnm-language-change', () => {
+  renderBanner();
+  renderSubmitText();
+});
+
+function showBanner(msg, values = null) {
+  bannerKey = msg;
+  bannerValues = values;
   const b = document.getElementById('error-banner');
-  document.getElementById('error-msg').textContent = msg;
+  renderBanner();
   b.classList.add('show');
   b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function hideBanner() {
+  bannerKey = null;
+  bannerValues = null;
   document.getElementById('error-banner').classList.remove('show');
 }
 
@@ -1086,10 +1110,10 @@ function showSuccess(jobTitle, id) {
   currentJobId = id || null; // store for goToWorkers()
   document.getElementById('dashboard-link').href = currentJobId
     ? `employer-dashboard.html?job_id=${encodeURIComponent(currentJobId)}`
-    : 'employer-dashboard.html';
+    : 'patron-dashboard.html';
 
   const idEl = document.getElementById('success-id');
-  if (id) { idEl.textContent = `Job ID: ${id}`; }
+  if (id) { idEl.style.display = ''; document.getElementById('success-id-value').textContent = id; }
   else     { idEl.style.display = 'none'; }
 
   document.getElementById('success-job-title').textContent = `\u{1F4CB} ${jobTitle}`;
@@ -1101,7 +1125,7 @@ function showSuccess(jobTitle, id) {
 
 function goToWorkers() {
   if (!currentJobId) {
-    alert('Job ID not available. Please try posting the job again.');
+    alert(authText('jobIdUnavailable', 'Job ID not available. Please try posting the job again.'));
     return;
   }
   window.location.href = `job_workers.html?job_id=${currentJobId}`;
@@ -1115,10 +1139,7 @@ function resetForm() {
     clearFieldErr(id);
   });
   // Reset skills
-  skills = [];
-  renderChips();
-  document.getElementById('skills-input').classList.remove('error');
-  document.getElementById('skills-err').classList.remove('show');
+  skillCatalogue.clear();
 
   // Reset urgency
   urgency = '';
@@ -1133,7 +1154,7 @@ function resetForm() {
 
   // Reset success state
   document.getElementById('success-id').style.display      = '';
-  document.getElementById('success-id').textContent        = '';
+  document.getElementById('success-id-value').textContent   = '';
   document.getElementById('success-job-title').textContent = '';
   document.getElementById('success-overlay').classList.remove('show');
   document.getElementById('form-body').style.display       = 'block';
@@ -1145,7 +1166,8 @@ function resetForm() {
 }
 
 if (completingProfile) {
-  document.getElementById('btn-text').textContent = authText('completeProfileAndPostJob', 'Complete Profile and Post Job');
+  submitTextKey = 'completeProfileAndPostJob';
+  renderSubmitText();
 }
 </script>
 </body>

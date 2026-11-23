@@ -1,4 +1,4 @@
-# LabourNearMe frontend integration
+# Shramik Setu frontend integration
 
 The frontend is a collection of static HTML, CSS, and JavaScript files. It has no build step or frontend environment-variable loader. `supabase-config.js` supplies the Supabase project URL and public publishable key to the browser; it must never contain a service-role key. Supabase JS v2 is loaded from its CDN on sign-in, profile-registration, and employer applicant pages.
 

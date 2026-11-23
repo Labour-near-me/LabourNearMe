@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// LabourNearMe — main.js
+// Shramik Setu — main.js
 // ─────────────────────────────────────────────────────────────
 
 // ── Nav scroll effect ──────────────────────────────────────
@@ -25,8 +25,8 @@ mmEl.querySelectorAll('a').forEach(a => {
 const testimonials = [
   {
     name:   'Current backend capabilities',
-    role:   'LabourNearMe integration',
-    text:   'Worker and employer registration, job posting and listing, job recommendations, applications, and application status updates are available through the connected API.',
+    role:   'Platform integration',
+    text:   'Pro and Patron registration, job posting and listing, job recommendations, applications, and application status updates are available through the connected API.',
     rating: 0,
     loc:    'Availability depends on the backend service'
   }
