@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style>[data-auth-login][hidden],[data-auth-signout][hidden]{display:none!important}</style>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Jobs Near You — LabourNearMe</title>
+<title>Jobs Near You — Shramik Setu</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 /* ─────────────────────────────────────────────────────
-   LabourNearMe — worker_jobs.html
+   Shramik Setu — worker_jobs.html
    Palette mirrors project: navy, saffron, green, surf
 ───────────────────────────────────────────────────── */
 
@@ -54,10 +55,13 @@ nav{
 }
 .nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
 .li-box{
-  background:var(--saffron);padding:8px;border-radius:8px;
+  width:44px;height:44px;padding:5px;border-radius:12px;
+  background:linear-gradient(145deg,#0b54a2,var(--navy-dk));
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(255,102,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 12px rgba(0,20,55,.28),inset 0 1px 0 rgba(255,255,255,.14);
 }
+.brand-symbol{display:block;width:34px;height:34px;flex:none}
 .lt h1{font-size:1.2rem;font-weight:800;color:#fff;letter-spacing:-.01em}
 .lt p{font-size:.62rem;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.02em}
 .nav-back{
@@ -329,13 +333,17 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <div class="ni">
     <a href="index.html" class="nl">
       <div class="li-box">
-        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-        </svg>
+        <svg class="brand-symbol" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+  <circle cx="11" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <circle cx="29" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <path d="M4.5 29v-3.5a6.5 6.5 0 0 1 13 0V29M22.5 29v-3.5a6.5 6.5 0 0 1 13 0V29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M13.5 19c3.7-4.2 9.3-4.2 13 0" stroke="#FFB15E" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="20" cy="17.5" r="2" fill="#FFB15E"/>
+</svg>
       </div>
       <div class="lt">
-        <h1>LabourNearMe</h1>
-        <p>Shramik Setu · श्रमिक सेतु</p>
+        <h1>Shramik Setu</h1>
+        <p>श्रमिक सेतु</p>
       </div>
     </a>
     <a href="index.html" class="nav-back">
@@ -344,6 +352,9 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       </svg>
       Back to Home
     </a>
+    <a href="login.html" class="nav-back" data-auth-login data-i18n="login" hidden>Sign in</a>
+    <select data-language-selector aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option></select>
+    <button class="nav-back" type="button" data-auth-signout data-i18n="signOut" hidden>Sign out</button>
   </div>
 </nav>
 
@@ -384,7 +395,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
   <section class="application-history" aria-labelledby="application-history-title">
     <h3 id="application-history-title">Application history</h3>
-    <p class="history-note">Statuses are shown as returned by the API. The Worker ID in this browser is a workflow reference, not secure sign-in.</p>
+    <p class="history-note">Statuses are shown as returned by the API. The Pro ID in this browser is a workflow reference, not secure sign-in.</p>
     <div id="application-history-state" class="history-state" role="status" aria-live="polite">Loading application history…</div>
   </section>
 
@@ -392,7 +403,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
 <!-- FOOTER -->
 <footer>
-  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <p class="fbot-p" data-i18n="footerCopyright">© 2026 Shramik Setu · Digital India</p>
   <a href="index.html" class="fbot-back">
     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
       <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
@@ -403,11 +414,12 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="auth.js"></script>
+<script src="auth.js?v=auth-controls-20261123"></script>
 <script src="api.js"></script>
+<script src="i18n.js?v=footer-brand-20261123"></script>
 <script>
 // ─────────────────────────────────────────────────────
-// LabourNearMe — worker_jobs.html
+// Shramik Setu — worker_jobs.html
 // Fetches personalised job recommendations for a worker.
 // ─────────────────────────────────────────────────────
 
@@ -452,7 +464,7 @@ function showApplicationHistoryError(message) {
 
 function renderApplicationHistory(applications) {
   if (!applications.length) {
-    historyContainer.textContent = 'No applications were returned for this Worker ID.';
+    historyContainer.textContent = 'No applications were returned for this Pro ID.';
     return;
   }
 
@@ -503,7 +515,7 @@ function showNoJobs(openJobCount = 0) {
       </div>
       <h3>${hasOpenJobs ? 'No Recommended Matches' : 'No Open Jobs Right Now'}</h3>
       <p>${hasOpenJobs
-        ? `The recommendation service returned no matches for this worker. There are ${openJobCount} open job${openJobCount === 1 ? '' : 's'} in the general feed; they are not being shown as recommendations.`
+        ? `The recommendation service returned no matches for this pro. There are ${openJobCount} open job${openJobCount === 1 ? '' : 's'} in the general feed; they are not being shown as recommendations.`
         : 'The recommendation service returned no matches, and the open-jobs feed is empty.'}</p>
       ${hasOpenJobs ? '<a class="retry-link" href="jobs.html">Browse all open jobs</a>' : ''}
     </div>`;
@@ -643,7 +655,7 @@ async function handleApply(jobIndexOrId, titleParam, indexParam) {
 
   const workerId = localStorage.getItem('worker_id');
   if (!workerId || !String(workerId).trim()) {
-    showToast('error', 'Please register first — no worker ID found.');
+    showToast('error', 'Please register first — no pro ID found.');
     return;
   }
 
@@ -779,9 +791,9 @@ async function fetchJobs() {
   const workerId = String(urlWorkerId || localStorage.getItem('worker_id') || '').trim();
 
   if (!workerId) {
-    showError('No worker ID found. Please register first via the Worker Registration page.');
+    showError('No pro ID found. Please register first via the Pro Registration page.');
     applicationHistoryAvailable = false;
-    historyContainer.textContent = 'Register as a worker to load application history. The browser-stored Worker ID is a workflow reference, not secure sign-in.';
+    historyContainer.textContent = 'Register as a pro to load application history. The browser-stored Pro ID is a workflow reference, not secure sign-in.';
     return;
   }
 

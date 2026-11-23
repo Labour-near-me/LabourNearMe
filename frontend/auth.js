@@ -1,4 +1,4 @@
-// Shared browser authentication for LabourNearMe's static pages.
+// Shared browser authentication for Shramik Setu's static pages.
 (function () {
   'use strict';
 
@@ -33,6 +33,13 @@
 
   function authText(key, fallback) {
     return window.LNM_I18N ? window.LNM_I18N.t(key) : fallback;
+  }
+
+  function hideAuthControlsWhileLoading() {
+    document.querySelectorAll('[data-auth-login], [data-auth-signout]').forEach((element) => {
+      element.hidden = true;
+      element.style.setProperty('display', 'none', 'important');
+    });
   }
 
   window.lnmAuth = {
@@ -74,35 +81,66 @@
   };
 
   function bindSignOut() {
+    let authEventVersion = 0;
+    let hasAuthenticatedSession = false;
+
+    function setHidden(element, hidden) {
+      element.hidden = hidden;
+      if (hidden) element.style.setProperty('display', 'none', 'important');
+      else element.style.removeProperty('display');
+    }
+
+    function updateAuthControls(session) {
+      const validSession = Boolean(
+        session &&
+        session.access_token &&
+        session.user && session.user.id &&
+        (!Number.isFinite(Number(session.expires_at)) || Number(session.expires_at) > Date.now() / 1000)
+      );
+      hasAuthenticatedSession = validSession;
+      document.querySelectorAll('[data-auth-signout]').forEach((button) => setHidden(button, !validSession));
+      document.querySelectorAll('[data-auth-login]').forEach((link) => setHidden(link, validSession));
+    }
+
     document.querySelectorAll('[data-auth-signout]').forEach((button) => {
       button.addEventListener('click', async () => {
-        button.disabled = true;
-        let signedOut = false;
+        document.querySelectorAll('[data-auth-signout]').forEach((control) => { control.disabled = true; });
+        const requestVersion = authEventVersion;
         try {
           await window.lnmAuth.signOut();
-          signedOut = true;
+          if (authEventVersion === requestVersion) {
+            authEventVersion += 1;
+            updateAuthControls(null);
+          }
           const status = document.getElementById('auth-status');
           if (status) status.textContent = authText('signedOut', 'You are signed out.');
+          if (!hasAuthenticatedSession) window.location.assign('index.html');
         } catch (_) {
           const status = document.getElementById('auth-status');
           if (status) status.textContent = authText('signOutError', 'Could not sign out.');
         } finally {
-          button.disabled = false;
-          if (signedOut) button.hidden = true;
+          document.querySelectorAll('[data-auth-signout]').forEach((control) => { control.disabled = false; });
         }
       });
     });
 
     if (client) {
-      client.auth.getSession().then(({ data }) => {
-        if (data.session) document.querySelectorAll('[data-auth-signout]').forEach((button) => { button.hidden = false; });
-      }).catch(() => {});
+      // Controls start hidden in the markup. Resolve the initial state through
+      // Supabase, while allowing newer auth events to supersede a stale lookup.
+      const initialVersion = authEventVersion;
       client.auth.onAuthStateChange((event, session) => {
-        document.querySelectorAll('[data-auth-signout]').forEach((button) => { button.hidden = !session; });
+        authEventVersion += 1;
+        updateAuthControls(session);
       });
-    }
+      client.auth.getSession().then(({ data, error }) => {
+        if (authEventVersion === initialVersion) updateAuthControls(error ? null : data.session);
+      }).catch(() => {
+        if (authEventVersion === initialVersion) updateAuthControls(null);
+      });
+    } else updateAuthControls(null);
   }
 
+  hideAuthControlsWhileLoading();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindSignOut, { once: true });
   else bindSignOut();
 })();

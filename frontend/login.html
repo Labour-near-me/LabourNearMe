@@ -4,23 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#003580" />
-  <title>Sign in — LabourNearMe</title>
+  <title>Sign in — Shramik Setu</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="login.css?v=google-sign-in-20261103" />
+  <link rel="stylesheet" href="login.css?v=brand-cleanup-20261123" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="auth.js?v=otp-fix-20261024"></script>
+  <script src="auth.js?v=auth-controls-20261123"></script>
   <script src="api.js"></script>
-  <script src="i18n.js" defer></script>
+  <script src="i18n.js?v=footer-brand-20261123" defer></script>
   <script src="login.js?v=google-sign-in-20261103" defer onerror="document.getElementById('otp-message').textContent='The sign-in page could not load its script. Refresh the page and try again.'"></script>
 </head>
 <body>
   <header class="login-header">
-    <a class="brand" href="index.html" aria-label="LabourNearMe home">
+    <a class="brand" href="index.html" aria-label="Shramik Setu home">
       <span class="brand-mark" aria-hidden="true">
-        <svg width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <svg class="brand-symbol" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+  <circle cx="11" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <circle cx="29" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <path d="M4.5 29v-3.5a6.5 6.5 0 0 1 13 0V29M22.5 29v-3.5a6.5 6.5 0 0 1 13 0V29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M13.5 19c3.7-4.2 9.3-4.2 13 0" stroke="#FFB15E" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="20" cy="17.5" r="2" fill="#FFB15E"/>
+</svg>
       </span>
-      <span><strong>LabourNearMe</strong><small>Shramik Setu · श्रमिक सेतु</small></span>
+      <span><strong>Shramik Setu</strong><small>श्रमिक सेतु</small></span>
     </a>
     <a class="home-link" href="index.html"><span aria-hidden="true">←</span> <span data-i18n="backHome">Back to home</span></a>
     <select data-language-selector aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="gu">ગુજરાતી</option><option value="mr">मराठी</option></select>
@@ -28,11 +34,11 @@
   </header>
 
   <main class="login-layout">
-    <aside class="welcome-panel" aria-label="About LabourNearMe">
+    <aside class="welcome-panel" aria-label="About Shramik Setu">
       <span class="eyebrow"><span class="status-dot"></span> <span data-i18n="welcomeEyebrow">A better way to find work</span></span>
-      <h1>Good work starts with a <span>connection.</span></h1>
-      <p>Sign in to continue your LabourNearMe journey, whether you’re looking for work or building your team.</p>
-      <div class="welcome-note"><span aria-hidden="true">✦</span><span>Connecting workers and local employers across Bharat</span></div>
+      <h1 data-i18n="loginHeadline">Good work starts with a connection.</h1>
+      <p data-i18n="loginWelcomeDescription">Sign in to continue with Shramik Setu, whether you’re looking for work or building your team.</p>
+      <div class="welcome-note"><span aria-hidden="true">✦</span><span data-i18n="loginGroupsConnected">Connecting Patrons and Pros across Bharat.</span></div>
     </aside>
 
     <section class="login-card" aria-labelledby="login-title">
@@ -63,8 +69,8 @@
           <p class="field-hint" data-i18n="profileMissingNotice">No application profile is linked to this account. If you already registered, stop and contact support before continuing.</p>
           <p class="connection-note" data-i18n="chooseProfileType">Choose which profile to complete:</p>
           <label class="field-hint"><input id="otp-new-user-confirm" type="checkbox" /> <span data-i18n="otpNewUserConfirm">I have not registered a profile before.</span></label>
-          <button class="continue-profile" type="button" data-otp-role="worker" data-i18n="worker" disabled>Worker</button>
-          <button class="continue-profile" type="button" data-otp-role="employer" data-i18n="employer" disabled>Employer</button>
+          <button class="continue-profile" type="button" data-otp-role="worker" data-i18n="worker" disabled>Pro</button>
+          <button class="continue-profile" type="button" data-otp-role="employer" data-i18n="employer" disabled>Patron</button>
         </div>
       </form>
 
@@ -99,8 +105,8 @@
             <label for="email-auth-role" data-i18n="emailRoleLabel">Profile type for a new account</label>
             <select id="email-auth-role" name="role">
               <option value="" selected data-i18n="emailRoleOptional">Choose only when creating an account</option>
-              <option value="worker" data-i18n="worker">Worker</option>
-              <option value="employer" data-i18n="employer">Employer</option>
+              <option value="worker" data-i18n="worker">Pro</option>
+              <option value="employer" data-i18n="employer">Patron</option>
             </select>
           </div>
           <button class="submit-button" id="email-sign-in" type="submit" data-i18n="emailSignIn">Sign in with email</button>
@@ -112,6 +118,6 @@
       <p class="form-message" id="auth-status" role="status" aria-live="polite"></p>
     </section>
   </main>
-  <footer class="page-footer">LabourNearMe <span aria-hidden="true">·</span> Shramik Setu</footer>
+  <footer class="page-footer">Shramik Setu</footer>
 </body>
 </html>

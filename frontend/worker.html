@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<style>[data-auth-login][hidden],[data-auth-signout][hidden]{display:none!important}</style>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Worker Registration — LabourNearMe</title>
+<title>Pro Registration — Shramik Setu</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -49,10 +50,13 @@ nav{
 }
 .nl{display:flex;align-items:center;gap:.75rem;text-decoration:none}
 .li-box{
-  background:var(--saffron);padding:8px;border-radius:8px;
+  width:44px;height:44px;padding:5px;border-radius:12px;
+  background:linear-gradient(145deg,#0b54a2,var(--navy-dk));
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(255,102,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 12px rgba(0,20,55,.28),inset 0 1px 0 rgba(255,255,255,.14);
 }
+.brand-symbol{display:block;width:34px;height:34px;flex:none}
 .lt h1{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-.01em}
 .lt p{font-size:.65rem;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.02em}
 .nav-back{
@@ -182,6 +186,16 @@ input.valid{border-color:var(--green)}
 @keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 .skill-chip button{background:none;border:none;cursor:pointer;padding:0;color:var(--muted);display:flex;line-height:1;font-size:1rem;transition:color .15s}
 .skill-chip button:hover{color:var(--red)}
+.skill-catalogue-controls{display:flex;gap:.5rem;align-items:stretch}
+.skill-catalogue-select{flex:1;min-width:0}
+.skill-catalogue-add,.skill-catalogue-retry{border:1.5px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-size:.82rem;font-weight:700;padding:.65rem .9rem;cursor:pointer}
+.skill-catalogue-add:disabled{opacity:.55;cursor:not-allowed}
+.skill-catalogue-status{font-size:.78rem;color:var(--muted);margin-top:.45rem}
+.skill-catalogue-status.is-error{color:var(--red)}
+.skill-catalogue-retry{margin-left:.35rem;padding:.2rem .55rem}
+.skill-catalogue-selected-section{margin-top:.65rem}
+.skill-catalogue-selected-heading{font-size:.76rem;font-weight:700;color:var(--muted);margin-bottom:.25rem}
+.skill-catalogue-no-selection{font-size:.76rem;color:var(--muted)}
 
 .skill-suggestions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
 .skill-sugg{
@@ -298,13 +312,20 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <div class="ni">
     <a href="index.html" class="nl">
       <div class="li-box">
-        <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <svg class="brand-symbol" width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+  <circle cx="11" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <circle cx="29" cy="10" r="3.3" stroke="white" stroke-width="2.2"/>
+  <path d="M4.5 29v-3.5a6.5 6.5 0 0 1 13 0V29M22.5 29v-3.5a6.5 6.5 0 0 1 13 0V29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M13.5 19c3.7-4.2 9.3-4.2 13 0" stroke="#FFB15E" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="20" cy="17.5" r="2" fill="#FFB15E"/>
+</svg>
       </div>
       <div class="lt">
-        <h1>LabourNearMe</h1>
-        <p>Shramik Setu · श्रमिक सेतु</p>
+        <h1>Shramik Setu</h1>
+        <p>श्रमिक सेतु</p>
       </div>
     </a>
+    <a href="login.html" class="nav-back" data-auth-login data-i18n="login" hidden>Login</a>
     <a href="index.html" class="nav-back">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       <span data-i18n="backHome">Back to Home</span>
@@ -317,7 +338,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 <!-- GOV STRIP -->
 <div class="gov-strip">
   <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-  <span data-i18n="registration">Worker profile · API-connected registration</span>
+  <span data-i18n="registration">Pro profile · API-connected registration</span>
 </div>
 
 <!-- PAGE -->
@@ -327,13 +348,10 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
   <div class="left-panel">
     <div class="page-badge">
       <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-      <span data-i18n="profileTitle">Worker Registration</span>
+      <span data-i18n="profileTitle">Pro Registration</span>
     </div>
-    <h2>
-      Start Finding<br>
-      <span class="acc">Jobs Near</span> <span class="saf">You</span>
-    </h2>
-    <p class="desc" data-i18n="profileDesc">Create a worker profile with your contact details, skills, expected daily wage, and current coordinates.</p>
+    <h2 data-i18n="workerHeroHeadline">Start Finding Jobs Near You</h2>
+    <p class="desc" data-i18n="profileDesc">Create a pro profile with your contact details, skills, expected daily wage, and current coordinates.</p>
 
     <div class="benefits">
       <div class="benefit">
@@ -369,7 +387,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
     <div class="mini-testi">
       <div class="mini-stars" id="mini-stars"></div>
-      <p class="mini-quote">The current API supports worker registration and job recommendations. It does not provide identity verification or job notifications.</p>
+      <p class="mini-quote">The current API supports pro registration and job recommendations. It does not provide identity verification or job notifications.</p>
       <div class="mini-author">
         <div class="mini-av">R</div>
         <div>
@@ -387,7 +405,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
         <svg width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
       <div class="form-header-text">
-      <h3 data-i18n="registration">Worker Registration</h3>
+      <h3 data-i18n="registration">Pro Registration</h3>
         <p data-i18n="fillDetails">Fill your details to get started — takes 2 minutes</p>
       </div>
       <div class="form-step-indicator">Step 1 of 1</div>
@@ -437,27 +455,12 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
       <!-- Skills -->
       <div class="field-group">
-        <label class="field-label" for="skills-input">
+        <label class="field-label" for="worker-skills-select">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
           <span data-i18n="skills">Skills</span> <span class="req">*</span>
         </label>
-        <input type="text" id="skills-input" placeholder="Type a skill and press Enter (e.g. Carpenter)" data-i18n-placeholder="addSkill"/>
-        <div class="field-error" id="skills-err">Please add at least one skill</div>
-        <div class="skills-chips" id="skills-chips"></div>
-        <p class="field-hint">Press <strong>Enter</strong> or <strong>comma</strong> to add · Click chip ×  to remove</p>
-        <div style="margin-top:.65rem">
-          <p class="field-hint" style="margin-bottom:.4rem">Quick add common skills:</p>
-          <div class="skill-suggestions" id="skill-suggestions">
-            <button class="skill-sugg" type="button">Carpenter</button>
-            <button class="skill-sugg" type="button">Painter</button>
-            <button class="skill-sugg" type="button">Plumber</button>
-            <button class="skill-sugg" type="button">Electrician</button>
-            <button class="skill-sugg" type="button">Mason</button>
-            <button class="skill-sugg" type="button">Driver</button>
-            <button class="skill-sugg" type="button">Helper</button>
-            <button class="skill-sugg" type="button">Welder</button>
-          </div>
-        </div>
+        <div id="worker-skill-catalogue"></div>
+        <div class="field-error" id="skills-err" data-i18n="skillRequiredWorker">Please select at least one skill</div>
       </div>
 
       <div class="field-group">
@@ -500,7 +503,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <!-- Availability -->
       <div class="field-group">
         <label class="field-label">Availability</label>
-        <div class="field-hint">The current backend marks every new worker profile as available.</div>
+        <div class="field-hint">The current backend marks every new pro profile as available.</div>
       </div>
 
       <!-- Terms -->
@@ -515,7 +518,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <!-- Submit -->
       <button class="submit-btn" id="submit-btn" type="button" onclick="handleRegister()">
         <svg width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        <span id="btn-text" data-i18n="registerWorker">Register as Worker</span>
+        <span id="btn-text" data-i18n="registerWorker">Register as Pro</span>
         <div class="spinner" id="btn-spinner"></div>
       </button>
 
@@ -526,13 +529,13 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
       <div class="success-circle">
         <svg width="40" height="40" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <h3>Registration Successful! 🎉</h3>
-      <p>Welcome to LabourNearMe, <strong id="success-name"></strong>!</p>
-      <p style="font-size:.85rem;margin-top:.25rem">Your profile is now live. Employers near you can find you.</p>
-      <div class="success-id" id="success-id"></div>
+      <h3 data-i18n="registrationSuccessTitle">Registration Successful! 🎉</h3>
+      <p><span data-i18n="welcomeToLabourNearMe">Welcome to Shramik Setu,</span> <strong id="success-name"></strong>!</p>
+      <p style="font-size:.85rem;margin-top:.25rem" data-i18n="workerSuccessDescription">Your profile is now live. Patrons near you can find you.</p>
+      <div class="success-id" id="success-id"><span data-i18n="workerIdLabel">Pro ID</span>: <span id="success-id-value"></span></div>
       <div class="success-actions">
-        <button class="btn-find-jobs" onclick="goToJobs()">Browse Jobs Near Me →</button>
-        <button class="btn-register-another" onclick="window.location.href='index.html'">Return to Homepage</button>
+        <button class="btn-find-jobs" onclick="goToJobs()" data-i18n="browseJobsNearMe">Browse Jobs Near Me →</button>
+        <button class="btn-register-another" onclick="window.location.href='index.html'" data-i18n="returnHomepage">Return to Homepage</button>
       </div>
     </div>
 
@@ -541,7 +544,7 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
 <!-- FOOTER -->
 <footer>
-  <p class="fbot-p">© 2026 LabourNearMe · College Project · Digital India</p>
+  <p class="fbot-p" data-i18n="footerCopyright">© 2026 Shramik Setu · Digital India</p>
   <a href="index.html" class="fbot-back">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     Back to Homepage
@@ -550,15 +553,19 @@ footer{background:var(--navy-dk);color:#fff;padding:1.5rem;text-align:center}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="auth.js"></script>
+<script src="auth.js?v=auth-controls-20261123"></script>
 <script src="api.js"></script>
-<script src="i18n.js"></script>
+<script src="i18n.js?v=footer-brand-20261123"></script>
+<script src="skill-catalogue.js"></script>
 <script>
 // ── CONFIG ───────────────────────────────────────────
 
 // ── STATE ────────────────────────────────────────────
 let skills = [];
 let profileRegistrationAttempted = false;
+let workerBannerSource = null;
+let workerBannerKey = null;
+let workerSubmitKey = 'registerWorker';
 const completingProfile = new URLSearchParams(window.location.search).get('complete_profile') === 'worker';
 
 function authText(key, fallback) {
@@ -603,6 +610,55 @@ async function checkWorkerProfileBeforeRegistration() {
 }
 
 // ── MINI STARS ───────────────────────────────────────
+// The registration POST may have completed even when its response was lost.
+function isUncertainWorkerRegistrationError(error) {
+  if (Number.isInteger(error && error.status)) return error.status >= 500;
+  const message = String(error && error.message || '').toLowerCase();
+  if (message.includes('session has expired') || message.includes('sign-in is required')) return false;
+  return true;
+}
+
+async function recoverWorkerRegistration() {
+  const maxAttempts = 5;
+  const delayBetweenAttempts = 2000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    try {
+      const result = await window.lnmRequest('/auth/me', {
+        authenticated: true,
+        signal: controller.signal
+      });
+      const profile = result && result.profile;
+      const workerId = profile && profile.id;
+      const validWorkerId = typeof workerId === 'string'
+        && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(workerId);
+
+      if (
+        result.profile_status === 'complete' &&
+        result.needs_registration === false &&
+        profile &&
+        profile.role === 'worker' &&
+        validWorkerId
+      ) {
+        return {
+          workerId,
+          fullName: typeof profile.full_name === 'string' ? profile.full_name : ''
+        };
+      }
+      if (result.profile_status === 'complete' && profile && profile.role && profile.role !== 'worker') return null;
+    } catch (error) {
+      console.warn(`Registration recovery check ${attempt} failed:`, error.message);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (attempt < maxAttempts) await new Promise(resolve => setTimeout(resolve, delayBetweenAttempts));
+  }
+  return null;
+}
+
 const starSVG = `<svg width="16" height="16" fill="#F59E0B" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`;
 document.getElementById('mini-stars').innerHTML = starSVG.repeat(5);
 
@@ -621,7 +677,17 @@ function updateProgress() {
 });
 
 // ── SKILLS ───────────────────────────────────────────
-const skillsInput = document.getElementById('skills-input');
+const skillCatalogue = window.SkillCatalogue.create({
+  root: document.getElementById('worker-skill-catalogue'),
+  selectId: 'worker-skills-select',
+  errorElement: document.getElementById('skills-err'),
+  path: '/skills/',
+  onChange(selected) {
+    skills = selected.map(skill => skill.id);
+    updateProgress();
+    if (skills.length) document.getElementById('skills-err').classList.remove('show');
+  }
+});
 
 // Dictate one reviewable profile field; this never submits the form.
 const voiceCategoryButton = document.getElementById('voice-category-button');
@@ -673,41 +739,6 @@ voiceCategoryButton.addEventListener('click', () => {
   }
 });
 
-function addSkill(val) {
-  const skill = val.trim();
-  if (!skill || skills.includes(skill)) return;
-  skills.push(skill);
-  renderChips();
-  updateProgress();
-}
-
-function removeSkill(skill) {
-  skills = skills.filter(s => s !== skill);
-  renderChips();
-  updateProgress();
-}
-
-function renderChips() {
-  document.getElementById('skills-chips').innerHTML = skills.map(s =>
-    `<div class="skill-chip">${s}<button type="button" onclick="removeSkill('${s.replace(/'/g,"\\'")}')">×</button></div>`
-  ).join('');
-}
-
-skillsInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ',') {
-    e.preventDefault();
-    addSkill(skillsInput.value.replace(',', ''));
-    skillsInput.value = '';
-  }
-});
-skillsInput.addEventListener('blur', () => {
-  if (skillsInput.value.trim()) { addSkill(skillsInput.value); skillsInput.value = ''; }
-});
-
-document.querySelectorAll('.skill-sugg').forEach(btn => {
-  btn.addEventListener('click', () => addSkill(btn.textContent));
-});
-
 // ── VALIDATION ────────────────────────────────────────
 function showErr(fieldId, errId) {
   document.getElementById(fieldId).classList.add('error');
@@ -733,12 +764,10 @@ function validate() {
   const expectedWage = Number(document.getElementById('expected-wage').value);
   if (!Number.isFinite(expectedWage) || expectedWage <= 0) { showBanner('Enter an expected daily wage greater than 0.'); ok = false; }
   if (skills.length === 0) {
-    document.getElementById('skills-input').classList.add('error');
-    document.getElementById('skills-err').classList.add('show');
+    skillCatalogue.setInvalid(true);
     ok = false;
   } else {
-    document.getElementById('skills-input').classList.remove('error');
-    document.getElementById('skills-err').classList.remove('show');
+    skillCatalogue.setInvalid(false);
   }
   return ok;
 }
@@ -783,14 +812,14 @@ async function handleRegister() {
       error.authKey = 'verifiedAuthRequired';
       throw error;
     }
-    profileRegistrationAttempted = true;
     const data = await window.lnmRequest('/workers/', {
-      method: 'POST', authenticated: true, body: JSON.stringify(payload), signal: controller.signal
+      method: 'POST', authenticated: true, body: JSON.stringify(payload), signal: controller.signal,
+      onRequestStart() { profileRegistrationAttempted = true; }
     });
     clearTimeout(timeoutId);
 
     const workerId = data.worker_id || null;
-    if (!workerId || data.status !== 'success') throw new Error('The server response did not confirm worker registration.');
+    if (!workerId || data.status !== 'success') throw new Error('The server response did not confirm pro registration.');
 
     setLoading(false);
     showSuccess(payload.full_name, workerId);
@@ -798,23 +827,35 @@ async function handleRegister() {
   } catch (err) {
     clearTimeout(timeoutId);
     let msg;
-    if (err.authKey) msg = authText(err.authKey, 'A verified phone sign-in is required.');
+    if (profileRegistrationAttempted) {
+      if (isUncertainWorkerRegistrationError(err)) {
+        const recovered = await recoverWorkerRegistration();
+        if (recovered) {
+          const submittedName = document.getElementById('name').value.trim();
+          showSuccess(recovered.fullName || submittedName, recovered.workerId);
+          return;
+        }
+      }
+
+      blockRetry = true;
+      if (err.status === 401) msg = authText('profileLookupUnauthorized', 'Sign in with phone OTP and try again.');
+      else if (err.status === 409) msg = authText('profileLookupConflict', 'A profile already exists for this account.');
+      else if (err.message === 'profileResponseUnexpected') msg = authText('profileResponseUnexpected', 'The server returned an unexpected profile response.');
+      else msg = authText('profileRegistrationFailed', 'Profile registration could not be confirmed. Do not retry until its status is checked.');
+    } else if (err.authKey) msg = authText(err.authKey, 'A verified phone sign-in is required.');
     else if (err.status === 401) msg = authText('profileLookupUnauthorized', 'Sign in with phone OTP and try again.');
     else if (err.status === 409) msg = authText('profileLookupConflict', 'A profile already exists for this account.');
     else if (err.message === 'profileResponseUnexpected') msg = authText('profileResponseUnexpected', 'The server returned an unexpected profile response.');
-    else if (profileRegistrationAttempted) msg = authText('profileRegistrationFailed', 'Profile registration could not be confirmed. Do not retry until its status is checked.');
     else if (!profileLookupComplete) msg = authText('profileLookupFailed', 'Could not verify your profile with the server.');
     else msg = err.message || 'Could not complete profile registration.';
     showBanner(msg);
-    if (profileRegistrationAttempted) {
-      blockRetry = true;
-    }
   } finally {
     clearTimeout(timeoutId);
     setLoading(false);
     if (blockRetry) {
       document.getElementById('submit-btn').disabled = true;
-      document.getElementById('btn-text').textContent = authText('registrationOutcomeUnknown', 'Registration not confirmed');
+      workerSubmitKey = 'registrationOutcomeUnknown';
+      renderWorkerSubmitText();
     }
   }
 }
@@ -823,19 +864,40 @@ async function handleRegister() {
 // ── UI HELPERS ────────────────────────────────────────
 function setLoading(on) {
   const btn = document.getElementById('submit-btn');
-  document.getElementById('btn-text').textContent = on ? authText('profileRegistering', 'Registering…') : authText('registerWorker', 'Register as Worker');
+  workerSubmitKey = on ? 'profileRegistering' : 'registerWorker';
+  renderWorkerSubmitText();
   document.getElementById('btn-spinner').style.display = on ? 'block' : 'none';
   btn.disabled = on;
 }
 
+function renderWorkerSubmitText() {
+  document.getElementById('btn-text').textContent = authText(workerSubmitKey, workerSubmitKey === 'profileRegistering' ? 'Registering…' : workerSubmitKey === 'registrationOutcomeUnknown' ? 'Registration not confirmed' : 'Register as Pro');
+}
+
+function renderWorkerBanner() {
+  if (!workerBannerSource) return;
+  document.getElementById('error-msg').textContent = workerBannerKey
+    ? authText(workerBannerKey, workerBannerSource)
+    : (window.LNM_I18N ? window.LNM_I18N.translateText(workerBannerSource) : workerBannerSource);
+}
+
+document.addEventListener('lnm-language-change', () => {
+  renderWorkerBanner();
+  renderWorkerSubmitText();
+});
+
 function showBanner(msg) {
+  workerBannerSource = msg;
+  workerBannerKey = window.LNM_I18N ? window.LNM_I18N.keyForText(msg) : null;
   const b = document.getElementById('error-banner');
-  document.getElementById('error-msg').textContent = msg;
+  renderWorkerBanner();
   b.classList.add('show');
   b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function hideBanner() {
+  workerBannerSource = null;
+  workerBannerKey = null;
   document.getElementById('error-banner').classList.remove('show');
 }
 
@@ -848,7 +910,7 @@ function showSuccess(name, id) {
   const idEl = document.getElementById('success-id');
 
   if (id) {
-    idEl.textContent = `Worker ID: ${id}`;
+    document.getElementById('success-id-value').textContent = id;
     currentWorkerId = id; // 🔥 store it
   } else {
     idEl.style.display = 'none';
@@ -859,7 +921,7 @@ function showSuccess(name, id) {
 }
 function goToJobs() {
   if (!currentWorkerId) {
-    alert("Worker ID missing!");
+    alert(window.LNM_I18N ? window.LNM_I18N.translateText('Pro ID missing!') : 'Pro ID missing!');
     return;
   }
 
@@ -867,7 +929,8 @@ function goToJobs() {
 }
 
 if (completingProfile) {
-  document.getElementById('btn-text').textContent = authText('registerWorker', 'Register as Worker');
+  workerSubmitKey = 'registerWorker';
+  renderWorkerSubmitText();
 }
 </script>
 </body>

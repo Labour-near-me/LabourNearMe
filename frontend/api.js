@@ -1,7 +1,7 @@
 // Shared API configuration and JSON request handling for the static frontend.
 window.LNM_API_BASE = 'https://labournearme.onrender.com';
 window.lnmRequest = async function (path, options = {}) {
-  const { authenticated = false, timeout: timeoutMs, ...requestOptions } = options;
+  const { authenticated = false, timeout: timeoutMs, onRequestStart, ...requestOptions } = options;
   let accessToken = null;
   if (authenticated) {
     if (!window.lnmAuth || typeof window.lnmAuth.getAccessToken !== 'function') {
@@ -13,7 +13,7 @@ window.lnmRequest = async function (path, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs || 45000);
   try {
-    const response = await fetch(`${window.LNM_API_BASE}${path}`, {
+    const responsePromise = fetch(`${window.LNM_API_BASE}${path}`, {
       ...requestOptions,
       signal: requestOptions.signal || controller.signal,
       headers: {
@@ -22,6 +22,8 @@ window.lnmRequest = async function (path, options = {}) {
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
       }
     });
+    if (typeof onRequestStart === 'function') onRequestStart();
+    const response = await responsePromise;
     const text = await response.text();
     let data = {};
     try { data = text ? JSON.parse(text) : {}; } catch (_) { data = { detail: text }; }
